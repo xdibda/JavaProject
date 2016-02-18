@@ -2,6 +2,8 @@ package othello;
 
 import java.util.EmptyStackException;
 
+class GameEndedException extends Exception {}
+
 class ComputerHasPlayed extends Exception {
     char x; int y;
     ComputerHasPlayed(int x, int y) {
@@ -9,7 +11,7 @@ class ComputerHasPlayed extends Exception {
         this.y = y + 1;
     }
     public String toString() {
-        return Utility.PlayerType.COMP.getName() + " tahl na pole: " + x + " " + y + "\n" + Utility.getPlayerTurnString(Utility.PLAYERONE, Utility.PlayerType.HUMAN);
+        return "Byl proveden tah: " + Utility.PlayerType.COMP.getName() + " tahl na pole: " + x + " " + y + "\n" + Utility.getPlayerTurnString(Utility.PLAYERONE) + ".";
     }
 
     int getX() { return x; }
@@ -109,13 +111,6 @@ class MoveNotAvailableException extends Exception {
     @Override
     public String toString() {
         return "Tento tah neni pristupny. Opakujte prosim tah.";
-    }
-}
-
-class GameEndedException extends Exception {
-    @Override
-    public String toString() {
-        return "Hra skoncila.";
     }
 }
 

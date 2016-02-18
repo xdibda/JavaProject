@@ -10,6 +10,16 @@ public class Utility {
 
     static int MAXFREEZETIME = 100;
 
+    static String[] PLAYERS = new String[2];
+
+    static void setPlayerString(boolean computer) {
+        PLAYERS[PLAYERONE] = PlayerType.PONE.getName();
+        if (computer)
+            PLAYERS[PLAYERTWO] = PlayerType.COMP.getName();
+        else
+            PLAYERS[PLAYERTWO] = PlayerType.PTWO.getName();
+    }
+
     public enum Color {
         WHITE('W'),
         BLACK('B'),
@@ -30,9 +40,9 @@ public class Utility {
         COMPUTER('C'),
         HUMAN('H'),
 
-        PONE("hrac 1"),
-        PTWO("hrac 2"),
-        COMP("pocitac");
+        PONE("[hrac 1]"),
+        PTWO("[hrac 2]"),
+        COMP("[pocitac]");
 
         private char key = 0;
         private String name = null;
@@ -139,24 +149,13 @@ public class Utility {
     static String getFileExtensionString() { return ".txt"; }
     static String getSaveFolderLocationString() { return "save"; }
 
-    static String getPlayerTurnString(int player, PlayerType playerType) {
-        switch (playerType) {
-            case COMPUTER:
-                if (player == PLAYERONE) {
-                    return "Nyni je na rade " + playerType.PONE.getName() + " s barvou [BLACK]:";
-                }
-                else {
-                    return "Nyni je na rade " + playerType.COMP.getName() + " s barvou [WHITE]:";
-                }
-            case HUMAN:
-                if (player == PLAYERONE) {
-                    return "Nyni je na rade " + playerType.PONE.getName() + " s barvou [BLACK]:";
-                }
-                else {
-                    return "Nyni je na rade " + playerType.PONE.getName() + " s barvou [WHITE]:";
-                }
+    static String getPlayerTurnString(int player) {
+        if (player == PLAYERONE) {
+            return "Nyni je na rade " + PLAYERS[PLAYERONE] + " s barvou [BLACK]:";
         }
-        return null;
+        else {
+            return "Nyni je na rade " + PLAYERS[PLAYERTWO] + " s barvou [WHITE]:";
+        }
     }
 
     static String getGameEndedString(Player[] players) {
@@ -166,45 +165,20 @@ public class Utility {
                 players[PLAYERTWO].getScore()
         };
 
-        switch (players[PLAYERTWO].getPlayerType()) {
-            case COMPUTER:
-                if (score[PLAYERONE] > score[PLAYERTWO]) {
-                    playerName = "Zvitezil " + PlayerType.PONE.getName();
-                } else if (score[PLAYERONE] > score[PLAYERTWO]) {
-                    playerName = "Zvitezil " + PlayerType.COMP.getName();
-                } else {
-                    playerName = "Zapas skoncil remizou";
-                }
-                return "Hra byla ukoncena.\n" + playerName + ".\nKonecna skore: " + PlayerType.PONE.getName() + ": " + score[PLAYERONE] + ", " + PlayerType.PTWO.getName() + ": " + score[PLAYERTWO];
-            case HUMAN:
-                if (score[PLAYERONE] > score[PLAYERTWO]) {
-                    playerName = "Zvitezil " + PlayerType.PONE.getName();
-                } else if (score[PLAYERONE] > score[PLAYERTWO]) {
-                    playerName = "Zvitezil " + PlayerType.PTWO.getName();
-                } else {
-                    playerName = "Zapas skoncil remizou";
-                }
-                return "Hra byla ukoncena.\n" + playerName + ".\nKonecna skore: " + PlayerType.PONE.getName() + ": " + score[PLAYERONE] + ", " + PlayerType.COMP.getName() + ": " + score[PLAYERTWO];
+        if (score[PLAYERONE] > score[PLAYERTWO]) {
+            playerName = "Zvitezil " + PLAYERS[PLAYERONE];
+        } else if (score[PLAYERONE] > score[PLAYERTWO]) {
+            playerName = "Zvitezil " + PLAYERS[PLAYERTWO];
+        } else {
+            playerName = "Zapas skoncil remizou";
         }
-        return null;
+        return "Hra byla ukoncena.\n" + playerName + ".\nKonecna skore: " + PLAYERS[PLAYERONE] + ": " + score[PLAYERONE] + ", " + PLAYERS[PLAYERTWO] + ": " + score[PLAYERTWO];
     }
 
     static int transformCharToInt(char x) {
         return (int) x - 97;
     }
     static char transformIntToChar(int x) { return (char) (x + 97); }
-
-    static ArrayDeque<Board> parseBoards(ArrayList<String> boardsInString, int boardSize) {
-        ArrayDeque<Board> boards = new ArrayDeque<>();
-
-        while (!boardsInString.isEmpty()) {
-            String temp = boardsInString.remove(0);
-            Board tempBoard = new Board(boardSize, temp);
-            boards.addLast(tempBoard);
-        }
-
-        return boards;
-    }
 
     static class Algorithm {
         static Coords getEasyAlgorithm(Board board) {

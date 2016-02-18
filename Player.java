@@ -6,6 +6,7 @@ public class Player {
     private Color color;
     private PlayerType playerType;
     private int score;
+    private String name;
 
     Player(Color color, PlayerType playerType) {
         this.color = color;

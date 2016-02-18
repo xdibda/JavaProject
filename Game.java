@@ -25,6 +25,8 @@ public class Game {
 
         logger = new ArrayDeque<>();
         logger.push(board.copy());
+
+        Utility.setPlayerString(players[Utility.PLAYERTWO].getPlayerType() == PlayerType.COMPUTER);
     }
 
     Game(int boardSize, Player players[], ArrayDeque<Board> logger, int activePlayerTurn) {
@@ -139,6 +141,21 @@ public class Game {
         } catch (FieldIsNotEmptyException e) {};
 
         changeFields(tempArrayOfCoords);
+    }
+
+    ArrayDeque<Board> parseBoards(ArrayList<String> boardsInString, int boardSize) {
+        ArrayDeque<Board> boards = new ArrayDeque<>();
+
+        System.out.println("Jednotlive boardy:");
+        while (!boardsInString.isEmpty()) {
+            String temp = boardsInString.remove(0);
+            Board tempBoard = new Board(boardSize, temp);
+            System.out.println(temp);
+            boards.addLast(tempBoard);
+        }
+        System.out.println("Konec boardu:");
+
+        return boards;
     }
 
     void controlIfComputerTurn(TypeOfGame typeOfGame) throws ComputerHasPlayed {

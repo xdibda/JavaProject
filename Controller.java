@@ -20,17 +20,20 @@ public class Controller {
         saveLoadManager = new SaveLoadManager();
     }
 
-    String createNewGame(int boardSize) {
+    String[] createNewGame(int boardSize) {
         this.playerType = PlayerType.HUMAN;
         this.boardSize = boardSize;
 
         Player players[] = Player.getPlayersForConstructor(this.playerType);
         game = new Game(boardSize, players);
 
-        return Utility.getPlayerTurnString(game.getActivePlayerTurn(), playerType);
+        String[] temp = {
+                Utility.getPlayerTurnString(game.getActivePlayerTurn())
+        };
+        return temp;
     }
 
-    String createNewGame(int boardSize, TypeOfGame typeOfGame) {
+    String[] createNewGame(int boardSize, TypeOfGame typeOfGame) {
         this.playerType = PlayerType.COMPUTER;
         this.boardSize = boardSize;
         this.typeOfGame = typeOfGame;
@@ -38,10 +41,13 @@ public class Controller {
         Player players[] = Player.getPlayersForConstructor(this.playerType);
         game = new Game(boardSize, players);
 
-        return Utility.getPlayerTurnString(game.getActivePlayerTurn(), playerType);
+        String[] temp = {
+                Utility.getPlayerTurnString(game.getActivePlayerTurn())
+        };
+        return temp;
     }
 
-    String makeMove(Coords coords) throws FieldIsNotEmptyException, MoveNotAvailableException {
+    String[] makeMove(Coords coords) throws FieldIsNotEmptyException, MoveNotAvailableException {
 
         try {
             game.controlMoveIfValid(coords, allAvailableMoves);
@@ -54,7 +60,10 @@ public class Controller {
         game.makeCheckpoint();
         game.turnHasBeenMade();
 
-        return Utility.getPlayerTurnString(game.getActivePlayerTurn(), playerType);
+        String[] temp = {
+                Utility.getPlayerTurnString(game.getActivePlayerTurn())
+        };
+        return temp;
     }
 
     void freezeStones() {
@@ -94,7 +103,7 @@ public class Controller {
         return Utility.getSuccessfulSaveGameString();
     }
 
-    String loadGame(String nameOfGame) throws GameLoadingFailureException, GameLoadingNameNotFoundException{
+    String[] loadGame(String nameOfGame) throws GameLoadingFailureException, GameLoadingNameNotFoundException{
         ArrayList<String> gameInfo = null;
         ArrayDeque<Board> gameBoards = null;
 
@@ -110,20 +119,30 @@ public class Controller {
             else {
                 this.playerType = PlayerType.HUMAN;
             }
+            System.out.println("Typ hrace: " + playerType);
+
+            Utility.setPlayerString(playerType == PlayerType.COMPUTER);
 
             this.boardSize = Integer.parseUnsignedInt(gameInfo.remove(0).trim());
+            System.out.println("Velikost desky: " + boardSize);
 
-            if (gameInfo.remove(0).equals(TypeOfGame.EASY.getDifficulty())) {
+            if (gameInfo.remove(0).trim().equals(TypeOfGame.EASY.getDifficulty())) {
                 this.typeOfGame = TypeOfGame.EASY;
             } else {
                 this.typeOfGame = TypeOfGame.HARD;
             }
+            System.out.println("Obtiznost: " + typeOfGame);
 
             scoreOfPlayers[Utility.PLAYERONE] = Integer.parseInt(gameInfo.remove(0).trim());
+            System.out.println("Prvni skore: " + scoreOfPlayers[Utility.PLAYERONE]);
             scoreOfPlayers[Utility.PLAYERTWO] = Integer.parseInt(gameInfo.remove(0).trim());
+            System.out.println("Druhe skore: " + scoreOfPlayers[Utility.PLAYERTWO]);
             activePlayer = Integer.parseInt(gameInfo.remove(0).trim());
+            System.out.println("Aktivni hrac: " + activePlayer);
+            
+            gameBoards = game.parseBoards(gameInfo, boardSize);
+            System.out.println("Pocet boardu: " + gameBoards.size());
 
-            gameBoards = Utility.parseBoards(gameInfo, boardSize);
         } catch (GameLoadingNameNotFoundException e) {
             throw e;
         } catch (Exception e) {
@@ -133,7 +152,11 @@ public class Controller {
         Player[] players = Player.getPlayersForConstructor(playerType, scoreOfPlayers);
         game = new Game(boardSize, players, gameBoards, activePlayer);
 
-        return Utility.getSuccessfulLoadGameString();
+        String[] temp = {
+            Utility.getSuccessfulLoadGameString(),
+            Utility.getPlayerTurnString(game.getActivePlayerTurn())
+        };
+        return temp;
     }
 
     void undoMove() throws NoMoreMovesToUndoException {

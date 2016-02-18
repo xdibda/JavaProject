@@ -46,7 +46,7 @@ public class GameCommandLine {
                     if (j != Board.SIZE - 1)
                         System.out.print(" ");
                 } catch (FieldIsEmptyException e) {
-                    System.out.print(Color.NONE.getKey());
+                    System.out.print(0);
                     if (j != Board.SIZE - 1)
                         System.out.print(" ");
                 }
@@ -64,22 +64,23 @@ public class GameCommandLine {
     public static void main(String args[]) {
         Controller controller = new Controller();
         ReadLineManager fileManager = new ReadLineManager();
-        String nextPlayer = null;
+        String[] nextPlayer = null;
 
         boolean gameStarted = false;
 
         while (true) {
             try {
                 ArrayList<String> tokenArgumentsArray = new ArrayList<>();
+
                 if (gameStarted) {
                     try {
                         controller.controlIfGameEnded();
                     } catch (GameEndedException e) {
-                        System.out.print(e);
                         System.out.println(controller.gameEndedResult());
-                        System.exit(0);
+                        gameStarted = false;
                     } catch (ComputerHasPlayed e) {
                         showBoard(controller.getBoard());
+                        System.out.println("Skore je:\n" + Utility.PLAYERS[Utility.PLAYERONE] + ": "+ controller.getScore()[Utility.PLAYERONE] + "\n" + Utility.PLAYERS[Utility.PLAYERTWO] + ": " + controller.getScore()[Utility.PLAYERTWO]);
                         System.out.println(e);
                     }
                 }
@@ -94,6 +95,7 @@ public class GameCommandLine {
                             nextPlayer = controller.createNewGame(fileManager.getBoardSize(), fileManager.getGameType());
                         }
                         showBoard(controller.getBoard());
+                        System.out.println("Skore je: \n" + Utility.PLAYERS[Utility.PLAYERONE] + ": "+ controller.getScore()[Utility.PLAYERONE] + "\n" + Utility.PLAYERS[Utility.PLAYERTWO] + ": " + controller.getScore()[Utility.PLAYERTWO]);
                         System.out.println(nextPlayer);
                         break;
                     case MOVE:
@@ -101,12 +103,13 @@ public class GameCommandLine {
 
                         try {
                             nextPlayer = controller.makeMove(coords);
+                            System.out.println("Skore je: \n" + Utility.PLAYERS[Utility.PLAYERONE] + ": "+ controller.getScore()[Utility.PLAYERONE] + "\n" + Utility.PLAYERS[Utility.PLAYERTWO] + ": " + controller.getScore()[Utility.PLAYERTWO]);
+                            System.out.println(nextPlayer);
                         } catch (FieldIsNotEmptyException | MoveNotAvailableException e) {
                             System.out.println(e);
                         }
 
                         showBoard(controller.getBoard());
-                        System.out.println(nextPlayer);
                         break;
                     case SAVE:
                         try {
@@ -117,20 +120,23 @@ public class GameCommandLine {
                         break;
                     case LOAD:
                         try {
-                            System.out.println(controller.loadGame(tokenArgumentsArray.get(0)));
+                            String[] writeOutStrings = controller.loadGame(tokenArgumentsArray.get(0));
                             gameStarted = true;
+                            System.out.println(writeOutStrings[0]);
+                            showBoard(controller.getBoard());
+                            System.out.println("Skore je: \n" + Utility.PLAYERS[Utility.PLAYERONE] + ": "+ controller.getScore()[Utility.PLAYERONE] + "\n" + Utility.PLAYERS[Utility.PLAYERTWO] + ": " + controller.getScore()[Utility.PLAYERTWO]);
+                            System.out.println(writeOutStrings[1]);
                         } catch (GameLoadingNameNotFoundException | GameLoadingFailureException e) {
                             System.out.println(e);
                         }
-                        showBoard(controller.getBoard());
                         break;
                     case UNDO:
                         try {
                             controller.undoMove();
+                            showBoard(controller.getBoard());
                         } catch (NoMoreMovesToUndoException e) {
                             System.out.println(e);
                         }
-                        showBoard(controller.getBoard());
                         break;
                 }
 
