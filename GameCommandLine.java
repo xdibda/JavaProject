@@ -68,7 +68,6 @@ public class GameCommandLine {
 
         while (true) {
             try {
-                Player players[];
                 ArrayList<String> tokenArgumentsArray = new ArrayList<>();
                 TypeOfInstruction typeOfInstruction = fileManager.getDecision(tokenArgumentsArray);
                 switch (typeOfInstruction) {
@@ -103,16 +102,14 @@ public class GameCommandLine {
                         break;
                     case SAVE:
                         try {
-                            controller.saveGame(tokenArgumentsArray.get(0));
-                            System.out.print("Hra byla uspesne ulozena");
+                            System.out.println(controller.saveGame(tokenArgumentsArray.get(0)));
                         } catch (GameSavingFailureException e) {
                             System.out.println(e);
                         }
                         break;
                     case LOAD:
                         try {
-                            controller.loadGame(tokenArgumentsArray.get(0));
-                            System.out.print("Hra byla uspesne nactena");
+                            System.out.println(controller.loadGame(tokenArgumentsArray.get(0)));
                         } catch (GameLoadingNameNotFoundException | GameLoadingFailureException e) {
                             System.out.println(e);
                         }

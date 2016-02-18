@@ -113,13 +113,19 @@ public class Game {
 
     void controlMoveIfValid(Coords coords, ArrayList<TreeMap<Coords, ArrayList<Coords>>> allAvailableMoves) throws MoveNotAvailableException {
         boolean moveFound = false;
-        ArrayList<Coords> tempArryOfCoords = null;
+        ArrayList<Coords> tempArrayOfCoords = null;
 
+        //System.out.println("Muj tah je: x = " + coords.getX() + " y = " + coords.getY());
         for (TreeMap<Coords, ArrayList<Coords>> map: allAvailableMoves) {
             for (Map.Entry<Coords, ArrayList<Coords>> mapSet: map.entrySet()) {
+                //System.out.println("Mozne povolene souradnice jsou x = : " + mapSet.getKey().getX() + " y = " + mapSet.getKey().getY() + " a pro ne budu prebarvovat tyto kameny: ");
+                //for (Coords temp: mapSet.getValue()) {
+                //    System.out.println("Tento kamen x = : " + temp.getX()  + " y = " + temp.getY());
+                //}
                 if (coords.equals(mapSet.getKey())) {
+                    //   System.out.println("Zadany tah je validni");
                     moveFound = true;
-                    tempArryOfCoords = mapSet.getValue();
+                    tempArrayOfCoords = mapSet.getValue();
                 }
             }
         }
@@ -132,10 +138,21 @@ public class Game {
             getBoard().setField(coords, getActivePlayer().getColor());
         } catch (FieldIsNotEmptyException e) {};
 
-        for (Coords temp: tempArryOfCoords) {
+        changeFields(tempArrayOfCoords);
+    }
+
+    void countScore() {
+        for (Player player: getPlayers()) {
+            player.resetScore();
+        }
+
+        for (Field field: getBoard().getField()) {
             try {
-                getBoard().setField(temp, getActivePlayer().getColor());
-            } catch (FieldIsNotEmptyException e) {}
+                if (field.getColor() == Color.BLACK)
+                    players[Utility.PLAYERONE].addScore();
+                else
+                    players[Utility.PLAYERTWO].addScore();
+            } catch (FieldIsEmptyException e) {}
         }
     }
 
@@ -153,10 +170,6 @@ public class Game {
 
     Player[] getPlayers() {
         return players;
-    }
-
-    Player getPlayer(int number) {
-        return players[number];
     }
 
     void changeFields(ArrayList<Coords> listOfCoords) {

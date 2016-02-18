@@ -111,9 +111,19 @@ public class Utility {
                 return 1;
         }
 
+        public boolean equals(Coords temp) {
+            return (temp.getX() == this.getX() && temp.getY() == this.getY());
+        }
+
         int getX() { return x; }
         int getY() { return y; }
     }
+
+    static String getSuccessfulSaveGameString() { return "Hra byla uspesne ulozena."; }
+    static String getSuccessfulLoadGameString() { return "Hra byla uspesne nactena."; }
+
+    static String getFileExtensionString() { return ".txt"; }
+    static String getSaveFolderLocationString() { return "save"; }
 
     static String getPlayerTurnString(int player, PlayerType playerType) {
         switch (playerType) {

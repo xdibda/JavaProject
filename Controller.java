@@ -49,6 +49,8 @@ public class Controller {
             throw e;
         }
 
+        game.countScore();
+
         game.makeCheckpoint();
         game.turnHasBeenMade();
 
@@ -59,15 +61,17 @@ public class Controller {
         return Utility.getGameEndedString(game.getPlayers());
     }
 
-    void saveGame(String nameOfGame) throws GameSavingFailureException {
+    String saveGame(String nameOfGame) throws GameSavingFailureException {
         try {
             saveLoadManager.save(nameOfGame, game.getPlayers(), game.getLogger(), Utility.PLAYERONE, typeOfGame);
         } catch (Exception e) {
             throw new GameSavingFailureException();
         }
+
+        return Utility.getSuccessfulSaveGameString();
     }
 
-    void loadGame(String nameOfGame) throws GameLoadingFailureException, GameLoadingNameNotFoundException{
+    String loadGame(String nameOfGame) throws GameLoadingFailureException, GameLoadingNameNotFoundException{
         ArrayList<String> gameInfo = null;
         ArrayDeque<Board> gameBoards = null;
 
@@ -105,6 +109,8 @@ public class Controller {
 
         Player[] players = Player.getPlayersForConstructor(playerType, scoreOfPlayers);
         game = new Game(boardSize, players, gameBoards, activePlayer);
+
+        return Utility.getSuccessfulLoadGameString();
     }
 
     void undoMove() throws NoMoreMovesToUndoException {
@@ -121,76 +127,73 @@ public class Controller {
         }
     }
 
+    int[] getScore() {
+        int[] score = new int[2];
+        Player[] playerScore =  game.getPlayers();
+
+        score[Utility.PLAYERONE] = playerScore[Utility.PLAYERONE].getScore();
+        score[Utility.PLAYERTWO] = playerScore[Utility.PLAYERTWO].getScore();
+
+        return score;
+    }
+
     Board getBoard() {
         return game.getBoard();
     }
 
     void controlIfGameEnded() throws GameEndedException {
-        allAvailableMoves = new ArrayList<TreeMap<Coords, ArrayList<Coords>>>();
-        for (Player player: game.getPlayers()) {
-            player.resetScore();
-        }
+        allAvailableMoves = new ArrayList<>();
 
         for (int x = 0; x < Board.SIZE; x++) {
             for (int y = 0; y < Board.SIZE; y++) {
-                Color color = null;
-                try {
-                    color = getBoard().getField(x, y).getColor();
-                    if (color == Color.BLACK) {
-                        game.getPlayer(Utility.PLAYERONE).addScore();
-                    } else {
-                        game.getPlayer(Utility.PLAYERTWO).addScore();
-                    }
-                } catch (FieldIsEmptyException e) {
                         try {
 //                          System.out.println("Projizdim prazdna pole, ted budu hledat okolni pozice pro : " + x + " a " + y);
                             ArrayList<Coords> temp = game.checkPositionForMoves(new Coords(x, y));
                             if (temp.isEmpty()) {
                                 continue;
                             }
-                            System.out.println("tempCoords pro prvek " + x + " a " + y + " nyni obsahuje : ");
-                            for (Coords tempo : temp) {
-                                System.out.println("Obsahuje prvek: " + tempo.getX() + " a " + tempo.getY());
-                            }
-                            System.out.println("Konec obsahu");
+                            //System.out.println("tempCoords pro prvek " + x + " a " + y + " nyni obsahuje : ");
+                           // for (Coords tempo : temp) {
+                            //    System.out.println("Obsahuje prvek: " + tempo.getX() + " a " + tempo.getY());
+                           //}
+                            //System.out.println("Konec obsahu");
                             NextTry:
                             for (Coords direction : temp) {
                                 int i, j;
                                 ArrayList<Coords> tempCoords = new ArrayList<>();
-                                System.out.println("Hledam celkove validni cesty pro: " + direction.getX() + " a " + direction.getY());
+                               // System.out.println("Hledam celkove validni cesty pro: " + direction.getX() + " a " + direction.getY());
                                 for (i = direction.getX(), j = direction.getY(); Utility.isInBoard(new Coords(i, j)); i += (direction.getX() - x), j += (direction.getY() - y)) {
-                                    System.out.println("Pokracuju v ceste na: " + i + " a " + j);
+                                   // System.out.println("Pokracuju v ceste na: " + i + " a " + j);
                                     try {
                                         if (getBoard().getField(i, j).getColor() != game.getActivePlayer().getColor()) {
-                                            System.out.println("V diagonale je dalsi: " + getBoard().getField(i, j).getColor() + " pro " + i + " a " + j);
+                                       //     System.out.println("V diagonale je dalsi: " + getBoard().getField(i, j).getColor() + " pro " + i + " a " + j);
                                             tempCoords.add(new Coords(i, j));
-                                            System.out.println("Pridavam prvek do stacku " + i + " a " + j + ". Obsah je ted: ");
-                                            for (Coords tempo : tempCoords) {
-                                                System.out.println("Obsahuje prvek: " + tempo.getX() + " a " + tempo.getY());
-                                            }
-                                            System.out.println("Konec obsahu");
+                                      //      System.out.println("Pridavam prvek do stacku " + i + " a " + j + ". Obsah je ted: ");
+                                        //    for (Coords tempo : tempCoords) {
+                                       //         System.out.println("Obsahuje prvek: " + tempo.getX() + " a " + tempo.getY());
+                                      //      }
+                                      //      System.out.println("Konec obsahu");
                                         } else {
-                                            System.out.println("Na konci diagonaly je i moje barva, takze to cele hodim do stromu a ulozim si pro pripadnou zmenu");
-                                            System.out.println("Cele to ukladam pro" + x + " a " + y);
+                                         //   System.out.println("Na konci diagonaly je i moje barva, takze to cele hodim do stromu a ulozim si pro pripadnou zmenu");
+                                        //    System.out.println("Cele to ukladam pro" + x + " a " + y);
                                             TreeMap<Coords, ArrayList<Coords>> map = new TreeMap<>();
                                             map.put(new Coords(x, y), tempCoords);
-                                            System.out.println("S obsahem:");
-                                            for (Coords tempo : tempCoords) {
-                                                System.out.println("Obsahuje prvek: " + tempo.getX() + " a " + tempo.getY());
-                                            }
-                                            System.out.println("Konec obsahu");
+                                        //    System.out.println("S obsahem:");
+                                       //     for (Coords tempo : tempCoords) {
+                                       //         System.out.println("Obsahuje prvek: " + tempo.getX() + " a " + tempo.getY());
+                                       //     }
+                                       //     System.out.println("Konec obsahu");
                                             allAvailableMoves.add(map);
-                                            System.out.println("TOTO POLICKO JE VALIDNI:" + x + " a " + y);
+                                         //   System.out.println("TOTO POLICKO JE VALIDNI:" + x + " a " + y);
                                             continue NextTry;
                                         }
                                     } catch (FieldIsEmptyException fieldException) {
-                                        System.out.println("Toto pole je prazdne, jdu dalsi cyklus pro dalsi okolni souradnici");
+                                        //System.out.println("Toto pole je prazdne, jdu dalsi cyklus pro dalsi okolni souradnici");
                                         continue NextTry;
                                     }
                                 }
                             }
                         } catch (NoMovesAvailableException movesException) {}
-                }
             }
         }
 
