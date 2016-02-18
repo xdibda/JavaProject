@@ -1,0 +1,57 @@
+package othello;
+
+import static othello.Utility.*;
+
+public class Player {
+    private Color color;
+    private PlayerType playerType;
+    private int score;
+
+    Player(Color color, PlayerType playerType) {
+        this.color = color;
+        this.playerType = playerType;
+        this.score = 0;
+    }
+
+    Player(Color color, PlayerType playerType, int score) {
+        this.color = color;
+        this.playerType = playerType;
+        this.score = score;
+    }
+
+    static Player[] getPlayersForConstructor(PlayerType playerType) {
+        Player players[] = {
+                new Player(Color.BLACK, PlayerType.HUMAN),
+                new Player(Color.WHITE, playerType)
+        };
+        return players;
+    }
+
+    static Player[] getPlayersForConstructor(PlayerType playerType, int[] score) {
+        Player players[] = {
+                new Player(Color.BLACK, PlayerType.HUMAN, score[PLAYERONE]),
+                new Player(Color.WHITE, playerType, score[PLAYERTWO])
+        };
+        return players;
+    }
+
+    PlayerType getPlayerType() {
+        return playerType;
+    }
+
+    Color getColor() {
+        return color;
+    }
+
+    void resetScore() {
+        this.score = 0;
+    }
+
+    void addScore() {
+        this.score++;
+    }
+
+    int getScore() {
+        return score;
+    }
+}
