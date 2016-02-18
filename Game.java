@@ -141,19 +141,44 @@ public class Game {
         changeFields(tempArrayOfCoords);
     }
 
-    void countScore() {
-        for (Player player: getPlayers()) {
-            player.resetScore();
+    void controlIfComputerTurn(TypeOfGame typeOfGame) throws ComputerHasPlayed {
+        if (getActivePlayer().getPlayerType() == PlayerType.COMPUTER) {
+            Coords temp = null;
+            switch (typeOfGame) {
+                case EASY:
+                    temp = Algorithm.getEasyAlgorithm(getBoard());
+                    break;
+                case HARD:
+                    temp = Algorithm.getHardAlgorithm(getBoard());
+                    break;
+            }
+
+            countStones();
+            makeCheckpoint();
+            turnHasBeenMade();
+
+            throw new ComputerHasPlayed(temp.getX(), temp.getY());
         }
+    }
+
+    ArrayList<Field>[] countStones() {
+        ArrayList<Field> blackStones = new ArrayList<>();
+        ArrayList<Field> whiteStones = new ArrayList<>();
 
         for (Field field: getBoard().getField()) {
             try {
                 if (field.getColor() == Color.BLACK)
-                    players[Utility.PLAYERONE].addScore();
+                    blackStones.add(field);
                 else
-                    players[Utility.PLAYERTWO].addScore();
+                    whiteStones.add(field);
             } catch (FieldIsEmptyException e) {}
         }
+
+        getPlayers()[Utility.PLAYERONE].setScore(blackStones.size());
+        getPlayers()[Utility.PLAYERTWO].setScore(whiteStones.size());
+
+        ArrayList<Field>[] temp = new ArrayList[]{blackStones, whiteStones};
+        return temp;
     }
 
     void setBoard(Board board) {

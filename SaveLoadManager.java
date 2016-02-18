@@ -12,8 +12,8 @@ class SaveLoadManager {
     void save(String nameOfGame, Player[] players, ArrayDeque<Board> logger, int activePlayer, TypeOfGame typeOfGame) throws GameSavingFailureException {
         char playerTypeChar = 0;
         if (players[Utility.PLAYERTWO].getPlayerType() == PlayerType.HUMAN)
-            playerTypeChar = 'H';
-        else playerTypeChar = 'C';
+            playerTypeChar = PlayerType.HUMAN.getKey();
+        else playerTypeChar = PlayerType.COMPUTER.getKey();
 
         String[] undoMoves = new String[logger.size()];
 
@@ -25,13 +25,13 @@ class SaveLoadManager {
                 try {
                     switch (field.getColor()) {
                         case BLACK:
-                            temp.append('B');
+                            temp.append(Color.BLACK.getKey());
                             break;
                         case WHITE:
-                            temp.append('W');
+                            temp.append(Color.WHITE.getKey());
                     }
                 } catch (FieldIsEmptyException e) {
-                    temp.append('N');
+                    temp.append(Color.NONE.getKey());
                 }
             }
             undoMoves[i] = temp.toString();

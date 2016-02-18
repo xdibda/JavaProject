@@ -49,12 +49,35 @@ public class Controller {
             throw e;
         }
 
-        game.countScore();
+        game.countStones();
 
         game.makeCheckpoint();
         game.turnHasBeenMade();
 
         return Utility.getPlayerTurnString(game.getActivePlayerTurn(), playerType);
+    }
+
+    void freezeStones() {
+        ArrayList<Field>[] temp = game.countStones();
+
+        ArrayList<Field> notFrozenStones = new ArrayList<>();
+
+        for (Field field: temp[game.getActivePlayerTurn()]) {
+            if (!field.isFrozen()) {
+                notFrozenStones.add(field);
+            }
+        }
+
+        Random random = new Random();
+
+        int randomInitNumber = 0, randomPersistNumber = 0, randomNumberOfStones = 0;
+        while ((randomInitNumber = random.nextInt()) <= Utility.MAXFREEZETIME);
+        while ((randomPersistNumber = random.nextInt()) <= Utility.MAXFREEZETIME);
+        while ((randomNumberOfStones = random.nextInt()) <= notFrozenStones.size());
+
+        for (int i = 0; i < randomNumberOfStones; i++) {
+            temp[game.getActivePlayerTurn()].get(i).freeze(randomInitNumber, randomPersistNumber);
+        }
     }
 
     String gameEndedResult() {
@@ -81,7 +104,7 @@ public class Controller {
         try {
             gameInfo = saveLoadManager.load(nameOfGame);
 
-            if (gameInfo.remove(0).charAt(0) == 'C') {
+            if (gameInfo.remove(0).charAt(0) == playerType.COMPUTER.getKey()) {
                 this.playerType = PlayerType.COMPUTER;
             }
             else {
@@ -90,7 +113,7 @@ public class Controller {
 
             this.boardSize = Integer.parseUnsignedInt(gameInfo.remove(0).trim());
 
-            if (gameInfo.remove(0).equals("easy")) {
+            if (gameInfo.remove(0).equals(TypeOfGame.EASY.getDifficulty())) {
                 this.typeOfGame = TypeOfGame.EASY;
             } else {
                 this.typeOfGame = TypeOfGame.HARD;
@@ -141,7 +164,7 @@ public class Controller {
         return game.getBoard();
     }
 
-    void controlIfGameEnded() throws GameEndedException {
+    void controlIfGameEnded() throws GameEndedException, ComputerHasPlayed {
         allAvailableMoves = new ArrayList<>();
 
         for (int x = 0; x < Board.SIZE; x++) {
@@ -199,6 +222,12 @@ public class Controller {
 
         if (allAvailableMoves.isEmpty()) {
             throw new GameEndedException();
+        }
+
+        try {
+            game.controlIfComputerTurn(typeOfGame);
+        } catch (ComputerHasPlayed e) {
+            throw e;
         }
     }
 }

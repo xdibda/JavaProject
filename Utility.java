@@ -8,43 +8,59 @@ public class Utility {
     static int PLAYERONE = 0;
     static int PLAYERTWO = 1;
 
+    static int MAXFREEZETIME = 100;
+
     public enum Color {
-        WHITE(true),
-        BLACK(false);
+        WHITE('W'),
+        BLACK('B'),
+        NONE('N');
 
-        private boolean isWhite;
+        private char key;
 
-        Color(boolean white) {
-            this.isWhite = white;
+        Color(char key) {
+            this.key = key;
+        }
+
+        char getKey() {
+            return key;
         }
     }
 
     public enum PlayerType {
-        COMPUTER(true, "Pocitac"),
-        HUMAN(false, "Hrac");
+        COMPUTER('C'),
+        HUMAN('H'),
 
-        private boolean isHuman;
-        private String name;
+        PONE("hrac 1"),
+        PTWO("hrac 2"),
+        COMP("pocitac");
 
-        PlayerType(boolean human, String name) {
-            this.isHuman = human;
+        private char key = 0;
+        private String name = null;
+
+        PlayerType(char c) {
+            this.key = c;
+        }
+
+        PlayerType(String name) {
             this.name = name;
         }
 
         String getName() {
             return name;
         }
+
+        char getKey() {
+            return key;
+        }
     }
 
     public enum TypeOfGame {
-        EASY(false, "easy"),
-        HARD(true, "hard");
+        EASY("easy"),
+        HARD("hard");
 
-        private boolean type;
         private String difficulty;
 
-        TypeOfGame(boolean type, String difficulty) {
-            this.type = type;
+        TypeOfGame(String difficulty) {
             this.difficulty = difficulty;
         }
 
@@ -54,22 +70,20 @@ public class Utility {
     }
 
     public enum TypeOfInstruction {
-        MOVE(0, 2),
+        MOVE(2),
         SAVE(1),
-        LOAD(2),
-        NEW(3, 2),
-        UNDO(4);
+        LOAD(1),
+        NEW(2),
+        UNDO(),
+        FREEZE();
 
-        private int instruction;
         private int numberOfArgumentRequired;
 
-        TypeOfInstruction(int instruction) {
-            this.instruction = instruction;
-            this.numberOfArgumentRequired = 1;
+        TypeOfInstruction() {
+            this.numberOfArgumentRequired = 0;
         }
 
-        TypeOfInstruction(int instruction, int numberOfArgumentsRequired) {
-            this.instruction = instruction;
+        TypeOfInstruction(int numberOfArgumentsRequired) {
             this.numberOfArgumentRequired = numberOfArgumentsRequired;
         }
 
@@ -129,17 +143,17 @@ public class Utility {
         switch (playerType) {
             case COMPUTER:
                 if (player == PLAYERONE) {
-                    return "Nyni je na rade [hrac] s barvou [BLACK]:";
+                    return "Nyni je na rade " + playerType.PONE.getName() + " s barvou [BLACK]:";
                 }
                 else {
-                    return "Nyni je na rade [pocitac] s barvou [WHITE]:";
+                    return "Nyni je na rade " + playerType.COMP.getName() + " s barvou [WHITE]:";
                 }
             case HUMAN:
                 if (player == PLAYERONE) {
-                    return "Nyni je na rade [hrac 1] s barvou [BLACK]:";
+                    return "Nyni je na rade " + playerType.PONE.getName() + " s barvou [BLACK]:";
                 }
                 else {
-                    return "Nyni je na rade [hrac 2] s barvou [WHITE]:";
+                    return "Nyni je na rade " + playerType.PONE.getName() + " s barvou [WHITE]:";
                 }
         }
         return null;
@@ -147,20 +161,32 @@ public class Utility {
 
     static String getGameEndedString(Player[] players) {
         String playerName;
-        String playerOne = "hrac 1", playerTwo = "hrac 2";
         int[] score = {
                 players[PLAYERONE].getScore(),
                 players[PLAYERTWO].getScore()
         };
 
-        if (score[PLAYERONE] > score[PLAYERTWO]) {
-            playerName = "Zvitezil " + playerOne;
-        } else if (score[PLAYERONE] > score[PLAYERTWO]) {
-            playerName = "Zvitezil " + playerTwo;
-        } else {
-            playerName = "Zapas skoncil remizou";
+        switch (players[PLAYERTWO].getPlayerType()) {
+            case COMPUTER:
+                if (score[PLAYERONE] > score[PLAYERTWO]) {
+                    playerName = "Zvitezil " + PlayerType.PONE.getName();
+                } else if (score[PLAYERONE] > score[PLAYERTWO]) {
+                    playerName = "Zvitezil " + PlayerType.COMP.getName();
+                } else {
+                    playerName = "Zapas skoncil remizou";
+                }
+                return "Hra byla ukoncena.\n" + playerName + ".\nKonecna skore: " + PlayerType.PONE.getName() + ": " + score[PLAYERONE] + ", " + PlayerType.PTWO.getName() + ": " + score[PLAYERTWO];
+            case HUMAN:
+                if (score[PLAYERONE] > score[PLAYERTWO]) {
+                    playerName = "Zvitezil " + PlayerType.PONE.getName();
+                } else if (score[PLAYERONE] > score[PLAYERTWO]) {
+                    playerName = "Zvitezil " + PlayerType.PTWO.getName();
+                } else {
+                    playerName = "Zapas skoncil remizou";
+                }
+                return "Hra byla ukoncena.\n" + playerName + ".\nKonecna skore: " + PlayerType.PONE.getName() + ": " + score[PLAYERONE] + ", " + PlayerType.COMP.getName() + ": " + score[PLAYERTWO];
         }
-        return "Hra byla ukoncena.\n" + playerName + ".\nKonecna skore: " + playerOne + ": " + score[PLAYERONE] + ", " + playerTwo + ": " + score[PLAYERTWO];
+        return null;
     }
 
     static int transformCharToInt(char x) {
@@ -181,12 +207,12 @@ public class Utility {
     }
 
     static class Algorithm {
-        static Field getEasyAlgorithm(Board board) {
-            Field temp = new Field();
+        static Coords getEasyAlgorithm(Board board) {
+            Coords temp = new Coords(1, 1);
             return temp;
         }
-        static Field getHardAlgorithm(Board board) {
-            Field temp = new Field();
+        static Coords getHardAlgorithm(Board board) {
+            Coords temp = new Coords(1, 1);
             return temp;
         }
     }

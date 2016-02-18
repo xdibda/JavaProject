@@ -2,7 +2,7 @@ package othello;
 
 import othello.Utility.*;
 
-public class Field implements Cloneable {
+public class Field extends StoneFreeze implements Cloneable {
     private Color color;
     private boolean empty;
 

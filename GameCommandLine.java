@@ -40,13 +40,13 @@ public class GameCommandLine {
             for (int j = 0; j < Board.SIZE; j++) {
                 try {
                     if (board.getField(j, i).getColor() == Color.BLACK)
-                        System.out.print("B");
+                        System.out.print(Color.BLACK.getKey());
                     else
-                        System.out.print("W");
+                        System.out.print(Color.WHITE.getKey());
                     if (j != Board.SIZE - 1)
                         System.out.print(" ");
                 } catch (FieldIsEmptyException e) {
-                    System.out.print(0);
+                    System.out.print(Color.NONE.getKey());
                     if (j != Board.SIZE - 1)
                         System.out.print(" ");
                 }
@@ -66,12 +66,28 @@ public class GameCommandLine {
         ReadLineManager fileManager = new ReadLineManager();
         String nextPlayer = null;
 
+        boolean gameStarted = false;
+
         while (true) {
             try {
                 ArrayList<String> tokenArgumentsArray = new ArrayList<>();
+                if (gameStarted) {
+                    try {
+                        controller.controlIfGameEnded();
+                    } catch (GameEndedException e) {
+                        System.out.print(e);
+                        System.out.println(controller.gameEndedResult());
+                        System.exit(0);
+                    } catch (ComputerHasPlayed e) {
+                        showBoard(controller.getBoard());
+                        System.out.println(e);
+                    }
+                }
+
                 TypeOfInstruction typeOfInstruction = fileManager.getDecision(tokenArgumentsArray);
                 switch (typeOfInstruction) {
                     case NEW:
+                        gameStarted = true;
                         if (fileManager.getGameType() == null) {
                             nextPlayer = controller.createNewGame(fileManager.getBoardSize());
                         } else {
@@ -81,14 +97,6 @@ public class GameCommandLine {
                         System.out.println(nextPlayer);
                         break;
                     case MOVE:
-                        try {
-                            controller.controlIfGameEnded();
-                        } catch (GameEndedException e) {
-                            System.out.print(e);
-                            System.out.println(controller.gameEndedResult());
-                            break;
-                        }
-
                         Coords coords = new Coords(tokenArgumentsArray.get(0).charAt(0), Integer.parseInt(tokenArgumentsArray.get(1)));
 
                         try {
@@ -110,6 +118,7 @@ public class GameCommandLine {
                     case LOAD:
                         try {
                             System.out.println(controller.loadGame(tokenArgumentsArray.get(0)));
+                            gameStarted = true;
                         } catch (GameLoadingNameNotFoundException | GameLoadingFailureException e) {
                             System.out.println(e);
                         }
@@ -124,6 +133,7 @@ public class GameCommandLine {
                         showBoard(controller.getBoard());
                         break;
                 }
+
             } catch (ReadingFromConsoleFailureException | InvalidTokenInputException | BadTokenArgumentException e) {
                 System.out.println(e);
             }
