@@ -172,7 +172,7 @@ public class Utility {
         } else {
             playerName = "Zapas skoncil remizou";
         }
-        return "Hra byla ukoncena.\n" + playerName + ".\nKonecna skore: " + PLAYERS[PLAYERONE] + ": " + score[PLAYERONE] + ", " + PLAYERS[PLAYERTWO] + ": " + score[PLAYERTWO];
+        return "Hra byla ukoncena.\n" + playerName;
     }
 
     static int transformCharToInt(char x) {

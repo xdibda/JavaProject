@@ -2,7 +2,23 @@ package othello;
 
 import java.util.EmptyStackException;
 
-class GameEndedException extends Exception {}
+class GameEndedException extends Exception {
+    String msg;
+    String scoreOne;
+    String scoreTwo;
+
+    GameEndedException(String msg, int scoreOne, int scoreTwo) {
+        this.msg = msg;
+        this.scoreOne = Integer.toString(scoreOne);
+        this.scoreTwo = Integer.toString(scoreTwo);
+    }
+
+    String[] getScore() {
+        return new String[] {
+            scoreOne, scoreTwo
+        };
+    }
+}
 
 class ComputerHasPlayed extends Exception {
     char x; int y;

@@ -24,12 +24,14 @@ public class Game {
         logger = new ArrayDeque<>();
         logger.push(board.copy());
 
+        countStones();
+
         Utility.setPlayerString(players[Utility.PLAYERTWO].getPlayerType() == PlayerType.COMPUTER);
     }
 
     Game(int boardSize, Player players[], ArrayDeque<Board> logger, int activePlayerTurn) {
         try {
-            this.board = new Board(boardSize);
+            board = new Board(boardSize);
         } catch (NotValidMatrixSize e) {
             System.out.print(e);
             board = new Board();
@@ -39,10 +41,18 @@ public class Game {
             this.players[i] = players[i];
         }
 
-        this.logger = logger;
+        this.logger = new ArrayDeque<>();
+        while (!logger.isEmpty()) {
+            this.logger.push(logger.removeFirst());
+        }
+
         this.activePlayerTurn = activePlayerTurn;
 
-        setBoard(logger.peek());
+        Utility.setPlayerString(players[Utility.PLAYERTWO].getPlayerType() == PlayerType.COMPUTER);
+
+        setBoard(this.logger.peek());
+
+        countStones();
     }
 
     Board makeUndo() throws NoMoreMovesToUndoException {

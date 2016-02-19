@@ -28,14 +28,6 @@ public class Player {
         return players;
     }
 
-    static Player[] getPlayersForConstructor(PlayerType playerType, int[] score) {
-        Player players[] = {
-                new Player(Color.BLACK, PlayerType.HUMAN, score[PLAYERONE]),
-                new Player(Color.WHITE, playerType, score[PLAYERTWO])
-        };
-        return players;
-    }
-
     PlayerType getPlayerType() {
         return playerType;
     }

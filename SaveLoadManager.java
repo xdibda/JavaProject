@@ -10,10 +10,13 @@ class SaveLoadManager {
     File nameOfSave = null;
 
     void save(String nameOfGame, Player[] players, ArrayDeque<Board> logger, int activePlayer, TypeOfGame typeOfGame) throws GameSavingFailureException {
-        char playerTypeChar = 0;
+        char playerTypeChar = 0; String typeOfGameString = "null";
         if (players[Utility.PLAYERTWO].getPlayerType() == PlayerType.HUMAN)
             playerTypeChar = PlayerType.HUMAN.getKey();
-        else playerTypeChar = PlayerType.COMPUTER.getKey();
+        else  {
+            playerTypeChar = PlayerType.COMPUTER.getKey();
+            typeOfGameString = typeOfGame.getDifficulty();
+        }
 
         String[] undoMoves = new String[logger.size()];
 
@@ -50,13 +53,7 @@ class SaveLoadManager {
                 fout.write(Integer.toString(Board.SIZE));
                 fout.write(System.lineSeparator());
 
-                fout.write(typeOfGame.getDifficulty());
-                fout.write(System.lineSeparator());
-
-                fout.write(Integer.toString(players[Utility.PLAYERONE].getScore()));
-                fout.write(System.lineSeparator());
-
-                fout.write(Integer.toString(players[Utility.PLAYERTWO].getScore()));
+                fout.write(typeOfGameString);
                 fout.write(System.lineSeparator());
 
                 fout.write(Integer.toString(activePlayer));
