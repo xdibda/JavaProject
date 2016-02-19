@@ -119,34 +119,33 @@ public class Controller {
             else {
                 this.playerType = PlayerType.HUMAN;
             }
-            System.out.println("Typ hrace: " + playerType);
+            //System.out.println("Typ hrace: " + playerType);
 
             Utility.setPlayerString(playerType == PlayerType.COMPUTER);
 
             this.boardSize = Integer.parseUnsignedInt(gameInfo.remove(0).trim());
-            System.out.println("Velikost desky: " + boardSize);
+            //System.out.println("Velikost desky: " + boardSize);
 
             if (gameInfo.remove(0).trim().equals(TypeOfGame.EASY.getDifficulty())) {
                 this.typeOfGame = TypeOfGame.EASY;
             } else {
                 this.typeOfGame = TypeOfGame.HARD;
             }
-            System.out.println("Obtiznost: " + typeOfGame);
+            //System.out.println("Obtiznost: " + typeOfGame);
 
             scoreOfPlayers[Utility.PLAYERONE] = Integer.parseInt(gameInfo.remove(0).trim());
-            System.out.println("Prvni skore: " + scoreOfPlayers[Utility.PLAYERONE]);
+            //System.out.println("Prvni skore: " + scoreOfPlayers[Utility.PLAYERONE]);
             scoreOfPlayers[Utility.PLAYERTWO] = Integer.parseInt(gameInfo.remove(0).trim());
-            System.out.println("Druhe skore: " + scoreOfPlayers[Utility.PLAYERTWO]);
+            //System.out.println("Druhe skore: " + scoreOfPlayers[Utility.PLAYERTWO]);
             activePlayer = Integer.parseInt(gameInfo.remove(0).trim());
-            System.out.println("Aktivni hrac: " + activePlayer);
-            
-            gameBoards = game.parseBoards(gameInfo, boardSize);
-            System.out.println("Pocet boardu: " + gameBoards.size());
+            //System.out.println("Aktivni hrac: " + activePlayer);
+
+            gameBoards = Utility.parseBoards(gameInfo, boardSize);
 
         } catch (GameLoadingNameNotFoundException e) {
             throw e;
         } catch (Exception e) {
-            throw  new GameLoadingFailureException();
+            throw new GameLoadingFailureException();
         }
 
         Player[] players = Player.getPlayersForConstructor(playerType, scoreOfPlayers);
@@ -164,11 +163,7 @@ public class Controller {
         try {
             temp = game.makeUndo();
             game.setBoard(temp);
-        } catch (EmptyStackException e) {
-            throw new NoMoreMovesToUndoException();
-        } catch (NullPointerException e) {
-            Player players[] = Player.getPlayersForConstructor(playerType);
-            game = new Game(boardSize, players);
+        } catch (EmptyStackException | NoMoreMovesToUndoException e) {
             throw new NoMoreMovesToUndoException();
         }
     }

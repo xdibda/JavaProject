@@ -191,6 +191,18 @@ public class Utility {
         }
     }
 
+    static ArrayDeque<Board> parseBoards(ArrayList<String> boardsInString, int boardSize) {
+        ArrayDeque<Board> boards = new ArrayDeque<>();
+
+        while (!boardsInString.isEmpty()) {
+            String temp = boardsInString.remove(0);
+            Board tempBoard = new Board(boardSize, temp);
+            boards.addFirst(tempBoard);
+        }
+
+        return boards;
+    }
+
     static void help() {
         System.out.print("dake pickoviny");
     }

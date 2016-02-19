@@ -1,9 +1,7 @@
 package othello;
 
-import java.io.CharArrayReader;
 import java.util.*;
 import othello.Utility.*;
-import sun.reflect.generics.tree.Tree;
 
 public class Game {
     private int activePlayerTurn = 0;
@@ -43,9 +41,14 @@ public class Game {
 
         this.logger = logger;
         this.activePlayerTurn = activePlayerTurn;
+
+        setBoard(logger.peek());
     }
 
-    Board makeUndo() {
+    Board makeUndo() throws NoMoreMovesToUndoException {
+        if (logger.size() < 2) {
+            throw new NoMoreMovesToUndoException();
+        }
         logger.pop();
         return logger.peek();
     }
@@ -141,21 +144,6 @@ public class Game {
         } catch (FieldIsNotEmptyException e) {};
 
         changeFields(tempArrayOfCoords);
-    }
-
-    ArrayDeque<Board> parseBoards(ArrayList<String> boardsInString, int boardSize) {
-        ArrayDeque<Board> boards = new ArrayDeque<>();
-
-        System.out.println("Jednotlive boardy:");
-        while (!boardsInString.isEmpty()) {
-            String temp = boardsInString.remove(0);
-            Board tempBoard = new Board(boardSize, temp);
-            System.out.println(temp);
-            boards.addLast(tempBoard);
-        }
-        System.out.println("Konec boardu:");
-
-        return boards;
     }
 
     void controlIfComputerTurn(TypeOfGame typeOfGame) throws ComputerHasPlayed {
