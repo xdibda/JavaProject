@@ -1,7 +1,5 @@
 package othello;
 
-import java.util.EmptyStackException;
-
 class GameEndedException extends Exception {
     String msg;
     String scoreOne;
@@ -40,30 +38,11 @@ class FieldIsEmptyException extends Exception {
     }
 }
 
-class NotEnoughStonesToFreezeException extends Exception {
-    public String toString() {
-        return "Nelze zmrazit tento pocet kamenu, protoze tento pocet kamenu neni k dispozici.";
-    }
-}
-
-class NotValidCharException extends Exception {
-    public String toString() {
-        return "Zadany identifikator neni platny";
-    }
-}
-
 class NotValidMatrixSize extends Exception {
     public String toString() {
         return "Velikost hraci desky neni povolena.\n" +
                 "Byla nastavena implicitni velikost desky 8.\n" +
                 "--------------------------------------------";
-    }
-}
-
-class InvalidCoordsInputException extends Exception {
-    @Override
-    public String toString() {
-        return "Tuto kombinace znaku nelze zadat.Zkuste to prosim znovu.";
     }
 }
 
@@ -134,5 +113,12 @@ class NoMovesAvailableException extends Exception {
     @Override
     public String toString() {
         return "Neni k dispozici zadny tah.";
+    }
+}
+
+class GameIsNotStartedException extends Exception {
+    @Override
+    public String toString() {
+        return "Není aktivní žádná hra na které by mohl hráč táhnout";
     }
 }

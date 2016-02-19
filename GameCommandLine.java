@@ -74,7 +74,7 @@ public class GameCommandLine {
 
                 if (gameStarted) {
                     try {
-                        controller.controlIfGameEnded();
+                        controller.controlGameEnd();
                     } catch (GameEndedException e) {
                         System.out.println(e);
                         System.out.println("Konecne skore: " + Utility.PLAYERS[Utility.PLAYERONE] + ": " + e.getScore()[Utility.PLAYERONE] + ", " + Utility.PLAYERS[Utility.PLAYERTWO] + ": " + e.getScore()[Utility.PLAYERTWO]);
@@ -118,6 +118,13 @@ public class GameCommandLine {
                         } catch (GameSavingFailureException e) {
                             System.out.println(e);
                         }
+                        break;
+                    case FREEZE:
+                        nextPlayer = controller.freezeStones();
+                        showBoard(controller.getBoard());
+                        System.out.println(nextPlayer[0]);
+                        System.out.println("Skore je: " + Utility.PLAYERS[Utility.PLAYERONE] + ": " + nextPlayer[2] + ", " + Utility.PLAYERS[Utility.PLAYERTWO] + ": " + nextPlayer[3]);
+                        System.out.println(nextPlayer[1]);
                         break;
                     case LOAD:
                         try {

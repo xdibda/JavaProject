@@ -10,12 +10,7 @@ public class Game {
     private ArrayDeque<Board> logger = null;
 
     Game(int boardSize, Player players[]) {
-        try {
-            this.board = new Board(boardSize);
-        } catch (NotValidMatrixSize e) {
-            System.out.print(e);
-            board = new Board();
-        }
+        this.board = new Board(boardSize);
 
         for (int i = 0; i < 2; i++) {
             this.players[i] = players[i];
@@ -30,12 +25,7 @@ public class Game {
     }
 
     Game(int boardSize, Player players[], ArrayDeque<Board> logger, int activePlayerTurn) {
-        try {
-            board = new Board(boardSize);
-        } catch (NotValidMatrixSize e) {
-            System.out.print(e);
-            board = new Board();
-        }
+        board = new Board(boardSize);
 
         for (int i = 0; i < 2; i++) {
             this.players[i] = players[i];
@@ -45,14 +35,13 @@ public class Game {
         while (!logger.isEmpty()) {
             this.logger.push(logger.removeFirst());
         }
+        setBoard(this.logger.peek());
 
         this.activePlayerTurn = activePlayerTurn;
 
-        Utility.setPlayerString(players[Utility.PLAYERTWO].getPlayerType() == PlayerType.COMPUTER);
-
-        setBoard(this.logger.peek());
-
         countStones();
+
+        Utility.setPlayerString(players[Utility.PLAYERTWO].getPlayerType() == PlayerType.COMPUTER);
     }
 
     Board makeUndo() throws NoMoreMovesToUndoException {
@@ -86,7 +75,6 @@ public class Game {
     }
 
     ArrayList<Coords> checkPositionForMoves(Coords coords) throws NoMovesAvailableException {
-        //System.out.println("Zjistuji pristupne tahy pro: " + coords.getX() + " a " + coords.getY());
         ArrayList<Coords> availableMoves = new ArrayList<>();
 
         for (int i = coords.getX() - 1; i <= coords.getX() + 1; i++) {
@@ -96,25 +84,13 @@ public class Game {
                 }
 
                 Coords tempCoords = new Coords(i, j);
-//                System.out.println("Zjistuji pro policko pro: " + tempCoords.getX() + " a " + tempCoords.getY());
                 if (Utility.isInBoard(tempCoords)) {
-//                    System.out.println("Toto policko je v boardu: " + tempCoords.getX() + " a " + tempCoords.getY());
                     try {
                         Color color = board.getField(tempCoords.getX(), tempCoords.getY()).getColor();
-//                        System.out.println("Je tam barva: " + tempCoords.getX() + " a " + tempCoords.getY() + " a " + color);
                         if (color != getActivePlayer().getColor()) {
-//                            System.out.println("Toto policko obsahuje barvu soupere a je potencionalne zmenitelne: " + tempCoords.getX() + " a " + tempCoords.getY());
-//                            System.out.println("Pridavam toto policko do tempCoords: " + tempCoords.getX() + " a " + tempCoords.getY());
                             availableMoves.add(tempCoords);
-//                            System.out.println("tempCoords nyni obsahuje : ");
-//                            for (Coords tempo: availableMoves) {
-//                                System.out.println("Obsahuje prvek: " + tempo.getX() + " a " + tempo.getY());
-//                            }
-//                            System.out.println("Konec obsahu");
                         }
-                    } catch (FieldIsEmptyException e) {
-//                        System.out.println("Je prazdne, pokracuji: " + tempCoords.getX() + " a " + tempCoords.getY());
-                    }
+                    } catch (FieldIsEmptyException e) {}
                 }
             }
         }
@@ -126,21 +102,41 @@ public class Game {
         return availableMoves;
     }
 
+    void setFinalScore() {
+        countStones();
+
+        int playerOne = getPlayers()[Utility.PLAYERONE].getScore();
+        int playerTwo = getPlayers()[Utility.PLAYERTWO].getScore();
+
+        if ((playerOne + playerTwo) != (Board.SIZE * Board.SIZE)) {
+            if (playerOne > playerTwo) {
+                getPlayers()[Utility.PLAYERONE].setScore(Board.SIZE * Board.SIZE - playerTwo);
+            }
+            else if (playerOne < playerTwo) {
+                getPlayers()[Utility.PLAYERTWO].setScore(Board.SIZE * Board.SIZE - playerOne);
+            }
+            else {
+                getPlayers()[Utility.PLAYERONE].setScore((Board.SIZE * Board.SIZE) / 2);
+                getPlayers()[Utility.PLAYERTWO].setScore((Board.SIZE * Board.SIZE) / 2);
+            }
+        }
+    }
+
     void controlMoveIfValid(Coords coords, ArrayList<TreeMap<Coords, ArrayList<Coords>>> allAvailableMoves) throws MoveNotAvailableException {
         boolean moveFound = false;
-        ArrayList<Coords> tempArrayOfCoords = null;
+        ArrayList<ArrayList<Coords>> tempArrayOfCoords = new ArrayList<>();
 
-        //System.out.println("Muj tah je: x = " + coords.getX() + " y = " + coords.getY());
+        try {
+            getBoard().setField(coords, getActivePlayer().getColor());
+        } catch (FieldIsNotEmptyException e) {
+            throw new MoveNotAvailableException();
+        };
+
         for (TreeMap<Coords, ArrayList<Coords>> map: allAvailableMoves) {
             for (Map.Entry<Coords, ArrayList<Coords>> mapSet: map.entrySet()) {
-                //System.out.println("Mozne povolene souradnice jsou x = : " + mapSet.getKey().getX() + " y = " + mapSet.getKey().getY() + " a pro ne budu prebarvovat tyto kameny: ");
-                //for (Coords temp: mapSet.getValue()) {
-                //    System.out.println("Tento kamen x = : " + temp.getX()  + " y = " + temp.getY());
-                //}
                 if (coords.equals(mapSet.getKey())) {
-                    //   System.out.println("Zadany tah je validni");
                     moveFound = true;
-                    tempArrayOfCoords = mapSet.getValue();
+                    tempArrayOfCoords.add(mapSet.getValue());
                 }
             }
         }
@@ -148,10 +144,6 @@ public class Game {
         if (!moveFound) {
             throw new MoveNotAvailableException();
         }
-
-        try {
-            getBoard().setField(coords, getActivePlayer().getColor());
-        } catch (FieldIsNotEmptyException e) {};
 
         changeFields(tempArrayOfCoords);
     }
@@ -192,8 +184,7 @@ public class Game {
         getPlayers()[Utility.PLAYERONE].setScore(blackStones.size());
         getPlayers()[Utility.PLAYERTWO].setScore(whiteStones.size());
 
-        ArrayList<Field>[] temp = new ArrayList[]{blackStones, whiteStones};
-        return temp;
+        return new ArrayList[] {blackStones, whiteStones};
     }
 
     void setBoard(Board board) {
@@ -212,9 +203,11 @@ public class Game {
         return players;
     }
 
-    void changeFields(ArrayList<Coords> listOfCoords) {
-        for (Coords temp: listOfCoords) {
-            board.changeField(temp);
+    void changeFields(ArrayList<ArrayList<Coords>> listOfCoords) {
+        for (ArrayList<Coords> tempCoords: listOfCoords) {
+            for (Coords temp: tempCoords) {
+                board.changeField(temp);
+            }
         }
     }
 }

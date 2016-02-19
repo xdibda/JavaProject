@@ -8,15 +8,10 @@ import othello.Utility.*;
 
 public class ReadLineManager {
     private int boardSize;
-    private PlayerType secondPlayer;
     private TypeOfGame gameType;
 
     private BufferedReader commandLineReader;
     private StringTokenizer tokenizer;
-
-    PlayerType getSecondPlayer() {
-        return secondPlayer;
-    }
 
     int getBoardSize() {
         return boardSize;
@@ -30,17 +25,28 @@ public class ReadLineManager {
         String argument;
         argument = arguments.get(0);
         if (argument.equals("H")) {
-            secondPlayer = PlayerType.HUMAN;
             gameType = null;
             if (arguments.size() != 2) {
                 throw new BadTokenArgumentException();
+            } else {
+                int boardSizeInteger = Integer.parseInt(arguments.get(1));
+                if (boardSizeInteger < 6 || boardSizeInteger > 12 || !(boardSizeInteger % 2 == 0)) {
+                    this.boardSize = 8;
+                } else {
+                    this.boardSize = boardSizeInteger;
+                }
             }
         }
         else if(argument.equals("C")) {
-            secondPlayer = PlayerType.COMPUTER;
             if (arguments.size() != 3) {
                 throw new BadTokenArgumentException();
             } else {
+                int boardSize = Integer.parseInt(arguments.get(1));
+                if (boardSize < 6 || boardSize > 12 || !(boardSize % 2 == 0)) {
+                    this.boardSize = 8;
+                } else {
+                    this.boardSize = boardSize;
+                }
                 argument = arguments.get(2);
                 if (argument.equals("easy")) {
                     gameType = TypeOfGame.EASY;
@@ -56,9 +62,6 @@ public class ReadLineManager {
         else {
             throw new BadTokenArgumentException();
         }
-
-        argument = arguments.get(1);
-        boardSize = Integer.parseInt(argument);
     }
 
     void controlMakeMoveArguments(ArrayList<String> arguments) throws BadTokenArgumentException {
@@ -120,6 +123,12 @@ public class ReadLineManager {
                         throw new BadTokenArgumentException();
                     }
                     return TypeOfInstruction.SAVE;
+                case "FREEZE":
+                case "freeze":
+                    if (tokenizer.hasMoreTokens()) {
+                        throw new BadTokenArgumentException();
+                    }
+                    return TypeOfInstruction.FREEZE;
                 case "LOAD":
                 case "load":
                     if (tokenizer.hasMoreTokens()) {

@@ -6,11 +6,11 @@ import java.io.*;
 
 class SaveLoadManager {
     File pathToEnviroment = new File(System.getProperty("user.dir"));
-    File nameOfFolder = new File(pathToEnviroment + "\\" + Utility.getSaveFolderLocationString());
+    File nameOfFolder = new File(pathToEnviroment + "/" + Utility.getSaveFolderLocationString());
     File nameOfSave = null;
 
     void save(String nameOfGame, Player[] players, ArrayDeque<Board> logger, int activePlayer, TypeOfGame typeOfGame) throws GameSavingFailureException {
-        char playerTypeChar = 0; String typeOfGameString = "null";
+        char playerTypeChar; String typeOfGameString = "null";
         if (players[Utility.PLAYERTWO].getPlayerType() == PlayerType.HUMAN)
             playerTypeChar = PlayerType.HUMAN.getKey();
         else  {
@@ -21,7 +21,7 @@ class SaveLoadManager {
         String[] undoMoves = new String[logger.size()];
 
         int i; Iterator<Board> index;
-        StringBuffer temp = new StringBuffer();
+        StringBuilder temp = new StringBuilder();
         for (index = logger.iterator(), i = 0; index.hasNext(); i++) {
             temp.setLength(0);
             for (Field field: index.next().getField()) {
@@ -40,7 +40,7 @@ class SaveLoadManager {
             undoMoves[i] = temp.toString();
         }
 
-        nameOfSave = new File(nameOfFolder + "\\" + nameOfGame + Utility.getFileExtensionString());
+        nameOfSave = new File(nameOfFolder + "/" + nameOfGame + Utility.getFileExtensionString());
         if (!nameOfFolder.exists()) {
             nameOfFolder.mkdir();
         }
@@ -78,8 +78,8 @@ class SaveLoadManager {
         ArrayList<String> gameInfo = new ArrayList<>();
 
         try (FileReader fin = new FileReader(nameOfFolder + "\\" + nameOfGame + Utility.getFileExtensionString());) {
-            int data = 0; StringBuffer temp = new StringBuffer();
             try {
+                int data; StringBuilder temp = new StringBuilder();
                 while ((data = fin.read()) != -1) {
                     if (Character.isWhitespace(data) && temp.length() != 0) {
                         gameInfo.add(temp.toString());
@@ -88,7 +88,7 @@ class SaveLoadManager {
                     else temp.append((char) data);
                 }
             } catch (IOException e) {
-                throw e;
+                throw new GameLoadingFailureException();
             }
         } catch (FileNotFoundException e) {
             throw new GameLoadingNameNotFoundException();

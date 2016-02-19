@@ -3,12 +3,13 @@ package othello;
 import java.lang.reflect.Type;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Random;
 
 public class Utility {
     static int PLAYERONE = 0;
     static int PLAYERTWO = 1;
 
-    static int MAXFREEZETIME = 100;
+    static int MAXFREEZETIME = 60;
 
     static String[] PLAYERS = new String[2];
 
@@ -145,6 +146,9 @@ public class Utility {
 
     static String getSuccessfulSaveGameString() { return "Hra byla uspesne ulozena."; }
     static String getSuccessfulLoadGameString() { return "Hra byla uspesne nactena."; }
+    static String getSuccessfulFreezeStoneString(int[] numbers) {
+        return "Za dobu: " + numbers[0] + " sekund bude zmrazen pocet kamenu: " + numbers[2] + " na dobu: " + numbers[1] + " sekund";
+    }
 
     static String getFileExtensionString() { return ".txt"; }
     static String getSaveFolderLocationString() { return "save"; }
@@ -191,7 +195,24 @@ public class Utility {
         }
     }
 
-    static ArrayDeque<Board> parseBoards(ArrayList<String> boardsInString, int boardSize) {
+    static PlayerType loadParsePlayerType(char temp) {
+        return Character.valueOf(temp).equals(PlayerType.COMPUTER.getKey()) ?
+                PlayerType.COMPUTER : PlayerType.HUMAN;
+    }
+
+    static int loadParseBoardSize(String temp) {
+        return Integer.parseUnsignedInt(temp);
+    }
+
+    static TypeOfGame loadParseTypeOfGame(String temp) {
+        return (temp.equals(TypeOfGame.EASY.getDifficulty())) ? TypeOfGame.EASY : TypeOfGame.HARD;
+    }
+
+    static int loadPraseActivePlayer(String temp) {
+        return Integer.parseUnsignedInt(temp);
+    }
+
+    static ArrayDeque<Board> loadParseBoards(ArrayList<String> boardsInString, int boardSize) {
         ArrayDeque<Board> boards = new ArrayDeque<>();
 
         while (!boardsInString.isEmpty()) {
@@ -201,6 +222,14 @@ public class Utility {
         }
 
         return boards;
+    }
+
+    static void generateRandomNumbers(int[] randomNumbers, int notFrozenStones) {
+        Random random = new Random();
+
+        randomNumbers[0] = random.nextInt(Utility.MAXFREEZETIME);
+        randomNumbers[1] = random.nextInt(Utility.MAXFREEZETIME);
+        randomNumbers[2] = random.nextInt(notFrozenStones);
     }
 
     static void help() {

@@ -3,18 +3,10 @@ package othello;
 import othello.Utility.*;
 
 public class Board implements Cloneable {
-    static int SIZE = 8;
+    static int SIZE;
     private Field[] map;
 
-    Board() {
-        map = new Field[SIZE * SIZE];
-        this.allocateFields();
-        this.initBoardStones();
-    }
-
-    Board(int size) throws NotValidMatrixSize {
-        if (size % 2 != 0 | size > 12 | size < 6)
-            throw new NotValidMatrixSize();
+    Board(int size)  {
         SIZE = size;
         map = new Field[SIZE * SIZE];
         this.allocateFields();
