@@ -6,14 +6,17 @@ import java.io.*;
 
 class SaveLoadManager {
     File pathToEnviroment = new File(System.getProperty("user.dir"));
-    File nameOfFolder = new File(pathToEnviroment + "\\save");
+    File nameOfFolder = new File(pathToEnviroment + "\\" + Utility.getSaveFolderLocationString());
     File nameOfSave = null;
 
     void save(String nameOfGame, Player[] players, ArrayDeque<Board> logger, int activePlayer, TypeOfGame typeOfGame) throws GameSavingFailureException {
-        char playerTypeChar = 0;
+        char playerTypeChar = 0; String typeOfGameString = "null";
         if (players[Utility.PLAYERTWO].getPlayerType() == PlayerType.HUMAN)
-            playerTypeChar = 'H';
-        else playerTypeChar = 'C';
+            playerTypeChar = PlayerType.HUMAN.getKey();
+        else  {
+            playerTypeChar = PlayerType.COMPUTER.getKey();
+            typeOfGameString = typeOfGame.getDifficulty();
+        }
 
         String[] undoMoves = new String[logger.size()];
 
@@ -25,19 +28,19 @@ class SaveLoadManager {
                 try {
                     switch (field.getColor()) {
                         case BLACK:
-                            temp.append('B');
+                            temp.append(Color.BLACK.getKey());
                             break;
                         case WHITE:
-                            temp.append('W');
+                            temp.append(Color.WHITE.getKey());
                     }
                 } catch (FieldIsEmptyException e) {
-                    temp.append('N');
+                    temp.append(Color.NONE.getKey());
                 }
             }
             undoMoves[i] = temp.toString();
         }
 
-        nameOfSave = new File(nameOfFolder + "\\" + nameOfGame + ".txt");
+        nameOfSave = new File(nameOfFolder + "\\" + nameOfGame + Utility.getFileExtensionString());
         if (!nameOfFolder.exists()) {
             nameOfFolder.mkdir();
         }
@@ -50,13 +53,7 @@ class SaveLoadManager {
                 fout.write(Integer.toString(Board.SIZE));
                 fout.write(System.lineSeparator());
 
-                fout.write(typeOfGame.getDifficulty());
-                fout.write(System.lineSeparator());
-
-                fout.write(Integer.toString(players[Utility.PLAYERONE].getScore()));
-                fout.write(System.lineSeparator());
-
-                fout.write(Integer.toString(players[Utility.PLAYERTWO].getScore()));
+                fout.write(typeOfGameString);
                 fout.write(System.lineSeparator());
 
                 fout.write(Integer.toString(activePlayer));
@@ -80,7 +77,7 @@ class SaveLoadManager {
     ArrayList<String> load(String nameOfGame) throws GameLoadingNameNotFoundException, GameLoadingFailureException {
         ArrayList<String> gameInfo = new ArrayList<>();
 
-        try (FileReader fin = new FileReader(nameOfFolder + "\\" + nameOfGame + ".txt");) {
+        try (FileReader fin = new FileReader(nameOfFolder + "\\" + nameOfGame + Utility.getFileExtensionString());) {
             int data = 0; StringBuffer temp = new StringBuffer();
             try {
                 while ((data = fin.read()) != -1) {

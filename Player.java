@@ -6,6 +6,7 @@ public class Player {
     private Color color;
     private PlayerType playerType;
     private int score;
+    private String name;
 
     Player(Color color, PlayerType playerType) {
         this.color = color;
@@ -27,14 +28,6 @@ public class Player {
         return players;
     }
 
-    static Player[] getPlayersForConstructor(PlayerType playerType, int[] score) {
-        Player players[] = {
-                new Player(Color.BLACK, PlayerType.HUMAN, score[PLAYERONE]),
-                new Player(Color.WHITE, playerType, score[PLAYERTWO])
-        };
-        return players;
-    }
-
     PlayerType getPlayerType() {
         return playerType;
     }
@@ -47,8 +40,8 @@ public class Player {
         this.score = 0;
     }
 
-    void addScore() {
-        this.score++;
+    void setScore(int score) {
+        this.score = score;
     }
 
     int getScore() {

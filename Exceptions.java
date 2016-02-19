@@ -2,9 +2,47 @@ package othello;
 
 import java.util.EmptyStackException;
 
+class GameEndedException extends Exception {
+    String msg;
+    String scoreOne;
+    String scoreTwo;
+
+    GameEndedException(String msg, int scoreOne, int scoreTwo) {
+        this.msg = msg;
+        this.scoreOne = Integer.toString(scoreOne);
+        this.scoreTwo = Integer.toString(scoreTwo);
+    }
+
+    String[] getScore() {
+        return new String[] {
+            scoreOne, scoreTwo
+        };
+    }
+}
+
+class ComputerHasPlayed extends Exception {
+    char x; int y;
+    ComputerHasPlayed(int x, int y) {
+        this.x = Utility.transformIntToChar(x);
+        this.y = y + 1;
+    }
+    public String toString() {
+        return "Byl proveden tah: " + Utility.PlayerType.COMP.getName() + " tahl na pole: " + x + " " + y + "\n" + Utility.getPlayerTurnString(Utility.PLAYERONE) + ".";
+    }
+
+    int getX() { return x; }
+    int getY() { return y; }
+}
+
 class FieldIsEmptyException extends Exception {
     public String toString() {
         return "Prazdne pole nema kamen.";
+    }
+}
+
+class NotEnoughStonesToFreezeException extends Exception {
+    public String toString() {
+        return "Nelze zmrazit tento pocet kamenu, protoze tento pocet kamenu neni k dispozici.";
     }
 }
 
@@ -92,16 +130,9 @@ class MoveNotAvailableException extends Exception {
     }
 }
 
-class GameEndedException extends Exception {
-    @Override
-    public String toString() {
-        return "Hra skoncila.";
-    }
-}
-
 class NoMovesAvailableException extends Exception {
     @Override
     public String toString() {
-        return "zadny tah.";
+        return "Neni k dispozici zadny tah.";
     }
 }

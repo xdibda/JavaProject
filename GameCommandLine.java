@@ -40,9 +40,9 @@ public class GameCommandLine {
             for (int j = 0; j < Board.SIZE; j++) {
                 try {
                     if (board.getField(j, i).getColor() == Color.BLACK)
-                        System.out.print("B");
+                        System.out.print(Color.BLACK.getKey());
                     else
-                        System.out.print("W");
+                        System.out.print(Color.WHITE.getKey());
                     if (j != Board.SIZE - 1)
                         System.out.print(" ");
                 } catch (FieldIsEmptyException e) {
@@ -64,32 +64,42 @@ public class GameCommandLine {
     public static void main(String args[]) {
         Controller controller = new Controller();
         ReadLineManager fileManager = new ReadLineManager();
-        String nextPlayer = null;
+        String[] nextPlayer = null;
+
+        boolean gameStarted = false;
 
         while (true) {
             try {
-                Player players[];
                 ArrayList<String> tokenArgumentsArray = new ArrayList<>();
+
+                if (gameStarted) {
+                    try {
+                        controller.controlIfGameEnded();
+                    } catch (GameEndedException e) {
+                        System.out.println(e);
+                        System.out.println("Konecne skore: " + Utility.PLAYERS[Utility.PLAYERONE] + ": " + e.getScore()[Utility.PLAYERONE] + ", " + Utility.PLAYERS[Utility.PLAYERTWO] + ": " + e.getScore()[Utility.PLAYERTWO]);
+                        gameStarted = false;
+                    } catch (ComputerHasPlayed e) {
+                        showBoard(controller.getBoard());
+                        System.out.println("Skore: " + Utility.PLAYERS[Utility.PLAYERONE] + ": "+ controller.getScore()[Utility.PLAYERONE] + ", " + Utility.PLAYERS[Utility.PLAYERTWO] + ": " + controller.getScore()[Utility.PLAYERTWO]);
+                        System.out.println(e);
+                    }
+                }
+
                 TypeOfInstruction typeOfInstruction = fileManager.getDecision(tokenArgumentsArray);
                 switch (typeOfInstruction) {
                     case NEW:
+                        gameStarted = true;
                         if (fileManager.getGameType() == null) {
                             nextPlayer = controller.createNewGame(fileManager.getBoardSize());
                         } else {
                             nextPlayer = controller.createNewGame(fileManager.getBoardSize(), fileManager.getGameType());
                         }
                         showBoard(controller.getBoard());
-                        System.out.println(nextPlayer);
+                        System.out.println("Skore je: " + Utility.PLAYERS[Utility.PLAYERONE] + ": " + nextPlayer[1] + ", " + Utility.PLAYERS[Utility.PLAYERTWO] + ": " + nextPlayer[2]);
+                        System.out.println(nextPlayer[0]);
                         break;
                     case MOVE:
-                        try {
-                            controller.controlIfGameEnded();
-                        } catch (GameEndedException e) {
-                            System.out.print(e);
-                            System.out.println(controller.gameEndedResult());
-                            break;
-                        }
-
                         Coords coords = new Coords(tokenArgumentsArray.get(0).charAt(0), Integer.parseInt(tokenArgumentsArray.get(1)));
 
                         try {
@@ -99,34 +109,40 @@ public class GameCommandLine {
                         }
 
                         showBoard(controller.getBoard());
-                        System.out.println(nextPlayer);
+                        System.out.println("Skore je: " + Utility.PLAYERS[Utility.PLAYERONE] + ": " + nextPlayer[1] + ", " + Utility.PLAYERS[Utility.PLAYERTWO] + ": " + nextPlayer[2]);
+                        System.out.println(nextPlayer[0]);
                         break;
                     case SAVE:
                         try {
-                            controller.saveGame(tokenArgumentsArray.get(0));
-                            System.out.print("Hra byla uspesne ulozena");
+                            System.out.println(controller.saveGame(tokenArgumentsArray.get(0)));
                         } catch (GameSavingFailureException e) {
                             System.out.println(e);
                         }
                         break;
                     case LOAD:
                         try {
-                            controller.loadGame(tokenArgumentsArray.get(0));
-                            System.out.print("Hra byla uspesne nactena");
+                            nextPlayer = controller.loadGame(tokenArgumentsArray.get(0));
+                            gameStarted = true;
+                            System.out.println(nextPlayer[0]);
+                            showBoard(controller.getBoard());
+                            System.out.println("Skore je: " + Utility.PLAYERS[Utility.PLAYERONE] + ": " + nextPlayer[2] + ", " + Utility.PLAYERS[Utility.PLAYERTWO] + ": " + nextPlayer[3]);
+                            System.out.println(nextPlayer[1]);
                         } catch (GameLoadingNameNotFoundException | GameLoadingFailureException e) {
                             System.out.println(e);
                         }
-                        showBoard(controller.getBoard());
                         break;
                     case UNDO:
                         try {
-                            controller.undoMove();
+                            nextPlayer = controller.undoMove();
+                            showBoard(controller.getBoard());
+                            System.out.println("Skore je: " + Utility.PLAYERS[Utility.PLAYERONE] + ": " + nextPlayer[1] + ", " + Utility.PLAYERS[Utility.PLAYERTWO] + ": " + nextPlayer[2]);
+                            System.out.println(nextPlayer[0]);
                         } catch (NoMoreMovesToUndoException e) {
                             System.out.println(e);
                         }
-                        showBoard(controller.getBoard());
                         break;
                 }
+
             } catch (ReadingFromConsoleFailureException | InvalidTokenInputException | BadTokenArgumentException e) {
                 System.out.println(e);
             }

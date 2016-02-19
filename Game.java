@@ -1,9 +1,7 @@
 package othello;
 
-import java.io.CharArrayReader;
 import java.util.*;
 import othello.Utility.*;
-import sun.reflect.generics.tree.Tree;
 
 public class Game {
     private int activePlayerTurn = 0;
@@ -25,11 +23,15 @@ public class Game {
 
         logger = new ArrayDeque<>();
         logger.push(board.copy());
+
+        countStones();
+
+        Utility.setPlayerString(players[Utility.PLAYERTWO].getPlayerType() == PlayerType.COMPUTER);
     }
 
     Game(int boardSize, Player players[], ArrayDeque<Board> logger, int activePlayerTurn) {
         try {
-            this.board = new Board(boardSize);
+            board = new Board(boardSize);
         } catch (NotValidMatrixSize e) {
             System.out.print(e);
             board = new Board();
@@ -39,11 +41,24 @@ public class Game {
             this.players[i] = players[i];
         }
 
-        this.logger = logger;
+        this.logger = new ArrayDeque<>();
+        while (!logger.isEmpty()) {
+            this.logger.push(logger.removeFirst());
+        }
+
         this.activePlayerTurn = activePlayerTurn;
+
+        Utility.setPlayerString(players[Utility.PLAYERTWO].getPlayerType() == PlayerType.COMPUTER);
+
+        setBoard(this.logger.peek());
+
+        countStones();
     }
 
-    Board makeUndo() {
+    Board makeUndo() throws NoMoreMovesToUndoException {
+        if (logger.size() < 2) {
+            throw new NoMoreMovesToUndoException();
+        }
         logger.pop();
         return logger.peek();
     }
@@ -113,13 +128,19 @@ public class Game {
 
     void controlMoveIfValid(Coords coords, ArrayList<TreeMap<Coords, ArrayList<Coords>>> allAvailableMoves) throws MoveNotAvailableException {
         boolean moveFound = false;
-        ArrayList<Coords> tempArryOfCoords = null;
+        ArrayList<Coords> tempArrayOfCoords = null;
 
+        //System.out.println("Muj tah je: x = " + coords.getX() + " y = " + coords.getY());
         for (TreeMap<Coords, ArrayList<Coords>> map: allAvailableMoves) {
             for (Map.Entry<Coords, ArrayList<Coords>> mapSet: map.entrySet()) {
+                //System.out.println("Mozne povolene souradnice jsou x = : " + mapSet.getKey().getX() + " y = " + mapSet.getKey().getY() + " a pro ne budu prebarvovat tyto kameny: ");
+                //for (Coords temp: mapSet.getValue()) {
+                //    System.out.println("Tento kamen x = : " + temp.getX()  + " y = " + temp.getY());
+                //}
                 if (coords.equals(mapSet.getKey())) {
+                    //   System.out.println("Zadany tah je validni");
                     moveFound = true;
-                    tempArryOfCoords = mapSet.getValue();
+                    tempArrayOfCoords = mapSet.getValue();
                 }
             }
         }
@@ -132,11 +153,47 @@ public class Game {
             getBoard().setField(coords, getActivePlayer().getColor());
         } catch (FieldIsNotEmptyException e) {};
 
-        for (Coords temp: tempArryOfCoords) {
-            try {
-                getBoard().setField(temp, getActivePlayer().getColor());
-            } catch (FieldIsNotEmptyException e) {}
+        changeFields(tempArrayOfCoords);
+    }
+
+    void controlIfComputerTurn(TypeOfGame typeOfGame) throws ComputerHasPlayed {
+        if (getActivePlayer().getPlayerType() == PlayerType.COMPUTER) {
+            Coords temp = null;
+            switch (typeOfGame) {
+                case EASY:
+                    temp = Algorithm.getEasyAlgorithm(getBoard());
+                    break;
+                case HARD:
+                    temp = Algorithm.getHardAlgorithm(getBoard());
+                    break;
+            }
+
+            countStones();
+            makeCheckpoint();
+            turnHasBeenMade();
+
+            throw new ComputerHasPlayed(temp.getX(), temp.getY());
         }
+    }
+
+    ArrayList<Field>[] countStones() {
+        ArrayList<Field> blackStones = new ArrayList<>();
+        ArrayList<Field> whiteStones = new ArrayList<>();
+
+        for (Field field: getBoard().getField()) {
+            try {
+                if (field.getColor() == Color.BLACK)
+                    blackStones.add(field);
+                else
+                    whiteStones.add(field);
+            } catch (FieldIsEmptyException e) {}
+        }
+
+        getPlayers()[Utility.PLAYERONE].setScore(blackStones.size());
+        getPlayers()[Utility.PLAYERTWO].setScore(whiteStones.size());
+
+        ArrayList<Field>[] temp = new ArrayList[]{blackStones, whiteStones};
+        return temp;
     }
 
     void setBoard(Board board) {
@@ -153,10 +210,6 @@ public class Game {
 
     Player[] getPlayers() {
         return players;
-    }
-
-    Player getPlayer(int number) {
-        return players[number];
     }
 
     void changeFields(ArrayList<Coords> listOfCoords) {

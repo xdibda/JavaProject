@@ -27,10 +27,10 @@ public class Board implements Cloneable {
         char[] charArray = boardStones.trim().toCharArray();
         for (int i = 0; i < charArray.length; i++) {
             map[i] = new Field();
-            if (charArray[i] == 'B') {
+            if (charArray[i] == Color.BLACK.getKey()) {
                 map[i].setColor(Color.BLACK);
             }
-            else if (charArray[i] == 'W') {
+            else if (charArray[i] == Color.WHITE.getKey()) {
                 map[i].setColor(Color.WHITE);
             }
         }
