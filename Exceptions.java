@@ -1,69 +1,41 @@
 package othello;
 
-import java.util.EmptyStackException;
-
 class GameEndedException extends Exception {
-    String msg;
-    String scoreOne;
-    String scoreTwo;
+    String[] infoStrings;
 
-    GameEndedException(String msg, int scoreOne, int scoreTwo) {
-        this.msg = msg;
-        this.scoreOne = Integer.toString(scoreOne);
-        this.scoreTwo = Integer.toString(scoreTwo);
+    GameEndedException(String[] infoStrings) {
+        this.infoStrings = infoStrings;
     }
 
-    String[] getScore() {
-        return new String[] {
-            scoreOne, scoreTwo
-        };
+    String[] getInfoStrings() {
+        return infoStrings;
     }
 }
 
 class ComputerHasPlayed extends Exception {
+    String[] infoStrings;
     char x; int y;
+
     ComputerHasPlayed(int x, int y) {
         this.x = Utility.transformIntToChar(x);
         this.y = y + 1;
     }
-    public String toString() {
-        return "Byl proveden tah: " + Utility.PlayerType.COMP.getName() + " tahl na pole: " + x + " " + y + "\n" + Utility.getPlayerTurnString(Utility.PLAYERONE) + ".";
+
+    ComputerHasPlayed(String[] infoStrings) {
+        this.infoStrings = infoStrings;
     }
 
-    int getX() { return x; }
-    int getY() { return y; }
+    String getX() { return Character.toString(x); }
+    String getY() { return Integer.toString(y); }
+
+    String[] getInfoStrings() {
+        return infoStrings;
+    }
 }
 
 class FieldIsEmptyException extends Exception {
     public String toString() {
         return "Prazdne pole nema kamen.";
-    }
-}
-
-class NotEnoughStonesToFreezeException extends Exception {
-    public String toString() {
-        return "Nelze zmrazit tento pocet kamenu, protoze tento pocet kamenu neni k dispozici.";
-    }
-}
-
-class NotValidCharException extends Exception {
-    public String toString() {
-        return "Zadany identifikator neni platny";
-    }
-}
-
-class NotValidMatrixSize extends Exception {
-    public String toString() {
-        return "Velikost hraci desky neni povolena.\n" +
-                "Byla nastavena implicitni velikost desky 8.\n" +
-                "--------------------------------------------";
-    }
-}
-
-class InvalidCoordsInputException extends Exception {
-    @Override
-    public String toString() {
-        return "Tuto kombinace znaku nelze zadat.Zkuste to prosim znovu.";
     }
 }
 
@@ -134,5 +106,12 @@ class NoMovesAvailableException extends Exception {
     @Override
     public String toString() {
         return "Neni k dispozici zadny tah.";
+    }
+}
+
+class GameIsNotStartedException extends Exception {
+    @Override
+    public String toString() {
+        return "Není aktivní žádná hra na které by mohl hráč táhnout";
     }
 }

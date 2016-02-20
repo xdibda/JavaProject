@@ -1,3 +1,12 @@
+/**
+ * Třída pro správu Save/Load operací
+ * Funkce:  1) Operace nad souborovým systémem, manipulace se složkou a umístěním souborů
+ *          2) Ukládání her
+ *          3) Načítání her
+ * @author Lukáš Dibďák
+ * @see othello.Controller
+ */
+
 package othello;
 
 import java.util.*;
@@ -6,11 +15,20 @@ import java.io.*;
 
 class SaveLoadManager {
     File pathToEnviroment = new File(System.getProperty("user.dir"));
-    File nameOfFolder = new File(pathToEnviroment + "\\" + Utility.getSaveFolderLocationString());
+    File nameOfFolder = new File(pathToEnviroment + "/" + Utility.getSaveFolderLocationString());
     File nameOfSave = null;
 
+    /**
+     * Metoda pro uložení her do souboru
+     * @param nameOfGame Jméno hry pro uložení
+     * @param players Množina hráčů hry
+     * @param logger Zásobník hracích desek pro {@code undoMove}
+     * @param activePlayer Tah hráče
+     * @param typeOfGame Obtížnost počítače (je-li druhý hráč počítač)
+     * @throws GameSavingFailureException Problém při ukládání hry, např. zapisování souborů
+     */
     void save(String nameOfGame, Player[] players, ArrayDeque<Board> logger, int activePlayer, TypeOfGame typeOfGame) throws GameSavingFailureException {
-        char playerTypeChar = 0; String typeOfGameString = "null";
+        char playerTypeChar; String typeOfGameString = "null";
         if (players[Utility.PLAYERTWO].getPlayerType() == PlayerType.HUMAN)
             playerTypeChar = PlayerType.HUMAN.getKey();
         else  {
@@ -21,7 +39,7 @@ class SaveLoadManager {
         String[] undoMoves = new String[logger.size()];
 
         int i; Iterator<Board> index;
-        StringBuffer temp = new StringBuffer();
+        StringBuilder temp = new StringBuilder();
         for (index = logger.iterator(), i = 0; index.hasNext(); i++) {
             temp.setLength(0);
             for (Field field: index.next().getField()) {
@@ -40,7 +58,7 @@ class SaveLoadManager {
             undoMoves[i] = temp.toString();
         }
 
-        nameOfSave = new File(nameOfFolder + "\\" + nameOfGame + Utility.getFileExtensionString());
+        nameOfSave = new File(nameOfFolder + "/" + nameOfGame + Utility.getFileExtensionString());
         if (!nameOfFolder.exists()) {
             nameOfFolder.mkdir();
         }
@@ -74,12 +92,19 @@ class SaveLoadManager {
         }
     }
 
+    /**
+     * Metoda pro načtení hry ze souboru
+     * @param nameOfGame Jméno hry k načtení
+     * @return Pole typu {@code String} obsahující všechny informace o načtené hře
+     * @throws GameLoadingNameNotFoundException Zadaný název hry neexistuje
+     * @throws GameLoadingFailureException Problém při načítání hry, např. čtení souborů
+     */
     ArrayList<String> load(String nameOfGame) throws GameLoadingNameNotFoundException, GameLoadingFailureException {
         ArrayList<String> gameInfo = new ArrayList<>();
 
         try (FileReader fin = new FileReader(nameOfFolder + "\\" + nameOfGame + Utility.getFileExtensionString());) {
-            int data = 0; StringBuffer temp = new StringBuffer();
             try {
+                int data; StringBuilder temp = new StringBuilder();
                 while ((data = fin.read()) != -1) {
                     if (Character.isWhitespace(data) && temp.length() != 0) {
                         gameInfo.add(temp.toString());
@@ -88,7 +113,7 @@ class SaveLoadManager {
                     else temp.append((char) data);
                 }
             } catch (IOException e) {
-                throw e;
+                throw new GameLoadingFailureException();
             }
         } catch (FileNotFoundException e) {
             throw new GameLoadingNameNotFoundException();
