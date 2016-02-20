@@ -1,18 +1,27 @@
+/**
+ * Třída pro provádění hlavních operací hry
+ * Funkce:  1) Řízení hlavních operací hry
+ *          2) Kontrola nad hrou a S/L manažerem
+ *          3) Vytváření, načítání a ukládání her
+ *          4) Provádění tahů
+ *          5) Vracení tahů
+ *          6) Zmrazování kamenů
+ *          7) Analýza konce hry
+ *          8) Analýza tahu počítače
+ * @author Lukáš Dibďák
+ */
+
 package othello;
 
 import othello.Utility.*;
-
 import java.util.*;
 
 public class Controller {
     private Game game;
     private SaveLoadManager saveLoadManager;
-
-    private TypeOfGame typeOfGame = null;
-
-    private boolean gameStarted = false;
-
-    ArrayList<TreeMap<Coords, ArrayList<Coords>>> allAvailableMoves = null;
+    private TypeOfGame typeOfGame;
+    private boolean gameStarted;
+    ArrayList<TreeMap<Coords, ArrayList<Coords>>> allAvailableMoves;
 
     /**
      * Konstruktor objektu
@@ -22,6 +31,9 @@ public class Controller {
     Controller() {
         game = null;
         saveLoadManager = new SaveLoadManager();
+        typeOfGame = null;
+        gameStarted = false;
+        allAvailableMoves = null;
     }
 
     /**
@@ -32,6 +44,7 @@ public class Controller {
      * @return Pole typu {@code String} které vrací
      * [0,1] aktuální skóre hráčů pro výpis
      * [2] řetězec s informací kdo je na řadě
+     * [3] vizualizovaná hrací deska
      */
     String[] createNewGame(int boardSize) {
         Player players[] = Player.getPlayersForConstructor(PlayerType.HUMAN);
@@ -40,9 +53,10 @@ public class Controller {
         this.gameStarted = true;
 
         return new String[] {
-                Integer.toString(getScore()[Utility.PLAYERONE]),
-                Integer.toString(getScore()[Utility.PLAYERTWO]),
-                Utility.getPlayerTurnString(game.getActivePlayerTurn())
+                Integer.toString(game.getScore()[Utility.PLAYERONE]),
+                Integer.toString(game.getScore()[Utility.PLAYERTWO]),
+                Utility.getPlayerTurnString(game.getActivePlayerTurn()),
+                Utility.visualizeBoard(game.getBoard())
         };
     }
 
@@ -55,6 +69,7 @@ public class Controller {
      * @return Pole typu {@code String} které vrací
      * [0,1] aktuální skóre hráčů pro výpis
      * [2] řetězec s informací kdo je na řadě
+     * [3] vizualizovaná hrací deska
      */
     String[] createNewGame(int boardSize, TypeOfGame typeOfGame) {
         Player players[] = Player.getPlayersForConstructor(PlayerType.COMPUTER);
@@ -63,9 +78,10 @@ public class Controller {
         this.typeOfGame = typeOfGame;
 
         return new String[] {
-                Integer.toString(getScore()[Utility.PLAYERONE]),
-                Integer.toString(getScore()[Utility.PLAYERTWO]),
-                Utility.getPlayerTurnString(game.getActivePlayerTurn())
+                Integer.toString(game.getScore()[Utility.PLAYERONE]),
+                Integer.toString(game.getScore()[Utility.PLAYERTWO]),
+                Utility.getPlayerTurnString(game.getActivePlayerTurn()),
+                Utility.visualizeBoard(game.getBoard())
         };
     }
 
@@ -76,7 +92,8 @@ public class Controller {
      * @return Pole typu {@code String} které vrací
      * [0,1] aktuální skóre hráčů pro výpis
      * [2] řetězec s informací kdo je na řadě
-     * [3] hlášku o úspěšném načtení hry
+     * [3] vizualizovaná hrací deska
+     * [4] hlášku o úspěšném načtení hry
      * @throws GameLoadingNameNotFoundException Pokud {@code nameOfGame} odkazuje na neexistující hru
      * @throws GameLoadingFailureException Při všech ostatních chybách, například chyba čtení souboru
      */
@@ -102,10 +119,11 @@ public class Controller {
             Utility.setPlayerString(playerType == PlayerType.COMPUTER);
 
             return new String[] {
-                    Integer.toString(getScore()[Utility.PLAYERONE]),
-                    Integer.toString(getScore()[Utility.PLAYERTWO]),
+                    Integer.toString(game.getScore()[Utility.PLAYERONE]),
+                    Integer.toString(game.getScore()[Utility.PLAYERTWO]),
                     Utility.getPlayerTurnString(game.getActivePlayerTurn()),
-                    Utility.getSuccessfulLoadGameString(),
+                    Utility.visualizeBoard(game.getBoard()),
+                    Utility.getSuccessfulLoadGameString()
             };
         }
         catch (GameLoadingNameNotFoundException e) {
@@ -125,6 +143,7 @@ public class Controller {
      * @return Pole typu {@code String} které vrací
      * [0,1] aktuální skóre hráčů pro výpis
      * [2] řetězec s informací kdo je na řadě
+     * [3] vizualizovaná hrací deska
      * @throws GameIsNotStartedException Není aktivní žádná hra na které by mohla být provedena operace
      * @throws MoveNotAvailableException Tah na daných souřadnicích není k dispozici protože:
      * - políčko není prázdné
@@ -144,9 +163,10 @@ public class Controller {
             game.turnHasBeenMade();
 
             return new String[] {
-                    Integer.toString(getScore()[Utility.PLAYERONE]),
-                    Integer.toString(getScore()[Utility.PLAYERTWO]),
-                    Utility.getPlayerTurnString(game.getActivePlayerTurn())
+                    Integer.toString(game.getScore()[Utility.PLAYERONE]),
+                    Integer.toString(game.getScore()[Utility.PLAYERTWO]),
+                    Utility.getPlayerTurnString(game.getActivePlayerTurn()),
+                    Utility.visualizeBoard(game.getBoard())
             };
         }
         catch (MoveNotAvailableException e) {
@@ -161,7 +181,8 @@ public class Controller {
      * @return Pole typu {@code String} které vrací
      * [0,1] aktuální skóre hráčů pro výpis
      * [2] řetězec s informací kdo je na řadě
-     * [3] hlášku o úspěšném provedení operace
+     * [3] vizualizovaná hrací deska
+     * [4] hlášku o úspěšném provedení operace
      * @throws GameIsNotStartedException Není aktivní žádná hra na které by mohla být provedena operace
      */
     String[] freezeStones() throws GameIsNotStartedException {
@@ -189,10 +210,11 @@ public class Controller {
         game.makeCheckpoint();
 
         return new String[] {
-                Integer.toString(getScore()[Utility.PLAYERONE]),
-                Integer.toString(getScore()[Utility.PLAYERTWO]),
+                Integer.toString(game.getScore()[Utility.PLAYERONE]),
+                Integer.toString(game.getScore()[Utility.PLAYERTWO]),
                 Utility.getPlayerTurnString(game.getActivePlayerTurn()),
-                Utility.getSuccessfulFreezeStoneString(randomNumbers),
+                Utility.visualizeBoard(game.getBoard()),
+                Utility.getSuccessfulFreezeStoneString(randomNumbers)
         };
     }
 
@@ -225,6 +247,7 @@ public class Controller {
      * @return Pole typu {@code String} které vrací
      * [0,1] aktuální skóre hráčů pro výpis
      * [2] řetězec s informací kdo je na řadě
+     * [3] vizualizovaná hrací deska
      * @throws GameIsNotStartedException Není aktivní žádná hra na které by mohla být provedena operace
      * @throws NoMoreMovesToUndoException Již nezbývá žádný tah, který by bylo možno vrátit, hra je na začátku
      */
@@ -241,9 +264,10 @@ public class Controller {
             game.turnHasBeenMade();
 
             return new String[] {
-                    Integer.toString(getScore()[Utility.PLAYERONE]),
-                    Integer.toString(getScore()[Utility.PLAYERTWO]),
-                    Utility.getPlayerTurnString(game.getActivePlayerTurn())
+                    Integer.toString(game.getScore()[Utility.PLAYERONE]),
+                    Integer.toString(game.getScore()[Utility.PLAYERTWO]),
+                    Utility.getPlayerTurnString(game.getActivePlayerTurn()),
+                    Utility.visualizeBoard(game.getBoard())
             };
         }
         catch (EmptyStackException | NoMoreMovesToUndoException e) {
@@ -251,68 +275,54 @@ public class Controller {
         }
     }
 
-    void controlGameEnd() throws GameEndedException, ComputerHasPlayed {
-        allAvailableMoves = new ArrayList<>();
-
-        for (int x = 0; x < Board.SIZE; x++) {
-            for (int y = 0; y < Board.SIZE; y++) {
-                try {
-                    ArrayList<Coords> temp = game.checkPositionForMoves(new Coords(x, y));
-                    if (temp.isEmpty()) {
-                        continue;
-                    }
-
-                    NextTry:
-                    for (Coords direction : temp) {
-                        int i, j;
-                        ArrayList<Coords> tempCoords = new ArrayList<>();
-                        for (i = direction.getX(), j = direction.getY(); Utility.isInBoard(new Coords(i, j)); i += (direction.getX() - x), j += (direction.getY() - y)) {
-                            try {
-                                if (getBoard().getField(i, j).getColor() != game.getActivePlayer().getColor()) {
-                                    tempCoords.add(new Coords(i, j));
-                                } else {
-                                    TreeMap<Coords, ArrayList<Coords>> map = new TreeMap<>();
-                                    map.put(new Coords(x, y), tempCoords);
-                                    allAvailableMoves.add(map);
-                                    continue NextTry;
-                                }
-                            } catch (FieldIsEmptyException fieldException) {
-                                continue NextTry;
-                            }
-                        }
-                    }
-                } catch (NoMovesAvailableException movesException) {}
-            }
+    /**
+     * Metoda analyzuje následující možnosti hry, zejména:
+     * - hra skončila, protože žádný z hráčů nemůže táhnout nebo na hrací desce není žádné prázdné místo
+     * - na tahu je počítač, vykoná tedy podle algoritmu tah
+     * - ukládá všechny dostupné tahy, ve kterých se následně vyhledává tah hráčů/počítače
+     * @throws GameEndedException Hra byla ukončena, v rámci výjimky vrací pole typu {@code String}:
+     * [0,1] aktuální skóre hráčů pro výpis
+     * [2] řetězec s informací o vítězi a konci hry
+     * [3] vizualizovaná hrací deska
+     * @throws ComputerHasPlayed Na tahu byl počítač, který vykonal tah
+     * [0,1] aktuální skóre hráčů pro výpis
+     * [2] řetězec s informací kdo je na řadě
+     * [3] vizualizovaná hrací deska
+     * [4,5] souřadnice tahu počítače
+     */
+    void analyzeNextTurn() throws GameEndedException, ComputerHasPlayed {
+        if (!gameStarted) {
+            return;
         }
+
+        allAvailableMoves = game.getAvailableMoves();
 
         if (allAvailableMoves.isEmpty()) {
             game.setFinalScore();
-            throw new GameEndedException(gameEndedResult(), game.getPlayers()[Utility.PLAYERONE].getScore(), game.getPlayers()[Utility.PLAYERTWO].getScore());
+            throw new GameEndedException (
+                    new String[] {
+                            Integer.toString(game.getScore()[Utility.PLAYERONE]),
+                            Integer.toString(game.getScore()[Utility.PLAYERTWO]),
+                            Utility.getGameEndedString(game.getPlayers()),
+                            Utility.visualizeBoard(game.getBoard())
+                    }
+            );
         }
 
         try {
             game.controlIfComputerTurn(typeOfGame);
-        } catch (ComputerHasPlayed e) {
-            throw e;
         }
-    }
-
-
-    String gameEndedResult() {
-        return Utility.getGameEndedString(game.getPlayers());
-    }
-
-    int[] getScore() {
-        int[] score = new int[2];
-        Player[] playerScore =  game.getPlayers();
-
-        score[Utility.PLAYERONE] = playerScore[Utility.PLAYERONE].getScore();
-        score[Utility.PLAYERTWO] = playerScore[Utility.PLAYERTWO].getScore();
-
-        return score;
-    }
-
-    Board getBoard() {
-        return game.getBoard();
+        catch (ComputerHasPlayed coords) {
+            throw new ComputerHasPlayed(
+                    new String[] {
+                            Integer.toString(game.getScore()[Utility.PLAYERONE]),
+                            Integer.toString(game.getScore()[Utility.PLAYERTWO]),
+                            Utility.getPlayerTurnString(game.getActivePlayerTurn()),
+                            Utility.visualizeBoard(game.getBoard()),
+                            coords.getX(),
+                            coords.getY()
+                    }
+            );
+        }
     }
 }

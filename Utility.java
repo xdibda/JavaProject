@@ -1,30 +1,62 @@
 package othello;
 
-import java.lang.reflect.Type;
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Random;
+import java.util.*;
 
 public class Utility {
     static int PLAYERONE = 0;
     static int PLAYERTWO = 1;
-
     static int MAXFREEZETIME = 60;
 
     static String[] PLAYERS = new String[2];
 
-    static void setPlayerString(boolean computer) {
-        PLAYERS[PLAYERONE] = PlayerType.PONE.getName();
-        if (computer)
-            PLAYERS[PLAYERTWO] = PlayerType.COMP.getName();
-        else
-            PLAYERS[PLAYERTWO] = PlayerType.PTWO.getName();
+    static class Coords implements Comparable<Coords> {;
+        private int x, y;
+
+        Coords(char x, int y) {
+            this.x = Utility.transformCharToInt(x);
+            this.y = y - 1;
+        }
+
+        Coords(int x, int y) {
+            this.x = x;
+            this.y = y;
+        }
+
+        @Override
+        public int compareTo(Coords o) {
+            if (this.getX() < o.getX())
+                return -1;
+            else if (this.getX() == o.getX())
+                return 0;
+            else
+                return 1;
+        }
+
+        public boolean equals(Coords temp) {
+            return (temp.getX() == this.getX() && temp.getY() == this.getY());
+        }
+
+        int getX() { return x; }
+        int getY() { return y; }
+    }
+
+    static class Algorithm {
+        static Coords getEasyAlgorithm(Board board) {
+            Coords temp = new Coords(1, 1);
+            return temp;
+        }
+        static Coords getHardAlgorithm(Board board) {
+            Coords temp = new Coords(1, 1);
+            return temp;
+        }
     }
 
     public enum Color {
         WHITE('W'),
         BLACK('B'),
-        NONE('N');
+        FWHITE('H'),
+        FBLACK('L'),
+        NONE('0');
 
         private char key;
 
@@ -51,7 +83,6 @@ public class Utility {
         PlayerType(char c) {
             this.key = c;
         }
-
         PlayerType(String name) {
             this.name = name;
         }
@@ -59,7 +90,6 @@ public class Utility {
         String getName() {
             return name;
         }
-
         char getKey() {
             return key;
         }
@@ -93,7 +123,6 @@ public class Utility {
         TypeOfInstruction() {
             this.numberOfArgumentRequired = 0;
         }
-
         TypeOfInstruction(int numberOfArgumentsRequired) {
             this.numberOfArgumentRequired = numberOfArgumentsRequired;
         }
@@ -103,55 +132,19 @@ public class Utility {
         }
     }
 
-    static boolean isInBoard(Coords coords) {
-        if (coords.getY() < 0 || coords.getY() >= Board.SIZE) {
-            return false;
-        }
-        else if (coords.getX() < 0 || coords.getX() >= Board.SIZE) {
-            return false;
-        }
-        return true;
+    static int transformCharToInt(char x) {
+        return (int) x - 97;
     }
-
-    static class Coords implements Comparable<Coords> {;
-        private int x, y;
-
-        Coords(char x, int y) {
-            this.x = Utility.transformCharToInt(x);
-            this.y = y - 1;
-        }
-
-        Coords(int x, int y) {
-            this.x = x;
-            this.y = y;
-        }
-
-        @Override
-        public int compareTo(Coords o) {
-            if (this.getX() < o.getX())
-                return -1;
-            else if (this.getX() == o.getX())
-                return 0;
-            else
-                return 1;
-        }
-
-        public boolean equals(Coords temp) {
-            return (temp.getX() == this.getX() && temp.getY() == this.getY());
-        }
-
-        int getX() { return x; }
-        int getY() { return y; }
-    }
+    static char transformIntToChar(int x) { return (char) (x + 97); }
 
     static String getSuccessfulSaveGameString() { return "Hra byla uspesne ulozena."; }
     static String getSuccessfulLoadGameString() { return "Hra byla uspesne nactena."; }
+    static String getFileExtensionString() { return ".txt"; }
+    static String getSaveFolderLocationString() { return "save"; }
+
     static String getSuccessfulFreezeStoneString(int[] numbers) {
         return "Za dobu: " + numbers[0] + " sekund bude zmrazen pocet kamenu: " + numbers[2] + " na dobu: " + numbers[1] + " sekund";
     }
-
-    static String getFileExtensionString() { return ".txt"; }
-    static String getSaveFolderLocationString() { return "save"; }
 
     static String getPlayerTurnString(int player) {
         if (player == PLAYERONE) {
@@ -171,28 +164,14 @@ public class Utility {
 
         if (score[PLAYERONE] > score[PLAYERTWO]) {
             playerName = "Zvitezil " + PLAYERS[PLAYERONE];
-        } else if (score[PLAYERONE] > score[PLAYERTWO]) {
+        }
+        else if (score[PLAYERONE] > score[PLAYERTWO]) {
             playerName = "Zvitezil " + PLAYERS[PLAYERTWO];
-        } else {
+        }
+        else {
             playerName = "Zapas skoncil remizou";
         }
         return "Hra byla ukoncena.\n" + playerName;
-    }
-
-    static int transformCharToInt(char x) {
-        return (int) x - 97;
-    }
-    static char transformIntToChar(int x) { return (char) (x + 97); }
-
-    static class Algorithm {
-        static Coords getEasyAlgorithm(Board board) {
-            Coords temp = new Coords(1, 1);
-            return temp;
-        }
-        static Coords getHardAlgorithm(Board board) {
-            Coords temp = new Coords(1, 1);
-            return temp;
-        }
     }
 
     static PlayerType loadParsePlayerType(char temp) {
@@ -230,6 +209,49 @@ public class Utility {
         randomNumbers[0] = random.nextInt(Utility.MAXFREEZETIME);
         randomNumbers[1] = random.nextInt(Utility.MAXFREEZETIME);
         randomNumbers[2] = random.nextInt(notFrozenStones);
+    }
+
+    static String visualizeBoard(Board board) {
+        StringBuilder temp = new StringBuilder();
+        for (Field field: board.getField()) {
+            try {
+                switch (field.getColor()) {
+                    case WHITE:
+                        temp.append(Color.WHITE.getKey());
+                        break;
+                    case BLACK:
+                        temp.append(Color.BLACK.getKey());
+                        break;
+                    case FWHITE:
+                        temp.append(Color.FWHITE.getKey());
+                        break;
+                    case FBLACK:
+                        temp.append(Color.FBLACK.getKey());
+                        break;
+                }
+            } catch (FieldIsEmptyException e) {
+                temp.append(Color.NONE.getKey());
+            }
+        }
+        return temp.toString();
+    }
+
+    static void setPlayerString(boolean computer) {
+        PLAYERS[PLAYERONE] = PlayerType.PONE.getName();
+        if (computer)
+            PLAYERS[PLAYERTWO] = PlayerType.COMP.getName();
+        else
+            PLAYERS[PLAYERTWO] = PlayerType.PTWO.getName();
+    }
+
+    static boolean isInBoard(Coords coords) {
+        if (coords.getY() < 0 || coords.getY() >= Board.SIZE) {
+            return false;
+        }
+        else if (coords.getX() < 0 || coords.getX() >= Board.SIZE) {
+            return false;
+        }
+        return true;
     }
 
     static void help() {
