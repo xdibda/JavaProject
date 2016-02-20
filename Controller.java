@@ -108,7 +108,7 @@ public class Controller {
 
             this.typeOfGame = Utility.loadParseTypeOfGame(gameInfo.remove(0).trim());
 
-            int activePlayer = Utility.loadPraseActivePlayer(gameInfo.remove(0).trim());
+            int activePlayer = Utility.loadParseActivePlayer(gameInfo.remove(0).trim());
             gameBoards = Utility.loadParseBoards(gameInfo, boardSize);
 
             Player[] players = Player.getPlayersForConstructor(playerType);

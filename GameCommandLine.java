@@ -115,6 +115,20 @@ public class GameCommandLine {
         ReadLineManager fileManager = new ReadLineManager();
         String[] nextPlayer;
 
+        /**
+         * Kontrola vstupních parametrů
+         */
+        try {
+            fileManager.controlInputArguments(args);
+        }
+        catch (InvalidInputArgumentsException e) {
+            System.out.println(e);
+            System.exit(1);
+        }
+
+        /**
+         * Hlavní smyčka programu přijímající tokeny
+         */
         while (true) {
             try {
                 ArrayList<String> tokenArgumentsArray = new ArrayList<>();
