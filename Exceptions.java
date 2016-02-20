@@ -115,3 +115,10 @@ class GameIsNotStartedException extends Exception {
         return "Není aktivní žádná hra na které by mohl hráč táhnout";
     }
 }
+
+class InvalidInputArgumentsException extends Exception {
+    @Override
+    public String toString() {
+        return "Program spuštěn se špatnými argumenty. Lze spustit pouze bez argumentů nebo s argumentem --help";
+    }
+}

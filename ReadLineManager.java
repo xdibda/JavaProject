@@ -19,6 +19,26 @@ public class ReadLineManager {
     private TypeOfGame gameType;
 
     /**
+     * Metoda pro kontrolu vstupních argumentů příkazové řádky
+     * @param arguments Pole typu {@code String} argumentů příkazové řádky
+     * @throws InvalidInputArgumentsException Chybné argumenty příkazové řádky
+     */
+    void controlInputArguments(String[] arguments) throws InvalidInputArgumentsException {
+        if (arguments.length > 1) {
+            throw new InvalidInputArgumentsException();
+        }
+        if (arguments.length == 1) {
+            if(arguments[0].equals("--help")) {
+                Utility.help();
+                Utility.instructionsDescription();
+            }
+            else {
+                throw new InvalidInputArgumentsException();
+            }
+        }
+    }
+
+    /**
      * Získání velikosti desky
      * @return Velikost desky
      */

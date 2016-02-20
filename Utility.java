@@ -18,10 +18,20 @@ package othello;
 import java.util.*;
 
 public class Utility {
+    /**
+     * Identifikace hráčů pro indexování
+     */
     static int PLAYERONE = 0;
     static int PLAYERTWO = 1;
+
+    /**
+     * Konstanta pro maximální dobu zmrazení kamenů
+     */
     static int MAXFREEZETIME = 60;
 
+    /**
+     * Řetězcová interpretace jmen hráčů
+     */
     static String[] PLAYERS = new String[2];
 
     /**
@@ -30,16 +40,32 @@ public class Utility {
     static class Coords implements Comparable<Coords> {;
         private int x, y;
 
+        /**
+         * Konstruktor pro vodorovnou souřadnice zapsanou znakovým identifikátorem
+         * @param x Vodorovná souřadnice
+         * @param y Svislá souřadnice
+         */
         Coords(char x, int y) {
             this.x = Utility.transformCharToInt(x);
             this.y = y - 1;
         }
 
+        /**
+         * Konstruktor pro vodorovnou souřadnice zapsanou číselným identifikátorem
+         * @param x Vodorovná souřadnice
+         * @param y Svislá souřadnice
+         */
         Coords(int x, int y) {
             this.x = x;
             this.y = y;
         }
 
+        /**
+         * Přepsání metody vyšší třídy pro porovnání pro využití rozhraní Comparable
+         * Porovnává vodorovnou souřadnici a vrací její porovnání pro mapování
+         * @param o Souřadnice k porovnání
+         * @return Stejná, menší nebo větší vodorovná souřadnice
+         */
         @Override
         public int compareTo(Coords o) {
             if (this.getX() < o.getX())
@@ -50,6 +76,12 @@ public class Utility {
                 return 1;
         }
 
+        /**
+         * Přetížení metody pro porovnání objektu
+         * Porovnává souřadnice
+         * @param temp Druhé souřadnice k porovnání
+         * @return Stejné/rozdílné
+         */
         public boolean equals(Coords temp) {
             return (temp.getX() == this.getX() && temp.getY() == this.getY());
         }
@@ -62,10 +94,21 @@ public class Utility {
      * Inline třída pro zpracování algoritmů počítače a jeho tahů
      */
     static class Algorithm {
+        /**
+         * Jednoduchý algoritmus pro tah počítače
+         * @param board Hrací deska
+         * @return Pole hrací desky, kam počítač táhnul
+         */
         static Coords getEasyAlgorithm(Board board) {
             Coords temp = new Coords(1, 1);
             return temp;
         }
+
+        /**
+         * Složitější algoritmus pro tah počítače
+         * @param board Hrací deska
+         * @return Pole hrací desky, kam počítač táhnul
+         */
         static Coords getHardAlgorithm(Board board) {
             Coords temp = new Coords(1, 1);
             return temp;
@@ -74,20 +117,33 @@ public class Utility {
 
     /**
      * Enum - Barva kamenů
+     * - WHITE  - bílá
+     * - BLACK  - černá
+     * - FWHITE - bílá, zmrazený kámen
+     * - FBLACK - černá, zmrazený kámen
+     * - NONE   - žádný kámen na políčku
      */
     public enum Color {
         WHITE('W'),
         BLACK('B'),
-        FWHITE('H'),
-        FBLACK('L'),
+        FWHITE('E'),
+        FBLACK('K'),
         NONE('0');
 
         private char key;
 
+        /**
+         * Konstruktor
+         * @param key Jednoznačný znakový identifikátor typu kamenu
+         */
         Color(char key) {
             this.key = key;
         }
 
+        /**
+         * Vrací identifikátor kamene
+         * @return Identifikátor kamene
+         */
         char getKey() {
             return key;
         }
@@ -95,6 +151,12 @@ public class Utility {
 
     /**
      * Enum - Typ hráče
+     * - COMPUTER - počítačový hráč
+     * - HUMAN    - lidský hráč
+     *
+     * - PONE - řetězec identifikující prvního lidského hráče
+     * - PTWO - řetězec identifikující druhého ldeského hráče
+     * - COMP - řetězec identifikující počítač
      */
     public enum PlayerType {
         COMPUTER('C'),
@@ -107,23 +169,43 @@ public class Utility {
         private char key = 0;
         private String name = null;
 
+        /**
+         * Konstruktor
+         * @param c Znak reprezentující počítač/lidského hráče
+         */
         PlayerType(char c) {
             this.key = c;
         }
+
+        /**
+         * Konstruktor
+         * @param name Řetězcová identifikace hráče
+         */
         PlayerType(String name) {
             this.name = name;
         }
 
+        /**
+         * Vrací řetězcovou identifikace hráče
+         * @return Řetězcová identifikace hráče
+         */
         String getName() {
             return name;
         }
+
+        /**
+         * Vrací znak reprezentující počítač/lidského hráče
+         * @return Znak reprezentující počítač/lidského hráče
+         */
         char getKey() {
             return key;
         }
     }
 
     /**
-     * Enum - obtížnost hry
+     * Enum - Obtížnost hry
+     * - EASY - jednoduchá obtížnost tahů počítače
+     * - HARD - složitá obtížnost tahů počítače
      */
     public enum TypeOfGame {
         EASY("easy"),
@@ -131,10 +213,18 @@ public class Utility {
 
         private String difficulty;
 
+        /**
+         * Konstruktor
+         * @param difficulty Řetězcová interpretace složitosti hry
+         */
         TypeOfGame(String difficulty) {
             this.difficulty = difficulty;
         }
 
+        /**
+         * Vrací řetězcovou interpretaci složitosti hry
+         * @return Řetězcová interpretace složitosti hry
+         */
         String getDifficulty() {
             return difficulty;
         }
@@ -142,6 +232,12 @@ public class Utility {
 
     /**
      * Enum - typ instrukce (tokenu)
+     * - MOVE   - tah hráče na hrací desku
+     * - SAVE   - uložení hry
+     * - LOAD   - načtení hry
+     * - NEW    - vytvoření nové hry
+     * - UNDO   - vrácení tahu
+     * - FREEZE - zmrazení kamenů
      */
     public enum TypeOfInstruction {
         MOVE(2),
@@ -153,13 +249,26 @@ public class Utility {
 
         private int numberOfArgumentRequired;
 
+        /**
+         * Implicitní konstruktor
+         * Neočekává žádný argument tokenu
+         */
         TypeOfInstruction() {
             this.numberOfArgumentRequired = 0;
         }
+
+        /**
+         * Konstruktor
+         * @param numberOfArgumentsRequired Potřebný počet argumentů tokenu
+         */
         TypeOfInstruction(int numberOfArgumentsRequired) {
             this.numberOfArgumentRequired = numberOfArgumentsRequired;
         }
 
+        /**
+         * Vrací počet argumentů tokenu
+         * @return Počet potřebných argumentů tokenu
+         */
         int getNumberOfArgumentRequired() {
             return numberOfArgumentRequired;
         }
@@ -381,6 +490,70 @@ public class Utility {
      * Nápověda k programu
      */
     static void help() {
-        System.out.print("dake pickoviny");
+        System.out.println("Nápověda ke hře Reversi:");
+        System.out.println("-----------------------------------------------------------------");
+        System.out.println("Reversi, je desková hra pro dva hráče, hraná na desce\n" +
+                           "[6x6][8x8][10x10][12x12] polí. Hráči na desku pokládají\n" +
+                           "kameny, které jsou z jedné strany bílé a z druhé černé,\n" +
+                           "tak, aby mezi právě položený kámen a jiný kámen své\n" +
+                           "barvy uzavřeli souvislou řadu soupeřových kamenů; tyto\n" +
+                           "kameny se potom otočí a stanou se kameny druhého hráče.\n" +
+                           "Vítězí hráč, který po zaplnění desky na ní má více svých\n" +
+                           "kamenů. Pole se označují obdobně jako na šachovnici, tedy\n" +
+                           "sloupce písmeny, řady čísly. Lze také nechat náhodný počet\n" +
+                           "kamenů hráče zamrznout, pak nemohou být při žádném tahu\n" +
+                           "otočeny dokud opět nerozmrznou.");
+        System.out.println("Zdroj: wikipedia.org");
+        System.out.println("-----------------------------------------------------------------");
+    }
+
+    /**
+     * Popis instrukcí příkazové řádky
+     */
+    static void instructionsDescription() {
+        System.out.println("Popis instrukcí pro příkazovou řádku:");
+        System.out.println("-----------------------------------------------------------------");
+        System.out.println("1. vytvoření nové hry");
+        System.out.println("NEW TYP_HRACE VELIKOST_DESKY [OBTÍŽNOST_HRY]");
+        System.out.println("- TYP HRÁČE - typ druhého hráče, tento hráč může být");
+        System.out.println("              definován jako počítač [C] nebo lidský");
+        System.out.println("              hráč [H]");
+        System.out.println("- VELIKOST_DESKY - velikost hrací desky, povolené jsou");
+        System.out.println("                   tyto hodnoty: [6], [8], [10], [12]");
+        System.out.println("- OBTÍŽNOST HRY - pokud je jako TYP_HRACE zvolen počítač,");
+        System.out.println("                  pak lze zvolit obtížnost hry jako");
+        System.out.println("                  jednoduchou [easy] nebo složitou [hard]");
+        System.out.println("- Ukázka instrukce: NEW C 12 EASY");
+        System.out.println("-----------------------------------------------------------------");
+        System.out.println("2. načtení uložené hry");
+        System.out.println("LOAD JMÉNO_HRY");
+        System.out.println("- JMENO_HRY - název, ze kterého se má hra nahrát");
+        System.out.println("- Ukázka instrukce: LOAD hra");
+        System.out.println("-----------------------------------------------------------------");
+        System.out.println("3. uložení hry");
+        System.out.println("SAVE JMÉNO_HRY");
+        System.out.println("- JMENO_HRY - název, kdo kterého se má hra uložit");
+        System.out.println("- Ukázka instrukce: SAVE hra");
+        System.out.println("-----------------------------------------------------------------");
+        System.out.println("4. tah hráče");
+        System.out.println("MOVE VODOROVNA_SOURADNICE SVISLA_SOURADNICE");
+        System.out.println("- VODOROVNA_SOURADNICE - souřadnice tahu hráče zapsaná");
+        System.out.println("  ve znakové podobě");
+        System.out.println("- SVISLA_SOURADNICE - souřadnice tahu zapsaná v číselné");
+        System.out.println("  podobě");
+        System.out.println("- Ukázka instrukce: MOVE a 2");
+        System.out.println("-----------------------------------------------------------------");
+        System.out.println("5. vrácení tahu");
+        System.out.println("UNDO");
+        System.out.println("- Instrukce bez argumentů");
+        System.out.println("- Ukázka instrukce: UNDO");
+        System.out.println("-----------------------------------------------------------------");
+        System.out.println("6. zamrznutí kamenů");
+        System.out.println("FREEZE");
+        System.out.println("- Instrukce bez argumentů");
+        System.out.println("- Instrukce nechá zamrznout náhodný počet kamenů hráče");
+        System.out.println("  za na náhodně dlouhou dobu po náhodně dlouhou dobu");
+        System.out.println("- Ukázka instrukce: FREEZE");
+        System.out.println("-----------------------------------------------------------------");
     }
 }

@@ -46,9 +46,11 @@ class SaveLoadManager {
                 try {
                     switch (field.getColor()) {
                         case BLACK:
+                        case FBLACK:
                             temp.append(Color.BLACK.getKey());
                             break;
                         case WHITE:
+                        case FWHITE:
                             temp.append(Color.WHITE.getKey());
                     }
                 } catch (FieldIsEmptyException e) {
@@ -102,7 +104,7 @@ class SaveLoadManager {
     ArrayList<String> load(String nameOfGame) throws GameLoadingNameNotFoundException, GameLoadingFailureException {
         ArrayList<String> gameInfo = new ArrayList<>();
 
-        try (FileReader fin = new FileReader(nameOfFolder + "\\" + nameOfGame + Utility.getFileExtensionString());) {
+        try (FileReader fin = new FileReader(nameOfFolder + "/" + nameOfGame + Utility.getFileExtensionString());) {
             try {
                 int data; StringBuilder temp = new StringBuilder();
                 while ((data = fin.read()) != -1) {
