@@ -1,3 +1,11 @@
+/**
+ * Třída pro správu hráčů
+ * Funkce:  1) Inicializace hráčů
+ *          2) Podpora operací nad množinou hráčů
+ * @author Lukáš Dibďák
+ * @see othello.Game
+ */
+
 package othello;
 
 import static othello.Utility.*;
@@ -7,12 +15,23 @@ public class Player {
     private PlayerType playerType;
     private int score;
 
+    /**
+     * Konstruktor hráče
+     * @param color Barva kamenů hráče
+     * @param playerType Typ hráče (počítač nebo člověk)
+     */
     Player(Color color, PlayerType playerType) {
         this.color = color;
         this.playerType = playerType;
         this.score = 0;
     }
 
+    /**
+     * Pomocná statická metoda využívající konstruktory pro konstruktor třídy {@code Game}
+     * @param playerType Typ druhého hráče
+     * @return Pole hráčů typu {@code Player}
+     * @see Game
+     */
     static Player[] getPlayersForConstructor(PlayerType playerType) {
         Player players[] = {
                 new Player(Color.BLACK, PlayerType.HUMAN),
@@ -21,18 +40,34 @@ public class Player {
         return players;
     }
 
+    /**
+     * Získání typu hráče
+     * @return Počítač/hráč typu {@code PlayerType}
+     */
     PlayerType getPlayerType() {
         return playerType;
     }
 
+    /**
+     * Získání barvy kamene hráče
+     * @return Black/white typu {@code Color}
+     */
     Color getColor() {
         return color;
     }
 
+    /**
+     * Nastavení skóre hráče
+     * @param score Skóre
+     */
     void setScore(int score) {
         this.score = score;
     }
 
+    /**
+     * Získání skóre hráče
+     * @return Skóre
+     */
     int getScore() {
         return score;
     }

@@ -1,3 +1,11 @@
+/**
+ * Třída pro rozeznání tokenů a jejich zpracování
+ * Funkce:  1) Získání a zpracování tokenů
+ *          2) Kontrola argumentů
+ * @author Lukáš Dibďák
+ * @see othello.GameCommandLine
+ */
+
 package othello;
 
 import java.io.*;
@@ -10,20 +18,31 @@ public class ReadLineManager {
     private int boardSize;
     private TypeOfGame gameType;
 
-    private BufferedReader commandLineReader;
-    private StringTokenizer tokenizer;
-
+    /**
+     * Získání velikosti desky
+     * @return Velikost desky
+     */
     int getBoardSize() {
         return boardSize;
     }
 
+    /**
+     * Získání obtížnosti hry, pokud je druhý hráč počítač
+     * @return Obtížnost hry
+     */
     TypeOfGame getGameType() {
         return gameType;
     }
 
+    /**
+     * Kontrola argumentů pro instrukci NEW. Očekává se typ druhého hráče, velikost desky a případně obtížnost počítače
+     * @param arguments Argumenty tokenu NEW
+     * @throws BadTokenArgumentException Chybné argumenty tokenu NEW
+     */
     void controlGameArguments(ArrayList<String> arguments) throws BadTokenArgumentException {
         String argument;
         argument = arguments.get(0);
+
         if (argument.equals("H")) {
             gameType = null;
             if (arguments.size() != 2) {
@@ -64,6 +83,11 @@ public class ReadLineManager {
         }
     }
 
+    /**
+     * Kontrola argumentů pro instrukci MOVE. Očekávají se pouze vodorovné a svislé souřadnice pole
+     * @param arguments Argumenty tokenu MOVE
+     * @throws BadTokenArgumentException Chybné argumenty tokenu MOVE
+     */
     void controlMakeMoveArguments(ArrayList<String> arguments) throws BadTokenArgumentException {
         String argument;
         argument = arguments.get(0);
@@ -80,15 +104,24 @@ public class ReadLineManager {
         }
     }
 
+    /**
+     * Metoda pro zpracování tokenů
+     * @param arguments Proměnná pro vrácení proměnného počtu argumentů tokenů
+     * @return Typ instrukce, která má být vykonána
+     * @throws ReadingFromConsoleFailureException Chyba čtení příkazové řádky či jiná režijní chyba
+     * @throws InvalidTokenInputException Chybný typ zadaného tokenu (instrukce)
+     * @throws BadTokenArgumentException Token obsahuje více, méně či špatné argumenty
+     * @see TypeOfGame
+     */
     TypeOfInstruction getDecision(ArrayList<String> arguments) throws ReadingFromConsoleFailureException, InvalidTokenInputException, BadTokenArgumentException {
-        commandLineReader = new BufferedReader(new InputStreamReader(System.in));
+        BufferedReader commandLineReader = new BufferedReader(new InputStreamReader(System.in));
         String decision;
         try {
             decision = commandLineReader.readLine();
         } catch (IOException e) {
             throw new ReadingFromConsoleFailureException();
         }
-        tokenizer = new StringTokenizer(decision);
+        StringTokenizer tokenizer = new StringTokenizer(decision);
         if (tokenizer.hasMoreTokens()) {
             String token = tokenizer.nextToken();
             switch (token) {

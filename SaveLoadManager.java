@@ -1,3 +1,12 @@
+/**
+ * Třída pro správu Save/Load operací
+ * Funkce:  1) Operace nad souborovým systémem, manipulace se složkou a umístěním souborů
+ *          2) Ukládání her
+ *          3) Načítání her
+ * @author Lukáš Dibďák
+ * @see othello.Controller
+ */
+
 package othello;
 
 import java.util.*;
@@ -9,6 +18,15 @@ class SaveLoadManager {
     File nameOfFolder = new File(pathToEnviroment + "/" + Utility.getSaveFolderLocationString());
     File nameOfSave = null;
 
+    /**
+     * Metoda pro uložení her do souboru
+     * @param nameOfGame Jméno hry pro uložení
+     * @param players Množina hráčů hry
+     * @param logger Zásobník hracích desek pro {@code undoMove}
+     * @param activePlayer Tah hráče
+     * @param typeOfGame Obtížnost počítače (je-li druhý hráč počítač)
+     * @throws GameSavingFailureException Problém při ukládání hry, např. zapisování souborů
+     */
     void save(String nameOfGame, Player[] players, ArrayDeque<Board> logger, int activePlayer, TypeOfGame typeOfGame) throws GameSavingFailureException {
         char playerTypeChar; String typeOfGameString = "null";
         if (players[Utility.PLAYERTWO].getPlayerType() == PlayerType.HUMAN)
@@ -74,6 +92,13 @@ class SaveLoadManager {
         }
     }
 
+    /**
+     * Metoda pro načtení hry ze souboru
+     * @param nameOfGame Jméno hry k načtení
+     * @return Pole typu {@code String} obsahující všechny informace o načtené hře
+     * @throws GameLoadingNameNotFoundException Zadaný název hry neexistuje
+     * @throws GameLoadingFailureException Problém při načítání hry, např. čtení souborů
+     */
     ArrayList<String> load(String nameOfGame) throws GameLoadingNameNotFoundException, GameLoadingFailureException {
         ArrayList<String> gameInfo = new ArrayList<>();
 
