@@ -157,9 +157,7 @@ public class Controller {
 
         try {
             game.controlMoveIfValid(coords, allAvailableMoves);
-
             game.countStones();
-
             game.makeCheckpoint();
             game.turnHasBeenMade();
 

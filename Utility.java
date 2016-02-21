@@ -344,21 +344,17 @@ public class Utility {
      */
     static String getGameEndedString(Player[] players) {
         String playerName;
-        int[] score = {
-                players[PLAYERONE].getScore(),
-                players[PLAYERTWO].getScore()
-        };
 
-        if (score[PLAYERONE] > score[PLAYERTWO]) {
+        if (players[PLAYERONE].getScore() > players[PLAYERTWO].getScore()) {
             playerName = "Zvitezil " + PLAYERS[PLAYERONE];
         }
-        else if (score[PLAYERONE] > score[PLAYERTWO]) {
+        else if (players[PLAYERONE].getScore() < players[PLAYERTWO].getScore()) {
             playerName = "Zvitezil " + PLAYERS[PLAYERTWO];
         }
         else {
             playerName = "Zapas skoncil remizou";
         }
-        return "Hra byla ukoncena.\n" + playerName;
+        return "Hra byla ukoncena.\n" + playerName + ".";
     }
 
     /**

@@ -274,7 +274,7 @@ public class Game {
 
         for (int i = coords.getX() - 1; i <= coords.getX() + 1; i++) {
             for (int j = coords.getY() - 1; j <= coords.getY() + 1; j++) {
-                if (coords.getX() == i && coords.getY() == j) {
+                if ((coords.getX() == i && coords.getY() == j) || (!board.getField(coords.getX(), coords.getY()).isEmpty())) {
                     continue;
                 }
 
