@@ -129,7 +129,6 @@ public class Board implements Cloneable {
      * @param coords Souřadnice pole
      */
     void changeField(Coords coords) {
-        System.out.println(coords.getX() + " " + coords.getY());
         Field temp = getField(coords.getX(), coords.getY());
         try {
             if (temp.getColor() == Color.BLACK) {

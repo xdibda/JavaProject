@@ -130,8 +130,6 @@ public class Field implements Cloneable {
         Timer freezeTimer = new Timer();
         Defrost defrost = new Defrost(persistSec);
 
-        System.out.println("mrznu2");
-
         freezeTimer.schedule(defrost, initSec * 1000);
         freezeTimer.cancel();
     }

@@ -348,12 +348,6 @@ public class Game {
         boolean moveFound = false;
         ArrayList<ArrayList<Coords>> tempArrayOfCoords = new ArrayList<>();
 
-        try {
-            getBoard().setField(coords, getActivePlayer().getColor());
-        } catch (FieldIsNotEmptyException e) {
-            throw new MoveNotAvailableException();
-        };
-
         for (TreeMap<Coords, ArrayList<Coords>> map: allAvailableMoves) {
             for (Map.Entry<Coords, ArrayList<Coords>> mapSet: map.entrySet()) {
                 if (coords.equals(mapSet.getKey())) {
@@ -366,6 +360,12 @@ public class Game {
         if (!moveFound) {
             throw new MoveNotAvailableException();
         }
+
+        try {
+            getBoard().setField(coords, getActivePlayer().getColor());
+        } catch (FieldIsNotEmptyException e) {
+            throw new MoveNotAvailableException();
+        };
 
         changeFields(tempArrayOfCoords);
     }
