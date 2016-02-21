@@ -75,6 +75,7 @@ public class Controller {
         Player players[] = Player.getPlayersForConstructor(PlayerType.COMPUTER);
 
         game = new Game(boardSize, players);
+        this.gameStarted = true;
         this.typeOfGame = typeOfGame;
 
         return new String[] {
@@ -232,7 +233,7 @@ public class Controller {
         }
 
         try {
-            saveLoadManager.save(nameOfGame, game.getPlayers(), game.getLogger(), Utility.PLAYERONE, typeOfGame);
+            saveLoadManager.save(nameOfGame, game.getPlayers(), game.getLogger(), game.getActivePlayerTurn(), typeOfGame);
             return Utility.getSuccessfulSaveGameString();
         }
         catch (Exception e) {

@@ -2,23 +2,82 @@
  * Třída pro správu pole hrací desky
  * Funkce:  1) Získávání informace zdali je pole prázdné
  *          2) Práce s barvou na daném poli
+ *          3) Zmrazení kamenů
  * @author Lukáš Dibďák
- * @see othello.StoneFreeze
  */
 
 package othello;
 
 import othello.Utility.*;
 
-public class Field extends StoneFreeze implements Cloneable {
+import java.util.Timer;
+import java.util.TimerTask;
+
+public class Field implements Cloneable {
+    /**
+     * Vnitřní třída pro plánování události
+     */
+    class Defrost extends TimerTask {
+        int s = 0;
+
+        /**
+         * Konstruktor vnitřní třídy pro události zmrazení
+         * @param s Doba trvání zmrazení v sekundách
+         * @see Controller
+         */
+        Defrost(int s) {
+            this.s = s;
+        }
+
+        /**
+         * Specifikace události, která se má provést při naplánování
+         */
+        @Override
+        public void run() {
+            frozen = true;
+            changeColorFreeze(color);
+
+            try {
+                Thread.sleep((long) s * 1000);
+            } catch (InterruptedException e) {}
+
+            frozen = false;
+            changeColorFreeze(color);
+        }
+
+    }
+
     private Color color;
     private boolean empty;
+    private boolean frozen;
 
     /**
      * Konstruktor pole, implicitně nastavené na prázdné
      */
     Field() {
         empty = true;
+        frozen = false;
+    }
+
+    /**
+     * Mění barvu mezi zmrazením a odmrazením
+     * @param color Barva kamenu
+     */
+    void changeColorFreeze(Color color) {
+        switch (color) {
+            case WHITE:
+                this.color = Color.FWHITE;
+                break;
+            case BLACK:
+                this.color = Color.FBLACK;
+                break;
+            case FWHITE:
+                this.color = Color.WHITE;
+                break;
+            case FBLACK:
+                this.color = Color.BLACK;
+                break;
+        }
     }
 
     /**
@@ -40,7 +99,8 @@ public class Field extends StoneFreeze implements Cloneable {
      */
     void setColor(Color color) {
         empty = false;
-        this.color = color;
+        if (!frozen)
+            this.color = color;
     }
 
     /**
@@ -59,5 +119,26 @@ public class Field extends StoneFreeze implements Cloneable {
     @Override
     protected Object clone() throws CloneNotSupportedException {
         return super.clone();
+    }
+
+    /**
+     * Událost zmrazení políčka na určitou dobu
+     * @param initSec Za jak dlouho se událost provede
+     * @param persistSec Jak dlouho bude zmrazení trvat
+     */
+    void freeze(int initSec, int persistSec) {
+        Timer freezeTimer = new Timer();
+        Defrost defrost = new Defrost(persistSec);
+
+        freezeTimer.schedule(defrost, initSec * 1000);
+        freezeTimer.cancel();
+    }
+
+    /**
+     * Ziskává zda je políčko zamrznuté
+     * @return zamrznuté/nezamrznuté
+     */
+    public boolean isFrozen() {
+        return frozen;
     }
 }
