@@ -37,6 +37,7 @@ public class Player {
                 new Player(Color.BLACK, PlayerType.HUMAN),
                 new Player(Color.WHITE, playerType)
         };
+
         return players;
     }
 

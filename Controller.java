@@ -309,7 +309,7 @@ public class Controller {
         }
 
         try {
-            game.controlIfComputerTurn(typeOfGame);
+            game.controlIfComputerTurn(typeOfGame, allAvailableMoves);
         }
         catch (ComputerHasPlayed coords) {
             throw new ComputerHasPlayed(

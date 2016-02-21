@@ -80,7 +80,7 @@ public class GameCommandLine {
      */
     static void showMoveInfo(String x, String y, String[] temp) {
         showBoard(temp[3].toCharArray());
-        System.out.println("Počítač táhl na pole: " + x + " " + y);
+        System.out.println("[pocitac] táhl na pole: " + x + " " + y);
         System.out.println("Skore je: " + Utility.PLAYERS[Utility.PLAYERONE] + ": " + temp[0] + ", " + Utility.PLAYERS[Utility.PLAYERTWO] + ": " + temp[1]);
         System.out.println(temp[2]);
     }
@@ -140,7 +140,8 @@ public class GameCommandLine {
                     showMoveInfo(endOfGame.getInfoStrings());
                 }
                 catch (ComputerHasPlayed computerTurn) {
-                    showMoveInfo(computerTurn.getInfoStrings()[0], computerTurn.getInfoStrings()[1],computerTurn.getInfoStrings());
+                    showMoveInfo(computerTurn.getInfoStrings()[4], computerTurn.getInfoStrings()[5],computerTurn.getInfoStrings());
+                    continue;
                 }
 
                 TypeOfInstruction typeOfInstruction = fileManager.getDecision(tokenArgumentsArray);

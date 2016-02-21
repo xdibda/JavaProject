@@ -70,10 +70,19 @@ public class Utility {
         public int compareTo(Coords o) {
             if (this.getX() < o.getX())
                 return -1;
-            else if (this.getX() == o.getX())
-                return 0;
-            else
-                return 1;
+            else if (this.getX() == o.getX()) {
+                if(this.getY() > o.getY()) {
+                    return 1;
+                }
+                if(this.getY() == o.getY()) {
+                    return 0;
+                }
+                if(this.getY() < o.getY()) {
+                    return -1;
+                }
+
+            }
+            return 1;
         }
 
         /**
@@ -96,22 +105,72 @@ public class Utility {
     static class Algorithm {
         /**
          * Jednoduchý algoritmus pro tah počítače
-         * @param board Hrací deska
+         * @param allAvailableMoves Zásobník všech dostupných stavů
          * @return Pole hrací desky, kam počítač táhnul
          */
-        static Coords getEasyAlgorithm(Board board) {
-            Coords temp = new Coords(1, 1);
-            return temp;
+        static TreeMap<Coords, ArrayList<Coords>> getEasyAlgorithm(ArrayList<TreeMap<Coords, ArrayList<Coords>>> allAvailableMoves) {
+            TreeMap<Coords, ArrayList<Coords>> temp = new TreeMap<>();
+
+            for (TreeMap<Coords, ArrayList<Coords>> map: allAvailableMoves) {
+                for (Map.Entry<Coords, ArrayList<Coords>> mapSet: map.entrySet()) {
+                    if (temp.containsKey(mapSet.getKey())) {
+                        ArrayList<Coords> tempCoords = temp.get(mapSet.getKey());
+                        for (Coords x: mapSet.getValue()) {
+                            tempCoords.add(x);
+                        }
+                    } else {
+                        temp.put(mapSet.getKey(), mapSet.getValue());
+                    }
+                }
+            }
+
+            TreeMap<Coords, ArrayList<Coords>> returnval = new TreeMap<>();
+            Map.Entry<Coords, ArrayList<Coords>> mapReturnval = temp.firstEntry();
+            returnval.put(mapReturnval.getKey(), mapReturnval.getValue());
+
+            for(Map.Entry<Coords, ArrayList<Coords>> tempSet: temp.entrySet()) {
+                if (mapReturnval.getValue().size() > tempSet.getValue().size()) {
+                    returnval.put(tempSet.getKey(), tempSet.getValue());
+                    mapReturnval.setValue(tempSet.getValue());
+                }
+            }
+
+            return returnval;
         }
 
         /**
          * Složitější algoritmus pro tah počítače
-         * @param board Hrací deska
+         * @param allAvailableMoves Zásobník všech dostupných stavů
          * @return Pole hrací desky, kam počítač táhnul
          */
-        static Coords getHardAlgorithm(Board board) {
-            Coords temp = new Coords(1, 1);
-            return temp;
+        static TreeMap<Coords, ArrayList<Coords>> getHardAlgorithm(ArrayList<TreeMap<Coords, ArrayList<Coords>>> allAvailableMoves) {
+            TreeMap<Coords, ArrayList<Coords>> temp = new TreeMap<>();
+
+            for (TreeMap<Coords, ArrayList<Coords>> map: allAvailableMoves) {
+                for (Map.Entry<Coords, ArrayList<Coords>> mapSet: map.entrySet()) {
+                    if (temp.containsKey(mapSet.getKey())) {
+                        ArrayList<Coords> tempCoords = temp.get(mapSet.getKey());
+                        for (Coords x: mapSet.getValue()) {
+                            tempCoords.add(x);
+                        }
+                    } else {
+                        temp.put(mapSet.getKey(), mapSet.getValue());
+                    }
+                }
+            }
+
+            TreeMap<Coords, ArrayList<Coords>> returnval = new TreeMap<>();
+            Map.Entry<Coords, ArrayList<Coords>> mapReturnval = temp.firstEntry();
+            returnval.put(mapReturnval.getKey(), mapReturnval.getValue());
+
+            for(Map.Entry<Coords, ArrayList<Coords>> tempSet: temp.entrySet()) {
+                if (mapReturnval.getValue().size() < tempSet.getValue().size()) {
+                    returnval.put(tempSet.getKey(), tempSet.getValue());
+                    mapReturnval.setValue(tempSet.getValue());
+                }
+            }
+
+            return returnval;
         }
     }
 
