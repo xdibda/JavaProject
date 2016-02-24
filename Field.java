@@ -35,14 +35,12 @@ public class Field implements Cloneable {
         @Override
         public void run() {
             frozen = true;
-            changeColorFreeze(color);
 
             try {
                 Thread.sleep((long) s * 1000);
             } catch (InterruptedException e) {}
 
             frozen = false;
-            changeColorFreeze(color);
         }
 
     }
@@ -60,11 +58,10 @@ public class Field implements Cloneable {
     }
 
     /**
-     * Mění barvu mezi zmrazením a odmrazením
-     * @param color Barva kamenu
+     * Mění barvu mezi zmrazením a odmrazení
      */
-    void changeColorFreeze(Color color) {
-        switch (color) {
+    void changeColorFreeze() {
+        switch (this.color) {
             case WHITE:
                 this.color = Color.FWHITE;
                 break;
@@ -91,7 +88,7 @@ public class Field implements Cloneable {
             throw new FieldIsEmptyException();
         }
 
-        return color;
+        return this.color;
     }
 
     /**
@@ -132,7 +129,6 @@ public class Field implements Cloneable {
         Defrost defrost = new Defrost(persistSec);
 
         freezeTimer.schedule(defrost, initSec * 1000);
-        freezeTimer.cancel();
     }
 
     /**

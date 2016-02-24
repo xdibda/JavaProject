@@ -12,6 +12,7 @@ import static othello.Utility.*;
 
 public class Player {
     private Color color;
+    private Color frozenColor;
     private PlayerType playerType;
     private int score;
 
@@ -24,6 +25,14 @@ public class Player {
         this.color = color;
         this.playerType = playerType;
         this.score = 0;
+
+        switch (color) {
+            case BLACK:
+                frozenColor = Color.FBLACK;
+                break;
+            case WHITE:
+                frozenColor = Color.FWHITE;
+        }
     }
 
     /**
@@ -56,6 +65,12 @@ public class Player {
     Color getColor() {
         return color;
     }
+
+    /**
+     * Získání barvy zmrazených kamenů
+     * @return FBlack/FWhite typu {@code Color}
+     */
+    Color getFrozenColor() { return frozenColor; }
 
     /**
      * Nastavení skóre hráče

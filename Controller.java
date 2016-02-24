@@ -22,6 +22,7 @@ public class Controller {
     private TypeOfGame typeOfGame;
     private boolean gameStarted;
     ArrayList<TreeMap<Coords, ArrayList<Coords>>> allAvailableMoves;
+    ArrayList<Field> frozenStones = new ArrayList<>();
 
     /**
      * Konstruktor objektu
@@ -203,6 +204,7 @@ public class Controller {
 
         for (int i = 0; i < randomNumbers[2]; i++) {
             notFrozenStones.get(i).freeze(randomNumbers[0], randomNumbers[1]);
+            frozenStones.add(notFrozenStones.get(i));
         }
 
         game.turnHasBeenMade();
@@ -295,6 +297,8 @@ public class Controller {
         }
 
         allAvailableMoves = game.getAvailableMoves();
+
+        game.checkIfFrozen(frozenStones);
 
         if (allAvailableMoves.isEmpty()) {
             game.setFinalScore();
