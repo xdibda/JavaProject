@@ -3,5 +3,5 @@ IJA Project. Reversi.
 
 # Bugy
 
-# Chybí
+# Chybí otestovat
 - Zamrznutí kamenů
