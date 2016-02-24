@@ -305,20 +305,6 @@ public class Game {
     ArrayList<Coords> checkPositionForMoves(Coords coords) throws NoMovesAvailableException {
         ArrayList<Coords> availableMoves = new ArrayList<>();
 
-        Color regularColor = null;
-        Color frozenColor = null;
-
-        switch (getActivePlayer().getColor()) {
-            case WHITE:
-                regularColor = Color.WHITE;
-                frozenColor = Color.FWHITE;
-                break;
-            case BLACK:
-                regularColor = Color.BLACK;
-                frozenColor = Color.FBLACK;
-                break;
-        }
-
         for (int i = coords.getX() - 1; i <= coords.getX() + 1; i++) {
             for (int j = coords.getY() - 1; j <= coords.getY() + 1; j++) {
                 if ((coords.getX() == i && coords.getY() == j) || (!board.getField(coords.getX(), coords.getY()).isEmpty())) {
@@ -329,7 +315,7 @@ public class Game {
                 if (Utility.isInBoard(tempCoords)) {
                     try {
                         Color color = board.getField(tempCoords.getX(), tempCoords.getY()).getColor();
-                        if (color != regularColor || color != frozenColor) {
+                        if (color != getActivePlayer().getColor() && color != getActivePlayer().getFrozenColor()) {
                             availableMoves.add(tempCoords);
                         }
                     } catch (FieldIsEmptyException e) {}
@@ -354,20 +340,6 @@ public class Game {
     ArrayList<TreeMap<Coords, ArrayList<Coords>>> getAvailableMoves() {
         ArrayList<TreeMap<Coords, ArrayList<Coords>>> tempMoves = new ArrayList<>();
 
-        Color regularColor = null;
-        Color frozenColor = null;
-
-        switch (getActivePlayer().getColor()) {
-            case WHITE:
-                regularColor = Color.WHITE;
-                frozenColor = Color.FWHITE;
-                break;
-            case BLACK:
-                regularColor = Color.BLACK;
-                frozenColor = Color.FBLACK;
-                break;
-        }
-
         for (int x = 0; x < Board.SIZE; x++) {
             for (int y = 0; y < Board.SIZE; y++) {
                 try {
@@ -379,7 +351,7 @@ public class Game {
                         for (i = direction.getX(), j = direction.getY(); Utility.isInBoard(new Coords(i, j)); i += (direction.getX() - x), j += (direction.getY() - y)) {
                             try {
                                 Color boardColor = getBoard().getField(i, j).getColor();
-                                if (boardColor != regularColor || boardColor != frozenColor) {
+                                if (boardColor != getActivePlayer().getColor() && boardColor != getActivePlayer().getFrozenColor()) {
                                     tempCoords.add(new Coords(i, j));
                                 } else {
                                     TreeMap<Coords, ArrayList<Coords>> map = new TreeMap<>();
