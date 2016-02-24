@@ -90,6 +90,7 @@ public class Field implements Cloneable {
         if (empty) {
             throw new FieldIsEmptyException();
         }
+
         return color;
     }
 

@@ -39,6 +39,7 @@ public class Board implements Cloneable {
         SIZE = size;
         map = new Field[SIZE * SIZE];
         char[] charArray = boardStones.trim().toCharArray();
+
         for (int i = 0; i < charArray.length; i++) {
             map[i] = new Field();
             if (charArray[i] == Color.BLACK.getKey()) {
@@ -58,6 +59,7 @@ public class Board implements Cloneable {
      */
     Board (Board board) {
         this.map = new Field[board.getField().length];
+
         allocateFields();
         for (int i = 0; i < board.getField().length; i++) {
             try {
@@ -106,6 +108,7 @@ public class Board implements Cloneable {
      */
     void setField(int x, int y, Color color) {
         Field temp = map[y * SIZE + x];
+
         temp.setColor(color);
     }
 
@@ -130,6 +133,7 @@ public class Board implements Cloneable {
      */
     void changeField(Coords coords) {
         Field temp = getField(coords.getX(), coords.getY());
+
         try {
             if (temp.getColor() == Color.BLACK) {
                 temp.setColor(Color.WHITE);

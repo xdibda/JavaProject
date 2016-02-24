@@ -70,10 +70,19 @@ public class Utility {
         public int compareTo(Coords o) {
             if (this.getX() < o.getX())
                 return -1;
-            else if (this.getX() == o.getX())
-                return 0;
-            else
-                return 1;
+            else if (this.getX() == o.getX()) {
+                if(this.getY() > o.getY()) {
+                    return 1;
+                }
+                if(this.getY() == o.getY()) {
+                    return 0;
+                }
+                if(this.getY() < o.getY()) {
+                    return -1;
+                }
+
+            }
+            return 1;
         }
 
         /**
@@ -95,23 +104,73 @@ public class Utility {
      */
     static class Algorithm {
         /**
-         * Jednoduchý algoritmus pro tah počítače
-         * @param board Hrací deska
-         * @return Pole hrací desky, kam počítač táhnul
+         * Setřídí kameny, které se musí otočit do jednoho zásobníku podle souřadnice tahu
+         * @param allAvailableMoves Zásobník všech dostupných stavů
+         * @return Setřízený zásobník
          */
-        static Coords getEasyAlgorithm(Board board) {
-            Coords temp = new Coords(1, 1);
+        static TreeMap<Coords, ArrayList<Coords>> sortStonesByCoords(ArrayList<TreeMap<Coords, ArrayList<Coords>>> allAvailableMoves) {
+            TreeMap<Coords, ArrayList<Coords>> temp = new TreeMap<>();
+
+            for (TreeMap<Coords, ArrayList<Coords>> map: allAvailableMoves) {
+                for (Map.Entry<Coords, ArrayList<Coords>> mapSet: map.entrySet()) {
+                    if (temp.containsKey(mapSet.getKey())) {
+                        ArrayList<Coords> tempCoords = temp.get(mapSet.getKey());
+                        for (Coords x: mapSet.getValue()) {
+                            tempCoords.add(x);
+                        }
+                    } else {
+                        temp.put(mapSet.getKey(), mapSet.getValue());
+                    }
+                }
+            }
+
             return temp;
         }
 
         /**
-         * Složitější algoritmus pro tah počítače
-         * @param board Hrací deska
+         * Jednoduchý algoritmus pro tah počítače
+         * @param allAvailableMoves Zásobník všech dostupných stavů
          * @return Pole hrací desky, kam počítač táhnul
          */
-        static Coords getHardAlgorithm(Board board) {
-            Coords temp = new Coords(1, 1);
-            return temp;
+        static TreeMap<Coords, ArrayList<Coords>> getEasyAlgorithm(ArrayList<TreeMap<Coords, ArrayList<Coords>>> allAvailableMoves) {
+            TreeMap<Coords, ArrayList<Coords>> temp = sortStonesByCoords(allAvailableMoves);
+            TreeMap<Coords, ArrayList<Coords>> returnval = new TreeMap<>();
+
+            int minSize = temp.firstEntry().getValue().size();
+            returnval.put(temp.firstEntry().getKey(), temp.firstEntry().getValue());
+
+            for(Map.Entry<Coords, ArrayList<Coords>> tempSet: temp.entrySet()) {
+                if (minSize > tempSet.getValue().size()) {
+                    returnval.clear();
+                    returnval.put(tempSet.getKey(), tempSet.getValue());
+                    minSize = tempSet.getValue().size();
+                }
+            }
+
+            return returnval;
+        }
+
+        /**
+         * Složitější algoritmus pro tah počítače
+         * @param allAvailableMoves Zásobník všech dostupných stavů
+         * @return Pole hrací desky, kam počítač táhnul
+         */
+        static TreeMap<Coords, ArrayList<Coords>> getHardAlgorithm(ArrayList<TreeMap<Coords, ArrayList<Coords>>> allAvailableMoves) {
+            TreeMap<Coords, ArrayList<Coords>> temp = sortStonesByCoords(allAvailableMoves);
+            TreeMap<Coords, ArrayList<Coords>> returnval = new TreeMap<>();
+
+            int maxSize = temp.firstEntry().getValue().size();
+            returnval.put(temp.firstEntry().getKey(), temp.firstEntry().getValue());
+
+            for(Map.Entry<Coords, ArrayList<Coords>> tempSet: temp.entrySet()) {
+                if (maxSize < tempSet.getValue().size()) {
+                    returnval.clear();
+                    returnval.put(tempSet.getKey(), tempSet.getValue());
+                    maxSize = tempSet.getValue().size();
+                }
+            }
+
+            return returnval;
         }
     }
 
@@ -344,21 +403,17 @@ public class Utility {
      */
     static String getGameEndedString(Player[] players) {
         String playerName;
-        int[] score = {
-                players[PLAYERONE].getScore(),
-                players[PLAYERTWO].getScore()
-        };
 
-        if (score[PLAYERONE] > score[PLAYERTWO]) {
+        if (players[PLAYERONE].getScore() > players[PLAYERTWO].getScore()) {
             playerName = "Zvitezil " + PLAYERS[PLAYERONE];
         }
-        else if (score[PLAYERONE] > score[PLAYERTWO]) {
+        else if (players[PLAYERONE].getScore() < players[PLAYERTWO].getScore()) {
             playerName = "Zvitezil " + PLAYERS[PLAYERTWO];
         }
         else {
             playerName = "Zapas skoncil remizou";
         }
-        return "Hra byla ukoncena.\n" + playerName;
+        return "Hra byla ukoncena.\n" + playerName + ".";
     }
 
     /**
