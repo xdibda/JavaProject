@@ -239,25 +239,36 @@ public class Game {
     /**
      * Metoda kontrolující zda hráč na tahu je počítač, v tom případě provede podle obtížnosti hry tah
      * @param typeOfGame Obtížnost hry zadaná při vytváření nové hry
+     * @param allAvailableMoves Zásobník všech dostupných tahů
      * @throws ComputerHasPlayed Počítač provedl tah o souřadnicích coords typu {@code Coords}
      */
-    void controlIfComputerTurn(TypeOfGame typeOfGame) throws ComputerHasPlayed {
+    void controlIfComputerTurn(TypeOfGame typeOfGame, ArrayList<TreeMap<Coords, ArrayList<Coords>>> allAvailableMoves) throws ComputerHasPlayed {
         if (getActivePlayer().getPlayerType() == PlayerType.COMPUTER) {
-            Coords coords = null;
+            TreeMap<Coords, ArrayList<Coords>> toChangeTemp = new TreeMap<>();
+
             switch (typeOfGame) {
                 case EASY:
-                    coords = Algorithm.getEasyAlgorithm(getBoard());
+                    toChangeTemp = Algorithm.getEasyAlgorithm(allAvailableMoves);
                     break;
                 case HARD:
-                    coords = Algorithm.getHardAlgorithm(getBoard());
+                    toChangeTemp = Algorithm.getHardAlgorithm(allAvailableMoves);
                     break;
+            }
+
+            try {
+                getBoard().setField(toChangeTemp.firstKey(), getActivePlayer().getColor());
+            } catch (FieldIsNotEmptyException e) {}
+
+            for (Map.Entry<Coords, ArrayList<Coords>> temp: toChangeTemp.entrySet()) {
+                for (Coords change: temp.getValue())
+                    board.changeField(change);
             }
 
             countStones();
             makeCheckpoint();
             turnHasBeenMade();
 
-            throw new ComputerHasPlayed(coords.getX(), coords.getY());
+            throw new ComputerHasPlayed(toChangeTemp.firstKey().getX(), toChangeTemp.firstKey().getY());
         }
     }
 
@@ -274,7 +285,7 @@ public class Game {
 
         for (int i = coords.getX() - 1; i <= coords.getX() + 1; i++) {
             for (int j = coords.getY() - 1; j <= coords.getY() + 1; j++) {
-                if (coords.getX() == i && coords.getY() == j) {
+                if ((coords.getX() == i && coords.getY() == j) || (!board.getField(coords.getX(), coords.getY()).isEmpty())) {
                     continue;
                 }
 
@@ -363,9 +374,7 @@ public class Game {
 
         try {
             getBoard().setField(coords, getActivePlayer().getColor());
-        } catch (FieldIsNotEmptyException e) {
-            throw new MoveNotAvailableException();
-        };
+        } catch (FieldIsNotEmptyException e) {}
 
         changeFields(tempArrayOfCoords);
     }

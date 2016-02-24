@@ -122,6 +122,7 @@ class SaveLoadManager {
         } catch (IOException e) {
             throw new GameLoadingFailureException();
         }
+
         return gameInfo;
     }
 }

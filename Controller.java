@@ -157,9 +157,7 @@ public class Controller {
 
         try {
             game.controlMoveIfValid(coords, allAvailableMoves);
-
             game.countStones();
-
             game.makeCheckpoint();
             game.turnHasBeenMade();
 
@@ -311,7 +309,7 @@ public class Controller {
         }
 
         try {
-            game.controlIfComputerTurn(typeOfGame);
+            game.controlIfComputerTurn(typeOfGame, allAvailableMoves);
         }
         catch (ComputerHasPlayed coords) {
             throw new ComputerHasPlayed(
