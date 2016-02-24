@@ -1,7 +1,7 @@
 # JavaProject
 IJA Project. Reversi.
 
-Bugy, které jsme našli:
+# Bugy
 
-Chybí k pořádnému otestování:
+# Chybí
 - Zamrznutí kamenů
