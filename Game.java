@@ -184,6 +184,28 @@ public class Game {
     }
 
     /**
+     * Metoda pro kontrolu zamrznutí kamenů po tahu a změna jejich barvy
+     * @param frozenStones Pole zamrznutých kamenenů
+     */
+    void checkIfFrozen(ArrayList<Field> frozenStones) {
+        for (Field field: frozenStones) {
+            Color color = null;
+
+            try {
+                color = field.getColor();
+            } catch (FieldIsEmptyException e) {}
+
+            if(field.isFrozen() && color != Color.FBLACK && color != Color.FWHITE) {
+                field.changeColorFreeze();
+            }
+            else if (!field.isFrozen() && color != Color.BLACK && color != Color.WHITE) {
+                field.changeColorFreeze();
+                frozenStones.remove(field);
+            }
+        }
+    }
+
+    /**
      * Metoda pro získání aktuálních kamenů obou hráčů pro {@code freezeStones}
      * Pomocí počtu těchto kamenů lze také získat skóre obou hráčů
      * @return Pole kamenů černého i bílého hráče
@@ -283,6 +305,20 @@ public class Game {
     ArrayList<Coords> checkPositionForMoves(Coords coords) throws NoMovesAvailableException {
         ArrayList<Coords> availableMoves = new ArrayList<>();
 
+        Color regularColor = null;
+        Color frozenColor = null;
+
+        switch (getActivePlayer().getColor()) {
+            case WHITE:
+                regularColor = Color.WHITE;
+                frozenColor = Color.FWHITE;
+                break;
+            case BLACK:
+                regularColor = Color.BLACK;
+                frozenColor = Color.FBLACK;
+                break;
+        }
+
         for (int i = coords.getX() - 1; i <= coords.getX() + 1; i++) {
             for (int j = coords.getY() - 1; j <= coords.getY() + 1; j++) {
                 if ((coords.getX() == i && coords.getY() == j) || (!board.getField(coords.getX(), coords.getY()).isEmpty())) {
@@ -293,7 +329,7 @@ public class Game {
                 if (Utility.isInBoard(tempCoords)) {
                     try {
                         Color color = board.getField(tempCoords.getX(), tempCoords.getY()).getColor();
-                        if (color != getActivePlayer().getColor()) {
+                        if (color != regularColor || color != frozenColor) {
                             availableMoves.add(tempCoords);
                         }
                     } catch (FieldIsEmptyException e) {}
@@ -317,6 +353,21 @@ public class Game {
      */
     ArrayList<TreeMap<Coords, ArrayList<Coords>>> getAvailableMoves() {
         ArrayList<TreeMap<Coords, ArrayList<Coords>>> tempMoves = new ArrayList<>();
+
+        Color regularColor = null;
+        Color frozenColor = null;
+
+        switch (getActivePlayer().getColor()) {
+            case WHITE:
+                regularColor = Color.WHITE;
+                frozenColor = Color.FWHITE;
+                break;
+            case BLACK:
+                regularColor = Color.BLACK;
+                frozenColor = Color.FBLACK;
+                break;
+        }
+
         for (int x = 0; x < Board.SIZE; x++) {
             for (int y = 0; y < Board.SIZE; y++) {
                 try {
@@ -327,7 +378,8 @@ public class Game {
                         int i, j; ArrayList<Coords> tempCoords = new ArrayList<>();
                         for (i = direction.getX(), j = direction.getY(); Utility.isInBoard(new Coords(i, j)); i += (direction.getX() - x), j += (direction.getY() - y)) {
                             try {
-                                if (getBoard().getField(i, j).getColor() != getActivePlayer().getColor()) {
+                                Color boardColor = getBoard().getField(i, j).getColor();
+                                if (boardColor != regularColor || boardColor != frozenColor) {
                                     tempCoords.add(new Coords(i, j));
                                 } else {
                                     TreeMap<Coords, ArrayList<Coords>> map = new TreeMap<>();
