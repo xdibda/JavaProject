@@ -104,11 +104,11 @@ public class Utility {
      */
     static class Algorithm {
         /**
-         * Jednoduchý algoritmus pro tah počítače
+         * Setřídí kameny, které se musí otočit do jednoho zásobníku podle souřadnice tahu
          * @param allAvailableMoves Zásobník všech dostupných stavů
-         * @return Pole hrací desky, kam počítač táhnul
+         * @return Setřízený zásobník
          */
-        static TreeMap<Coords, ArrayList<Coords>> getEasyAlgorithm(ArrayList<TreeMap<Coords, ArrayList<Coords>>> allAvailableMoves) {
+        static TreeMap<Coords, ArrayList<Coords>> sortStonesByCoords(ArrayList<TreeMap<Coords, ArrayList<Coords>>> allAvailableMoves) {
             TreeMap<Coords, ArrayList<Coords>> temp = new TreeMap<>();
 
             for (TreeMap<Coords, ArrayList<Coords>> map: allAvailableMoves) {
@@ -124,14 +124,26 @@ public class Utility {
                 }
             }
 
+            return temp;
+        }
+
+        /**
+         * Jednoduchý algoritmus pro tah počítače
+         * @param allAvailableMoves Zásobník všech dostupných stavů
+         * @return Pole hrací desky, kam počítač táhnul
+         */
+        static TreeMap<Coords, ArrayList<Coords>> getEasyAlgorithm(ArrayList<TreeMap<Coords, ArrayList<Coords>>> allAvailableMoves) {
+            TreeMap<Coords, ArrayList<Coords>> temp = sortStonesByCoords(allAvailableMoves);
             TreeMap<Coords, ArrayList<Coords>> returnval = new TreeMap<>();
-            Map.Entry<Coords, ArrayList<Coords>> mapReturnval = temp.firstEntry();
-            returnval.put(mapReturnval.getKey(), mapReturnval.getValue());
+
+            int minSize = temp.firstEntry().getValue().size();
+            returnval.put(temp.firstEntry().getKey(), temp.firstEntry().getValue());
 
             for(Map.Entry<Coords, ArrayList<Coords>> tempSet: temp.entrySet()) {
-                if (mapReturnval.getValue().size() > tempSet.getValue().size()) {
+                if (minSize > tempSet.getValue().size()) {
+                    returnval.clear();
                     returnval.put(tempSet.getKey(), tempSet.getValue());
-                    mapReturnval.setValue(tempSet.getValue());
+                    minSize = tempSet.getValue().size();
                 }
             }
 
@@ -144,29 +156,17 @@ public class Utility {
          * @return Pole hrací desky, kam počítač táhnul
          */
         static TreeMap<Coords, ArrayList<Coords>> getHardAlgorithm(ArrayList<TreeMap<Coords, ArrayList<Coords>>> allAvailableMoves) {
-            TreeMap<Coords, ArrayList<Coords>> temp = new TreeMap<>();
-
-            for (TreeMap<Coords, ArrayList<Coords>> map: allAvailableMoves) {
-                for (Map.Entry<Coords, ArrayList<Coords>> mapSet: map.entrySet()) {
-                    if (temp.containsKey(mapSet.getKey())) {
-                        ArrayList<Coords> tempCoords = temp.get(mapSet.getKey());
-                        for (Coords x: mapSet.getValue()) {
-                            tempCoords.add(x);
-                        }
-                    } else {
-                        temp.put(mapSet.getKey(), mapSet.getValue());
-                    }
-                }
-            }
-
+            TreeMap<Coords, ArrayList<Coords>> temp = sortStonesByCoords(allAvailableMoves);
             TreeMap<Coords, ArrayList<Coords>> returnval = new TreeMap<>();
-            Map.Entry<Coords, ArrayList<Coords>> mapReturnval = temp.firstEntry();
-            returnval.put(mapReturnval.getKey(), mapReturnval.getValue());
+
+            int maxSize = temp.firstEntry().getValue().size();
+            returnval.put(temp.firstEntry().getKey(), temp.firstEntry().getValue());
 
             for(Map.Entry<Coords, ArrayList<Coords>> tempSet: temp.entrySet()) {
-                if (mapReturnval.getValue().size() < tempSet.getValue().size()) {
+                if (maxSize < tempSet.getValue().size()) {
+                    returnval.clear();
                     returnval.put(tempSet.getKey(), tempSet.getValue());
-                    mapReturnval.setValue(tempSet.getValue());
+                    maxSize = tempSet.getValue().size();
                 }
             }
 
