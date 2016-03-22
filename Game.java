@@ -103,9 +103,10 @@ public class Game {
      * @throws NoMoreMovesToUndoException Na zásobníku již nejsou uloženy žádné hrací desky, jedná se o začátek hry
      */
     Board makeUndo() throws NoMoreMovesToUndoException {
-        if (logger.size() < 2) {
+        if (logger.size() < 3) {
             throw new NoMoreMovesToUndoException();
         }
+        logger.pop();
         logger.pop();
         return logger.peek();
     }

@@ -262,7 +262,6 @@ public class Controller {
             game.setBoard(temp);
 
             game.countStones();
-            game.turnHasBeenMade();
 
             return new String[] {
                     Integer.toString(game.getScore()[Utility.PLAYERONE]),
