@@ -15,7 +15,7 @@ import java.io.*;
 
 class SaveLoadManager {
     File pathToEnviroment = new File(System.getProperty("user.dir"));
-    File nameOfFolder = new File(pathToEnviroment + "/" + Utility.getSaveFolderLocationString());
+    File nameOfFolder = new File(pathToEnviroment + System.getProperty("file.separator") + Utility.getSaveFolderLocationString());
     File nameOfSave = null;
 
     /**
@@ -60,7 +60,7 @@ class SaveLoadManager {
             undoMoves[i] = temp.toString();
         }
 
-        nameOfSave = new File(nameOfFolder + "/" + nameOfGame + Utility.getFileExtensionString());
+        nameOfSave = new File(nameOfFolder + System.getProperty("file.separator") + nameOfGame + Utility.getFileExtensionString());
         if (!nameOfFolder.exists()) {
             nameOfFolder.mkdir();
         }
@@ -104,7 +104,7 @@ class SaveLoadManager {
     ArrayList<String> load(String nameOfGame) throws GameLoadingNameNotFoundException, GameLoadingFailureException {
         ArrayList<String> gameInfo = new ArrayList<>();
 
-        try (FileReader fin = new FileReader(nameOfFolder + "/" + nameOfGame + Utility.getFileExtensionString());) {
+        try (FileReader fin = new FileReader(nameOfFolder + System.getProperty("file.separator") + nameOfGame + Utility.getFileExtensionString());) {
             try {
                 int data; StringBuilder temp = new StringBuilder();
                 while ((data = fin.read()) != -1) {

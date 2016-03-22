@@ -14,6 +14,8 @@
 package othello;
 
 import othello.Utility.*;
+
+import java.io.IOException;
 import java.util.*;
 
 public class Controller {
@@ -273,6 +275,17 @@ public class Controller {
         catch (EmptyStackException | NoMoreMovesToUndoException e) {
             throw new NoMoreMovesToUndoException();
         }
+    }
+
+    /**
+     *
+     */
+    void createWindow() {
+        System.out.println(System.getProperty("user.dir"));
+        Runtime rt = Runtime.getRuntime();
+        try {
+            Process pt = rt.exec(System.getProperty("user.dir"));
+        } catch (IOException e) {}
     }
 
     /**
