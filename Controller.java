@@ -278,17 +278,6 @@ public class Controller {
     }
 
     /**
-     * TODO
-     */
-    void createWindow() {
-        System.out.println(System.getProperty("user.dir"));
-        Runtime rt = Runtime.getRuntime();
-        try {
-            Process pt = rt.exec("cmd /c start");
-        } catch (IOException e) {}
-    }
-
-    /**
      * Metoda analyzuje následující možnosti hry, zejména:
      * - hra skončila, protože žádný z hráčů nemůže táhnout nebo na hrací desce není žádné prázdné místo
      * - na tahu je počítač, vykoná tedy podle algoritmu tah

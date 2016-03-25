@@ -220,12 +220,6 @@ public class ReadLineManager {
                         throw new BadTokenArgumentException();
                     }
                     return TypeOfInstruction.UNDO;
-                case "WINDOW":
-                case "window":
-                    if (tokenizer.hasMoreTokens()) {
-                        throw new BadTokenArgumentException();
-                    }
-                    return TypeOfInstruction.WINDOW;
             }
         }
         throw new InvalidTokenInputException();
