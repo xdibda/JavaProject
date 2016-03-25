@@ -304,7 +304,8 @@ public class Utility {
         LOAD(1),
         NEW(2),
         UNDO(),
-        FREEZE();
+        FREEZE(),
+        WINDOW();
 
         private int numberOfArgumentRequired;
 
