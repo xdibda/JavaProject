@@ -14,6 +14,8 @@
 package othello;
 
 import othello.Utility.*;
+
+import java.io.IOException;
 import java.util.*;
 
 public class Controller {
@@ -262,7 +264,6 @@ public class Controller {
             game.setBoard(temp);
 
             game.countStones();
-            game.turnHasBeenMade();
 
             return new String[] {
                     Integer.toString(game.getScore()[Utility.PLAYERONE]),
@@ -274,6 +275,17 @@ public class Controller {
         catch (EmptyStackException | NoMoreMovesToUndoException e) {
             throw new NoMoreMovesToUndoException();
         }
+    }
+
+    /**
+     * TODO
+     */
+    void createWindow() {
+        System.out.println(System.getProperty("user.dir"));
+        Runtime rt = Runtime.getRuntime();
+        try {
+            Process pt = rt.exec("cmd /c start");
+        } catch (IOException e) {}
     }
 
     /**

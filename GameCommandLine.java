@@ -202,6 +202,10 @@ public class GameCommandLine {
                             System.out.println(e);
                         }
                         break;
+
+                    case WINDOW:
+                        controller.createWindow();
+                        break;
                 }
 
             } catch (ReadingFromConsoleFailureException | InvalidTokenInputException | BadTokenArgumentException e) {
