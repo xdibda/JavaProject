@@ -278,13 +278,13 @@ public class Controller {
     }
 
     /**
-     *
+     * TODO
      */
     void createWindow() {
         System.out.println(System.getProperty("user.dir"));
         Runtime rt = Runtime.getRuntime();
         try {
-            Process pt = rt.exec(System.getProperty("user.dir"));
+            Process pt = rt.exec("cmd /c start");
         } catch (IOException e) {}
     }
 
