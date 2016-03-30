@@ -203,9 +203,9 @@ public class GameCommandLine {
                         }
                         break;
 
-                    case WINDOW:
-                        controller.createWindow();
-                        break;
+                    //case WINDOW:
+                    //    controller.createWindow();
+                    //    break;
                 }
 
             } catch (ReadingFromConsoleFailureException | InvalidTokenInputException | BadTokenArgumentException e) {

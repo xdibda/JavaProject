@@ -106,9 +106,11 @@ public class Game {
         if (logger.size() < 3) {
             throw new NoMoreMovesToUndoException();
         }
-        logger.pop();
-        logger.pop();
-        return logger.peek();
+        Board temp = null;
+        for (int i = 0; i < 3; i++) {
+            temp = logger.pop();
+        }
+        return temp;
     }
 
     /**
