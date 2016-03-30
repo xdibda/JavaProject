@@ -263,6 +263,7 @@ public class Controller {
             Board temp = game.makeUndo();
             game.setBoard(temp);
 
+            game.makeCheckpoint();
             game.countStones();
 
             return new String[] {

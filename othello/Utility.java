@@ -389,10 +389,10 @@ public class Utility {
      */
     static String getPlayerTurnString(int player) {
         if (player == PLAYERONE) {
-            return "Nyni je na rade " + PLAYERS[PLAYERONE] + " s barvou [BLACK]:";
+            return "Hraje " + PLAYERS[PLAYERONE] + " [BLACK]:";
         }
         else {
-            return "Nyni je na rade " + PLAYERS[PLAYERTWO] + " s barvou [WHITE]:";
+            return "Hraje " + PLAYERS[PLAYERTWO] + " [WHITE]:";
         }
     }
 
