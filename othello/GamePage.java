@@ -5,17 +5,23 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
+import javax.swing.JOptionPane;
 
 /**
- *
+ *  TODO RenderCoords()
  * @author Lukáš
  */
 public class GamePage extends Page
 {
     private GameGUI gui = null;
+    
+    private String congratulations = null;
+    private String playerName = null;
+    
     public Rectangle boardBackground = new Rectangle( 34, 34, 700, 700 );
     public Rectangle userPanelBackground = new Rectangle ( 768, 34, 222, 700 );
     
+    public Rectangle freezeButton = new Rectangle( 779, 490, 200, 50 );
     public Rectangle undoButton = new Rectangle( 779, 551, 200, 50 );
     public Rectangle saveButton = new Rectangle( 779, 612, 200, 50 );
     public Rectangle quitButton = new Rectangle( 779, 673, 200, 50 );
@@ -28,6 +34,7 @@ public class GamePage extends Page
     public GamePage( GameGUI gui )
     {
         this.gui = gui;
+        gui.finished = false;
     }
     
     @Override
@@ -36,15 +43,6 @@ public class GamePage extends Page
         Graphics2D g2d = ( Graphics2D ) g;
         
         g.setColor( Color.white );
-        
-        // p1 score
-        //g.drawString( gui.getGameInfo()[0], 770, 50);
-        // p2 score
-        //g.drawString( gui.getGameInfo()[1], 770, 70);
-        // kdo hraje
-        //g.drawString( gui.getGameInfo()[2], 770, 90);
-        // vizualice desky
-        //g.drawString( gui.getGameInfo()[3], 700, 110);
         
         prepareImage();
         renderGameBoard( g );
@@ -97,7 +95,6 @@ public class GamePage extends Page
         {
             for ( i = 0; i < gui.getBoardSize(); i++ )
             {
-                
                 switch ( gui.getGameInfo()[ 3 ].charAt( i + j * gui.getBoardSize() ) )
                 {
                     case 'W':
@@ -106,12 +103,52 @@ public class GamePage extends Page
                     case 'B':
                         g.drawImage( imgBlackField, i * ( imgSize + GameGUI.GAP_SIZE ) + 34, j * ( imgSize + GameGUI.GAP_SIZE ) + 34, null );
                         break;
+                    case 'K':
+                        g.drawImage( imgBlackField, i * ( imgSize + GameGUI.GAP_SIZE ) + 34, j * ( imgSize + GameGUI.GAP_SIZE ) + 34, null );
+                        g.setColor(transparentWhite);
+                        g.fillRect(i * ( imgSize + GameGUI.GAP_SIZE ) + 34, j * ( imgSize + GameGUI.GAP_SIZE ) + 34, imgSize, imgSize );
+                        break;
+                    case 'E':
+                        g.drawImage( imgWhiteField, i * ( imgSize + GameGUI.GAP_SIZE ) + 34, j * ( imgSize + GameGUI.GAP_SIZE ) + 34, null );
+                        g.setColor(transparentWhite);
+                        g.fillRect(i * ( imgSize + GameGUI.GAP_SIZE ) + 34, j * ( imgSize + GameGUI.GAP_SIZE ) + 34, imgSize, imgSize );
+                        break;
                     default:
                         g.drawImage( imgEmptyField, i * ( imgSize + GameGUI.GAP_SIZE ) + 34, j * ( imgSize + GameGUI.GAP_SIZE ) + 34, null );
                         break;
                 }
+                
                 g.drawString( Integer.toString( i + j * gui.getBoardSize() ), i * ( imgSize + GameGUI.GAP_SIZE ) + 35, j * ( imgSize + GameGUI.GAP_SIZE ) + 45 );
             }
+        }
+        if( !gui.finished )
+        {
+            try
+            {
+                gui.getController().analyzeNextTurn();
+            }
+            catch ( GameEndedException endOfGame )
+            {
+                JOptionPane.showMessageDialog( GameGUI.frame, endOfGame.getInfoStrings()[ 2 ] );
+                playerName = "Vyhral " + endOfGame.getInfoStrings()[ 2 ].substring( 
+                        endOfGame.getInfoStrings()[ 2 ].indexOf( "[" ), endOfGame.getInfoStrings()[ 2 ].indexOf( "]" ) + 1 );
+                gui.finished = true;
+            }
+            catch ( ComputerHasPlayed computerTurn )
+            {
+                gui.setGameInfo( computerTurn.getInfoStrings() );
+                
+                //showMoveInfo(computerTurn.getInfoStrings()[4], computerTurn.getInfoStrings()[5],computerTurn.getInfoStrings());
+            }
+        }
+        else
+        {
+            g.setFont( super.pageTitleFont );
+            g.setColor( transparentBlack );
+            g.fillRect( 34, 34, 700, 700 );
+            g.setColor( Color.white );
+            g.drawString( "Hra skoncila.", 160, 350 );
+            g.drawString( playerName, 140, 450 );
         }
     }
     
@@ -130,9 +167,17 @@ public class GamePage extends Page
         g.drawString( gui.getGameInfo()[0] + " : " + gui.getGameInfo()[1], 830, 180 );
         g.setFont( super.basicFont );
         
-        //g.drawString( gui.getGameInfo()[2], 772, 300 );
-        g.drawString( gui.getGameInfo()[2].substring(7, 13), 850, 310 );
-        if ( gui.getGameInfo()[2].substring(16, 21).equals( "BLACK" ) )
+//        g.drawString( gui.getGameInfo()[2].substring(9, 15), 772, 300 );
+        if( ( gui.getGameInfo()[2].substring(1, 8) ).equals("pocitac") )
+        {
+            g.drawString( "Pocitac", 850, 310 );
+        }
+        else
+        {
+            g.drawString( gui.getGameInfo()[2].substring(1, 7), 850, 310 );
+        }
+        
+        if ( gui.getGameInfo()[2].substring(10, 15).equals( "BLACK" ) )
         {
             g.drawImage( gui.imgBlackDisk, 810, 350, null );
         }
@@ -141,16 +186,19 @@ public class GamePage extends Page
             g.drawImage( gui.imgWhiteDisk, 810, 350, null );
         }
         
-        renderButton( undoButton, g, g2d, ( int )undoButton.getX(), ( int )undoButton.getY(), 200, 50, false );
-        renderButton( saveButton, g, g2d, ( int )saveButton.getX(), ( int )saveButton.getY(), 200, 50, false );
+        renderButton( freezeButton, g, g2d, ( int )freezeButton.getX(), ( int )freezeButton.getY(), 200, 50, gui.finished );
+        renderButton( undoButton, g, g2d, ( int )undoButton.getX(), ( int )undoButton.getY(), 200, 50, gui.finished );
+        renderButton( saveButton, g, g2d, ( int )saveButton.getX(), ( int )saveButton.getY(), 200, 50, gui.finished );
         renderButton( quitButton, g, g2d, ( int )quitButton.getX(), ( int )quitButton.getY(), 200, 50, false );
         
         g.setFont( super.descriptionFont );
+        g.drawString( "Freeze", 832, 527);
         g.drawString( "Undo", 842, 588);
         g.drawString( "Save", 845, 649);
         g.drawString( "Quit", 849, 710);
     }
     
+    // TODO
     public void renderCoords( Graphics g, int col, int row )
     {
         if ( row == 0 || row == gui.getBoardSize() )

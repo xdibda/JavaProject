@@ -14,8 +14,6 @@ import java.awt.image.BufferedImage;
 
 import java.io.IOException;
 
-
-
 /**
  *
  * @author Lukáš
@@ -32,6 +30,10 @@ public class GameGUI extends Canvas implements Runnable
     public static final int FIELD_12_SIZE = 56;
     
     private boolean running = false;
+    
+    public boolean computerPlayer;
+    public boolean easy;
+    public boolean finished;
     private Thread thread;
     
     private final BufferedImage image = new BufferedImage( WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB );
@@ -61,20 +63,19 @@ public class GameGUI extends Canvas implements Runnable
     
     private MenuPage pgMenu;
     private CreateGamePage pgCreate;
-    private LoadGamePage pgLoad;
     private GamePage pgGame;
     private CreditsPage pgCredits;
     private HowToPage pgHowTo;
             
+    public JOptionPane op;
+    static JFrame frame;
     public static Graphics g;
     
     public static enum STATE
     {
         MENU,
-        CREATE_SIZE_OPTIONS,
-        CREATE_FREEZE_OPTIONS,
+        CREATE,
         GAME,
-        LOAD,
         SAVE,
         CREDITS,
         HOWTO
@@ -90,7 +91,8 @@ public class GameGUI extends Canvas implements Runnable
         requestFocus();
         BufferedImageLoader loader = new BufferedImageLoader();
         
-        try {
+        try
+        {
             menuBackground = loader.loadImage("/menubg.jpg");
             background = loader.loadImage("/bg.jpg");
             imgBlackDisk = loader.loadImage( "/black_disk.png");
@@ -110,13 +112,14 @@ public class GameGUI extends Canvas implements Runnable
             imgBlackField_8 = loader.loadImage( "/black_field_8.png");
             imgBlackField_10 = loader.loadImage( "/black_field_10.png");
             imgBlackField_12 = loader.loadImage( "/black_field_12.png");
-        } catch( IOException e ) {
+        } 
+        catch( IOException e ) 
+        {
             e.printStackTrace();
         }
         controller = new Controller();
         
         pgMenu = new MenuPage();
-        pgLoad = new LoadGamePage();
         pgCreate = new CreateGamePage( this );
         pgGame = new GamePage( this );
         pgCredits = new CreditsPage();
@@ -183,7 +186,7 @@ public class GameGUI extends Canvas implements Runnable
             if ( System.currentTimeMillis() - timer > 1000 )
             {
                 timer += 1000;
-                System.out.println( updates + " Ticks, FPS " + frames );
+//                System.out.println( "FPS: " + frames + " updates: " + updates );
                 updates = 0;
                 frames = 0;
             }
@@ -191,7 +194,7 @@ public class GameGUI extends Canvas implements Runnable
         stop();
     }
     
-    // animations (maybe)
+    // TODO animations (maybe)
     private void tick()
     {
         if ( state == STATE.GAME )
@@ -225,12 +228,7 @@ public class GameGUI extends Canvas implements Runnable
                 pgMenu.render( g );
                 break;
             }
-            case CREATE_SIZE_OPTIONS:
-            {
-                pgCreate.render( g );
-                break;
-            }
-            case CREATE_FREEZE_OPTIONS:
+            case CREATE:
             {
                 pgCreate.render( g );
                 break;
@@ -238,11 +236,6 @@ public class GameGUI extends Canvas implements Runnable
             case GAME:
             {
                 pgGame.render( g );
-                break;
-            }
-            case LOAD:
-            {
-                pgLoad.render( g );
                 break;
             }
             case CREDITS:
@@ -275,7 +268,7 @@ public class GameGUI extends Canvas implements Runnable
         gui.setPreferredSize( new Dimension( WIDTH, HEIGHT ) );
         gui.setMaximumSize( new Dimension( WIDTH, HEIGHT ) );
         gui.setMinimumSize( new Dimension( WIDTH, HEIGHT ) );
-        JFrame frame = new JFrame( GameGUI.TITLE );
+        frame = new JFrame( GameGUI.TITLE );
         frame.add( gui );
         frame.pack();
         
