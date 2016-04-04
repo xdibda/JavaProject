@@ -91,6 +91,7 @@ public class GamePage extends Page
     public void renderGameBoard( Graphics g)
     {
         int i, j;
+        char colorCheck = 'W';
         for ( j = 0; j < gui.getBoardSize(); j++ )
         {
             for ( i = 0; i < gui.getBoardSize(); i++ )
@@ -99,25 +100,48 @@ public class GamePage extends Page
                 {
                     case 'W':
                         g.drawImage( imgWhiteField, i * ( imgSize + GameGUI.GAP_SIZE ) + 34, j * ( imgSize + GameGUI.GAP_SIZE ) + 34, null );
+                        colorCheck = 'W';
                         break;
                     case 'B':
                         g.drawImage( imgBlackField, i * ( imgSize + GameGUI.GAP_SIZE ) + 34, j * ( imgSize + GameGUI.GAP_SIZE ) + 34, null );
+                        colorCheck = 'B';
                         break;
                     case 'K':
                         g.drawImage( imgBlackField, i * ( imgSize + GameGUI.GAP_SIZE ) + 34, j * ( imgSize + GameGUI.GAP_SIZE ) + 34, null );
                         g.setColor(transparentWhite);
                         g.fillRect(i * ( imgSize + GameGUI.GAP_SIZE ) + 34, j * ( imgSize + GameGUI.GAP_SIZE ) + 34, imgSize, imgSize );
                         g.setColor( Color.white );
+                        colorCheck = 'K';
                         break;
                     case 'E':
                         g.drawImage( imgWhiteField, i * ( imgSize + GameGUI.GAP_SIZE ) + 34, j * ( imgSize + GameGUI.GAP_SIZE ) + 34, null );
                         g.setColor(transparentWhite);
                         g.fillRect(i * ( imgSize + GameGUI.GAP_SIZE ) + 34, j * ( imgSize + GameGUI.GAP_SIZE ) + 34, imgSize, imgSize );
                         g.setColor( Color.white );
+                        colorCheck = 'E';
                         break;
                     default:
                         g.drawImage( imgEmptyField, i * ( imgSize + GameGUI.GAP_SIZE ) + 34, j * ( imgSize + GameGUI.GAP_SIZE ) + 34, null );
                         break;
+                }
+                
+                if( gui.freezeTriggered )
+                {
+                    for ( Utility.Coords coord : gui.getStonesCoords() )
+                    {
+                        if ( coord.getX() == i && coord.getY() == j )
+                        {
+                            if ( colorCheck == 'B' || colorCheck == 'K' )
+                                g.setColor( Color.white );
+                            else
+                                g.setColor( Color.black );
+
+                            g.setFont( GameGUI.arial40bold );
+                            g.drawString( "F", i * ( imgSize + GameGUI.GAP_SIZE ) + 25 + imgSize / 2, j * ( imgSize + GameGUI.GAP_SIZE ) + 50 + imgSize / 2 );
+                            g.setFont( GameGUI.arial12 );
+                            g.setColor( Color.white );
+                        }
+                    }
                 }
                 
                 g.drawString( Integer.toString( i + j * gui.getBoardSize() ), i * ( imgSize + GameGUI.GAP_SIZE ) + 35, j * ( imgSize + GameGUI.GAP_SIZE ) + 45 );
@@ -139,10 +163,21 @@ public class GamePage extends Page
             catch ( ComputerHasPlayed computerTurn )
             {
                 gui.setGameInfo( computerTurn.getInfoStrings() );
-                
                 //showMoveInfo(computerTurn.getInfoStrings()[4], computerTurn.getInfoStrings()[5],computerTurn.getInfoStrings());
             }
-            catch (GameIsNotStartedException e) {}
+            catch ( GameIsNotStartedException e ) {}
+            
+            if ( gui.computerPlayer )
+            {
+                try
+                {
+                    gui.getThread().sleep( 500 );
+                }
+                catch ( InterruptedException e )
+                {
+                    Thread.currentThread().interrupt();
+                }
+            }
         }
         else
         {
@@ -170,23 +205,23 @@ public class GamePage extends Page
         g.drawString( gui.getGameInfo()[0] + " : " + gui.getGameInfo()[1], 830, 180 );
         g.setFont( super.basicFont );
         
-//        g.drawString( gui.getGameInfo()[2].substring(9, 15), 772, 300 );
+//        g.drawString( gui.getGameInfo()[2].substring(1, 8), 772, 300 );
         if( ( gui.getGameInfo()[2].substring(1, 8) ).equals("pocitac") )
         {
-            g.drawString( "Pocitac", 850, 310 );
+            g.drawString( "Pocitac", 850, 250 );
         }
         else
         {
-            g.drawString( gui.getGameInfo()[2].substring(1, 7), 850, 310 );
+            g.drawString( gui.getGameInfo()[2].substring(1, 7), 850, 250 );
         }
         
         if ( gui.getGameInfo()[2].substring(10, 15).equals( "BLACK" ) )
         {
-            g.drawImage( gui.imgBlackDisk, 810, 350, null );
+            g.drawImage( gui.imgBlackDisk, 810, 300, null );
         }
         else
         {
-            g.drawImage( gui.imgWhiteDisk, 810, 350, null );
+            g.drawImage( gui.imgWhiteDisk, 810, 300, null );
         }
         
         renderButton( freezeButton, g, g2d, ( int )freezeButton.getX(), ( int )freezeButton.getY(), 200, 50, gui.finished );
@@ -194,6 +229,13 @@ public class GamePage extends Page
         renderButton( saveButton, g, g2d, ( int )saveButton.getX(), ( int )saveButton.getY(), 200, 50, gui.finished );
         renderButton( quitButton, g, g2d, ( int )quitButton.getX(), ( int )quitButton.getY(), 200, 50, false );
         
+        if( gui.freezeTriggered )
+        {
+            g.setFont( GameGUI.arial12bold );
+            g.drawString( gui.getFreezeInfo().substring( 0, 31 ), 784, 450 );
+            g.drawString( gui.getFreezeInfo().substring( 31, gui.getFreezeInfo().length() ), 777, 470 );
+        }
+
         g.setFont( super.descriptionFont );
         g.drawString( "Freeze", 832, 527);
         g.drawString( "Undo", 842, 588);

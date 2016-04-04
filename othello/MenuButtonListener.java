@@ -11,6 +11,7 @@ import java.io.File;
 import java.util.ArrayList;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import javax.swing.filechooser.FileView;
 
 /**
  *
@@ -89,7 +90,18 @@ public class MenuButtonListener implements MouseListener
         // Load Game
             else if ( mouseY >= 350 && mouseY <= 425 )
             {
-                final JFileChooser fc = new JFileChooser();
+                final File dirToLock = new File("./save");
+                final JFileChooser fc = new JFileChooser( dirToLock );
+                
+                fc.setFileView( new FileView() 
+                {
+                    @Override
+                    public Boolean isTraversable(File f)
+                    {
+                         return dirToLock.equals(f);
+                    }
+                });
+                
                 int returnVal = fc.showOpenDialog( GameGUI.frame );
                 
                 if ( returnVal == JFileChooser.APPROVE_OPTION )
@@ -159,6 +171,7 @@ public class MenuButtonListener implements MouseListener
                    
                 }
                 gui.finished = false;
+                gui.getStonesCoords().clear();
                 gui.setState( GameGUI.STATE.GAME );
             }
         }
@@ -241,8 +254,10 @@ public class MenuButtonListener implements MouseListener
                 {
                     try
                     {
-                        ArrayList<Utility.Coords> stonesCoords = new ArrayList<>();
-                        gui.setGameInfo( gui.getController().freezeStones(stonesCoords) );
+                        gui.getStonesCoords().clear();
+                        gui.setGameInfo( gui.getController().freezeStones( gui.getStonesCoords() ) );
+                        gui.setFreezeInfo( gui.getGameInfo()[ 4 ] );
+                        gui.freezeTriggered = true;
                     }
                     catch( GameIsNotStartedException e )
                     {
@@ -262,6 +277,7 @@ public class MenuButtonListener implements MouseListener
                     try
                     {
                         gui.setGameInfo( gui.getController().undoMove() );
+                        gui.freezeTriggered = false;
                     }
                     catch( GameIsNotStartedException | NoMoreMovesToUndoException e )
                     {
@@ -284,6 +300,7 @@ public class MenuButtonListener implements MouseListener
                         try
                         {
                             gui.getController().saveGame( fileName );
+                            gui.freezeTriggered = false;
                         }
                         catch ( GameIsNotStartedException | GameSavingFailureException e)
                         {
@@ -340,6 +357,7 @@ public class MenuButtonListener implements MouseListener
                         try
                         {
                             gui.setGameInfo( gui.getController().makeMove( tmp ) );
+                            gui.freezeTriggered = false;
                         }
                         catch ( GameIsNotStartedException | MoveNotAvailableException e )
                         {

@@ -13,6 +13,8 @@ import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import othello.Utility.Coords;
 
 /**
  *
@@ -29,12 +31,19 @@ public class GameGUI extends Canvas implements Runnable
     public static final int FIELD_10_SIZE = 68;
     public static final int FIELD_12_SIZE = 56;
     
-    private boolean running = false;
+    private Thread thread;
     
+    private boolean running = false;
     public boolean computerPlayer;
     public boolean easy;
     public boolean finished;
-    private Thread thread;
+    public boolean freezeTriggered = false;
+    
+    private ArrayList<Utility.Coords> stonesCoords;
+    
+    public static Font arial12 = new Font( "arial", Font.PLAIN, 12 );
+    public static Font arial12bold = new Font( "arial", Font.BOLD, 12 );
+    public static Font arial40bold = new Font( "arial", Font.BOLD, 40 );
     
     private final BufferedImage image = new BufferedImage( WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB );
     private BufferedImage menuBackground = null;
@@ -59,6 +68,7 @@ public class GameGUI extends Canvas implements Runnable
     public BufferedImage imgBlackField_12 = null;
     
     private Controller controller = null;
+    private String freezeInfo = null;
     private Player p;
     
     private MenuPage pgMenu;
@@ -90,30 +100,30 @@ public class GameGUI extends Canvas implements Runnable
     {
         requestFocus();
         BufferedImageLoader loader = new BufferedImageLoader();
-
+        
         try
         {
             menuBackground = loader.loadImage("/resources/menubg.jpg");
             background = loader.loadImage("/resources/bg.jpg");
             imgBlackDisk = loader.loadImage( "/resources/black_disk.png");
             imgWhiteDisk = loader.loadImage( "/resources/white_disk.png");
-
+            
             imgEmptyField_6 = loader.loadImage( "/resources/empty_field_6.png");
             imgEmptyField_8 = loader.loadImage( "/resources/empty_field_8.png");
             imgEmptyField_10 = loader.loadImage( "/resources/empty_field_10.png");
             imgEmptyField_12 = loader.loadImage( "/resources/empty_field_12.png");
-
+            
             imgWhiteField_6 = loader.loadImage( "/resources/white_field_6.png");
             imgWhiteField_8 = loader.loadImage( "/resources/white_field_8.png");
             imgWhiteField_10 = loader.loadImage( "/resources/white_field_10.png");
             imgWhiteField_12 = loader.loadImage( "/resources/white_field_12.png");
-
+            
             imgBlackField_6 = loader.loadImage( "/resources/black_field_6.png");
             imgBlackField_8 = loader.loadImage( "/resources/black_field_8.png");
             imgBlackField_10 = loader.loadImage( "/resources/black_field_10.png");
             imgBlackField_12 = loader.loadImage( "/resources/black_field_12.png");
-        }
-        catch( IOException e )
+        } 
+        catch( IOException e ) 
         {
             e.printStackTrace();
         }
@@ -124,6 +134,7 @@ public class GameGUI extends Canvas implements Runnable
         pgGame = new GamePage( this );
         pgCredits = new CreditsPage();
         pgHowTo = new HowToPage();
+        stonesCoords = new ArrayList<>();
         
         setBoardSize( 8 );
         
@@ -314,5 +325,25 @@ public class GameGUI extends Canvas implements Runnable
     public String[] getGameInfo()
     {
         return this.gameInfo;
+    }
+    
+    public ArrayList<Coords> getStonesCoords()
+    {
+        return this.stonesCoords;
+    }
+    
+    public void setFreezeInfo( String freezeInfo )
+    {
+        this.freezeInfo = freezeInfo;
+    }
+    
+    public String getFreezeInfo()
+    {
+        return this.freezeInfo;
+    }
+    
+    public Thread  getThread()
+    {
+        return this.thread;
     }
 }
