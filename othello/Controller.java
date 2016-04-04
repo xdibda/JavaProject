@@ -187,7 +187,7 @@ public class Controller {
      * [4] hlášku o úspěšném provedení operace
      * @throws GameIsNotStartedException Není aktivní žádná hra na které by mohla být provedena operace
      */
-    String[] freezeStones() throws GameIsNotStartedException {
+    String[] freezeStones(ArrayList<Integer> numberOfFrozenStones) throws GameIsNotStartedException {
         if (!gameStarted) {
             throw new GameIsNotStartedException();
         }
@@ -201,10 +201,11 @@ public class Controller {
             }
         }
 
-        int[] randomNumbers = new int [3];
-        Utility.generateRandomNumbers(randomNumbers, notFrozenStones.size());
+        int[] randomNumbers = new int [2];
 
-        for (int i = 0; i < randomNumbers[2]; i++) {
+        Utility.generateRandomNumbers(randomNumbers, notFrozenStones.size(), numberOfFrozenStones);
+
+        for (int i: numberOfFrozenStones) {
             notFrozenStones.get(i).freeze(randomNumbers[0], randomNumbers[1]);
             frozenStones.add(notFrozenStones.get(i));
         }
@@ -217,7 +218,7 @@ public class Controller {
                 Integer.toString(game.getScore()[Utility.PLAYERTWO]),
                 Utility.getPlayerTurnString(game.getActivePlayerTurn()),
                 Utility.visualizeBoard(game.getBoard()),
-                Utility.getSuccessfulFreezeStoneString(randomNumbers)
+                Utility.getSuccessfulFreezeStoneString(randomNumbers, numberOfFrozenStones.size())
         };
     }
 
@@ -293,9 +294,9 @@ public class Controller {
      * [3] vizualizovaná hrací deska
      * [4,5] souřadnice tahu počítače
      */
-    void analyzeNextTurn() throws GameEndedException, ComputerHasPlayed {
+    String[] analyzeNextTurn() throws GameEndedException, ComputerHasPlayed, GameIsNotStartedException {
         if (!gameStarted) {
-            return;
+            throw new GameIsNotStartedException();
         }
 
         allAvailableMoves = game.getAvailableMoves();
@@ -329,5 +330,11 @@ public class Controller {
                     }
             );
         }
+        return new String[] {
+                Integer.toString(game.getScore()[Utility.PLAYERONE]),
+                Integer.toString(game.getScore()[Utility.PLAYERTWO]),
+                Utility.getPlayerTurnString(game.getActivePlayerTurn()),
+                Utility.visualizeBoard(game.getBoard())
+        };
     }
 }

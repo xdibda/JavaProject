@@ -134,12 +134,14 @@ public class Board implements Cloneable {
     void changeField(Coords coords) {
         Field temp = getField(coords.getX(), coords.getY());
 
-        try {
-            if (temp.getColor() == Color.BLACK) {
-                temp.setColor(Color.WHITE);
+        if (!temp.isFrozen()) {
+            try {
+                if (temp.getColor() == Color.BLACK) {
+                    temp.setColor(Color.WHITE);
+                } else temp.setColor(Color.BLACK);
+            } catch (FieldIsEmptyException e) {
             }
-            else temp.setColor(Color.BLACK);
-        } catch (FieldIsEmptyException e) {}
+        }
     }
 
     /**

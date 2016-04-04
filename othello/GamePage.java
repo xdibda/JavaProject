@@ -107,11 +107,13 @@ public class GamePage extends Page
                         g.drawImage( imgBlackField, i * ( imgSize + GameGUI.GAP_SIZE ) + 34, j * ( imgSize + GameGUI.GAP_SIZE ) + 34, null );
                         g.setColor(transparentWhite);
                         g.fillRect(i * ( imgSize + GameGUI.GAP_SIZE ) + 34, j * ( imgSize + GameGUI.GAP_SIZE ) + 34, imgSize, imgSize );
+                        g.setColor( Color.white );
                         break;
                     case 'E':
                         g.drawImage( imgWhiteField, i * ( imgSize + GameGUI.GAP_SIZE ) + 34, j * ( imgSize + GameGUI.GAP_SIZE ) + 34, null );
                         g.setColor(transparentWhite);
                         g.fillRect(i * ( imgSize + GameGUI.GAP_SIZE ) + 34, j * ( imgSize + GameGUI.GAP_SIZE ) + 34, imgSize, imgSize );
+                        g.setColor( Color.white );
                         break;
                     default:
                         g.drawImage( imgEmptyField, i * ( imgSize + GameGUI.GAP_SIZE ) + 34, j * ( imgSize + GameGUI.GAP_SIZE ) + 34, null );
@@ -125,7 +127,7 @@ public class GamePage extends Page
         {
             try
             {
-                gui.getController().analyzeNextTurn();
+                gui.setGameInfo( gui.getController().analyzeNextTurn() );
             }
             catch ( GameEndedException endOfGame )
             {
@@ -140,6 +142,7 @@ public class GamePage extends Page
                 
                 //showMoveInfo(computerTurn.getInfoStrings()[4], computerTurn.getInfoStrings()[5],computerTurn.getInfoStrings());
             }
+            catch (GameIsNotStartedException e) {}
         }
         else
         {

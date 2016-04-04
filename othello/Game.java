@@ -191,20 +191,28 @@ public class Game {
      * @param frozenStones Pole zamrznutých kamenenů
      */
     void checkIfFrozen(ArrayList<Field> frozenStones) {
-        for (Field field: frozenStones) {
-            Color color = null;
-
-            try {
-                color = field.getColor();
-            } catch (FieldIsEmptyException e) {}
-
-            if(field.isFrozen() && color != Color.FBLACK && color != Color.FWHITE) {
-                field.changeColorFreeze();
+        if (frozenStones.size() > 0) {
+            ArrayList<Field> tmp = new ArrayList<>();
+            for (Field fieldConstructor: frozenStones) {
+                tmp.add(new Field(fieldConstructor));
             }
-            else if (!field.isFrozen() && color != Color.BLACK && color != Color.WHITE) {
-                field.changeColorFreeze();
-                frozenStones.remove(field);
+            for (Field field : frozenStones) {
+                Color color = null;
+
+                try {
+                    color = field.getColor();
+                } catch (FieldIsEmptyException e) {
+                }
+
+                if (field.isFrozen() && color != Color.FBLACK && color != Color.FWHITE) {
+                    field.changeColorFreeze();
+                }
+                else if (!field.isFrozen() && color != Color.BLACK && color != Color.WHITE) {
+                    field.changeColorFreeze();
+                    tmp.remove(field);
+                }
             }
+            frozenStones = tmp;
         }
     }
 
@@ -220,7 +228,7 @@ public class Game {
 
         for (Field field: getBoard().getField()) {
             try {
-                if (field.getColor() == Color.BLACK)
+                if (field.getColor() == Color.BLACK || field.getColor() == Color.FBLACK)
                     blackStones.add(field);
                 else
                     whiteStones.add(field);

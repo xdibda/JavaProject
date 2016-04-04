@@ -8,6 +8,7 @@ package othello;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.File;
+import java.util.ArrayList;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
@@ -240,7 +241,8 @@ public class MenuButtonListener implements MouseListener
                 {
                     try
                     {
-                        gui.setGameInfo( gui.getController().freezeStones() );
+                        ArrayList<Integer> stonesPosition = new ArrayList<>();
+                        gui.setGameInfo( gui.getController().freezeStones(stonesPosition) );
                     }
                     catch( GameIsNotStartedException e )
                     {

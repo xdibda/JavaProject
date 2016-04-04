@@ -18,17 +18,26 @@ public class CreateGamePage extends Page
 {
     private GameGUI gui = null;
     
-    public Rectangle size6Button = new Rectangle( GameGUI.WIDTH / 2 - 230, 350, 100, 100 );
-    public Rectangle size8Button = new Rectangle( GameGUI.WIDTH / 2 - 110, 350, 100, 100 );
-    public Rectangle size10Button = new Rectangle( GameGUI.WIDTH / 2 + 10, 350, 100, 100 );
-    public Rectangle size12Button = new Rectangle( GameGUI.WIDTH / 2 + 130, 350, 100, 100 );
+    public Rectangle size6Button = new Rectangle( GameGUI.WIDTH / 2 - 230, 200, 100, 100 );
+    public Rectangle size8Button = new Rectangle( GameGUI.WIDTH / 2 - 110, 200, 100, 100 );
+    public Rectangle size10Button = new Rectangle( GameGUI.WIDTH / 2 + 10, 200, 100, 100 );
+    public Rectangle size12Button = new Rectangle( GameGUI.WIDTH / 2 + 130, 200, 100, 100 );
     
-    public Rectangle nextButton = new Rectangle( GameGUI.WIDTH / 2 - 160, 650, 150, 75 );
-    public Rectangle backButton = new Rectangle( GameGUI.WIDTH / 2 + 10, 650, 150, 75 );
+    public Rectangle humanButton = new Rectangle( GameGUI.WIDTH / 2 - 230, 350, 220, 75 );
+    public Rectangle AIButton = new Rectangle( GameGUI.WIDTH / 2 + 10, 350, 220, 75 );
+    
+    public Rectangle easyButton = new Rectangle( GameGUI.WIDTH / 2 - 230, 500, 220, 75 );
+    public Rectangle hardButton = new Rectangle( GameGUI.WIDTH / 2 + 10, 500, 220, 75 );
+    
+    
+    public Rectangle nextButton = new Rectangle( GameGUI.WIDTH / 2 - 230, 650, 220, 75 );
+    public Rectangle backButton = new Rectangle( GameGUI.WIDTH / 2 + 10, 650, 220, 75 );
 
     public CreateGamePage( GameGUI gui )
     {
         this.gui = gui;
+        this.gui.computerPlayer = false;
+        this.gui.easy = true;
     }
     
     @Override
@@ -36,33 +45,22 @@ public class CreateGamePage extends Page
     {
         Graphics2D g2d = ( Graphics2D ) g;
         
-        switch ( gui.getState() )
-        {
-            case CREATE_SIZE_OPTIONS:
-            {
-                renderSizeOptions( g, g2d );
-                break;
-            }
-            case CREATE_FREEZE_OPTIONS:
-            {
-                renderFreezeOptions( g, g2d );
-                break;
-            }
-        }
+        renderSizeOptions( g, g2d );
+        renderOpponentOptions( g, g2d );
         
-        renderButton( nextButton, g, g2d, ( int )nextButton.getX(), ( int )nextButton.getY(), 150, 75, false );
-        renderButton( backButton, g, g2d, ( int )backButton.getX(), ( int )backButton.getY(), 150, 75, false );
+        renderButton( nextButton, g, g2d, ( int )nextButton.getX(), ( int )nextButton.getY(), 220, 75, false );
+        renderButton( backButton, g, g2d, ( int )backButton.getX(), ( int )backButton.getY(), 220, 75, false );
         
         g.setFont( buttonFont );
-        g.drawString( "Back", GameGUI.WIDTH / 2 + 40, 700);
-        g.drawString( "Next", GameGUI.WIDTH / 2 - 130, 700);
+        g.drawString( "Back", GameGUI.WIDTH / 2 - 170, 700 );
+        g.drawString( "Next", GameGUI.WIDTH / 2 + 80, 700 );
     }
     
-    public void renderSizeOptions( Graphics g, Graphics2D g2d )
+    private void renderSizeOptions( Graphics g, Graphics2D g2d )
     {
         g.setFont( pageTitleFont );
         g.setColor( Color.white );
-        g.drawString( "Select size", GameGUI.WIDTH / 2 - 175, 100 );
+        g.drawString( "Game options", GameGUI.WIDTH / 2 - 225, 100 );
         
         switch ( gui.getBoardSize() )
         {
@@ -101,19 +99,30 @@ public class CreateGamePage extends Page
         }
         
         g.setFont( buttonFont );
-        g.drawString( "6", GameGUI.WIDTH / 2 - 190, 415);
-        g.drawString( "8", GameGUI.WIDTH / 2 - 70, 415);
-        g.drawString( "10", GameGUI.WIDTH / 2 + 40, 415);
-        g.drawString( "12", GameGUI.WIDTH / 2 + 160, 415);
-        
+        g.drawString( "6", GameGUI.WIDTH / 2 - 190, 265 );
+        g.drawString( "8", GameGUI.WIDTH / 2 - 70, 265 );
+        g.drawString( "10", GameGUI.WIDTH / 2 + 40, 265 );
+        g.drawString( "12", GameGUI.WIDTH / 2 + 160, 265 );
     }
     
-    public void renderFreezeOptions( Graphics g, Graphics2D g2d )
+    private void renderOpponentOptions( Graphics g, Graphics2D g2d )
     {
-        g.setFont( pageTitleFont );
         g.setColor( Color.white );
+        g.setFont( buttonFont );
         
-        g.drawString( "Freeze options", GameGUI.WIDTH / 2 - 230, 100 );
+        renderButton( humanButton, g, g2d, ( int )humanButton.getX(), ( int )humanButton.getY(), 220, 75, !gui.computerPlayer );
+        renderButton( AIButton, g, g2d, ( int )AIButton.getX(), ( int )AIButton.getY(), 220, 75, gui.computerPlayer );
+        
+        g.drawString( "Human", GameGUI.WIDTH / 2 - 190, 400 );
+        g.drawString( "AI", GameGUI.WIDTH / 2 + 100, 400 );
+        
+        if ( gui.computerPlayer )
+        {
+            renderButton( easyButton, g, g2d, ( int )easyButton.getX(), ( int )easyButton.getY(), 220, 75, gui.easy );
+            renderButton( hardButton, g, g2d, ( int )hardButton.getX(), ( int )hardButton.getY(), 220, 75, !gui.easy );
+
+            g.drawString( "Easy", GameGUI.WIDTH / 2 - 170, 550 );
+            g.drawString( "Hard", GameGUI.WIDTH / 2 + 80, 550 );
+        }
     }
-    
 }
