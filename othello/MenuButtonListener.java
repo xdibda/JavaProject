@@ -241,8 +241,8 @@ public class MenuButtonListener implements MouseListener
                 {
                     try
                     {
-                        ArrayList<Integer> stonesPosition = new ArrayList<>();
-                        gui.setGameInfo( gui.getController().freezeStones(stonesPosition) );
+                        ArrayList<Utility.Coords> stonesCoords = new ArrayList<>();
+                        gui.setGameInfo( gui.getController().freezeStones(stonesCoords) );
                     }
                     catch( GameIsNotStartedException e )
                     {

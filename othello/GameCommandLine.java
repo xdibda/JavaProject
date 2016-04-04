@@ -177,8 +177,8 @@ public class GameCommandLine {
 
                     case FREEZE:
                         try {
-                            ArrayList<Integer> numberOfStones = new ArrayList<>();
-                            nextPlayer = controller.freezeStones(numberOfStones);
+                            ArrayList<Coords> stonesCoords = new ArrayList<>();
+                            nextPlayer = controller.freezeStones(stonesCoords);
                             showAdditionalInfo(nextPlayer[4]);
                             showMoveInfo(nextPlayer);
                         } catch (GameIsNotStartedException e) {

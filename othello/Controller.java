@@ -187,27 +187,23 @@ public class Controller {
      * [4] hlášku o úspěšném provedení operace
      * @throws GameIsNotStartedException Není aktivní žádná hra na které by mohla být provedena operace
      */
-    String[] freezeStones(ArrayList<Integer> numberOfFrozenStones) throws GameIsNotStartedException {
+    String[] freezeStones(ArrayList<Coords> coordsOfFrozenStones) throws GameIsNotStartedException {
         if (!gameStarted) {
             throw new GameIsNotStartedException();
         }
 
-        ArrayList<Field>[] temp = game.countStones();
-        ArrayList<Field> notFrozenStones = new ArrayList<>();
-
-        for (Field field: temp[game.getActivePlayerTurn()]) {
-            if (!field.isFrozen()) {
-                notFrozenStones.add(field);
-            }
-        }
+        ArrayList<Coords>[] temp = game.getNotFrozenStones();
+        ArrayList<Integer> numberOfFrozenStones = new ArrayList<>();
 
         int[] randomNumbers = new int [2];
 
-        Utility.generateRandomNumbers(randomNumbers, notFrozenStones.size(), numberOfFrozenStones);
+        Utility.generateRandomNumbers(randomNumbers, temp[game.getActivePlayerTurn()].size(), numberOfFrozenStones);
 
         for (int i: numberOfFrozenStones) {
-            notFrozenStones.get(i).freeze(randomNumbers[0], randomNumbers[1]);
-            frozenStones.add(notFrozenStones.get(i));
+            Coords tmpCoords = temp[game.getActivePlayerTurn()].get(i);
+            game.getBoard().getField(tmpCoords.getX(), tmpCoords.getY()).freeze(randomNumbers[0], randomNumbers[1]);
+            frozenStones.add(game.getBoard().getField(tmpCoords.getX(), tmpCoords.getY()));
+            coordsOfFrozenStones.add(tmpCoords);
         }
 
         game.turnHasBeenMade();

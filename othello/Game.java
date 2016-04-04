@@ -17,6 +17,8 @@
 package othello;
 
 import java.util.*;
+
+import javafx.scene.web.WebHistory;
 import othello.Utility.*;
 
 public class Game {
@@ -214,6 +216,35 @@ public class Game {
             }
             frozenStones = tmp;
         }
+    }
+
+    /**
+     * Metoda pro získání polí, které nejsou zmraženy a tudíž mohou být zmraženy
+     * @return Pole kamenů černého i bílého hráče
+     * @see Controller
+     */
+    ArrayList<Coords>[] getNotFrozenStones() {
+        ArrayList<Coords> blackStones = new ArrayList<>();
+        ArrayList<Coords> whiteStones = new ArrayList<>();
+
+        for (int i = 0; i < Board.SIZE; i++) {
+            for (int j = 0; j < Board.SIZE; j++) {
+                try {
+                    if (!getBoard().getField(i, j).isFrozen()) {
+                        switch (getBoard().getField(i, j).getColor()) {
+                            case BLACK:
+                            case FBLACK:
+                                blackStones.add(new Coords(i, j));
+                                break;
+                            case WHITE:
+                            case FWHITE:
+                                whiteStones.add(new Coords(i, j));
+                        }
+                    }
+                } catch (FieldIsEmptyException e) {}
+            }
+        }
+        return new ArrayList[] {blackStones, whiteStones};
     }
 
     /**
