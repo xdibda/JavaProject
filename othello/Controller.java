@@ -187,26 +187,23 @@ public class Controller {
      * [4] hlášku o úspěšném provedení operace
      * @throws GameIsNotStartedException Není aktivní žádná hra na které by mohla být provedena operace
      */
-    String[] freezeStones() throws GameIsNotStartedException {
+    String[] freezeStones(ArrayList<Coords> coordsOfFrozenStones) throws GameIsNotStartedException {
         if (!gameStarted) {
             throw new GameIsNotStartedException();
         }
 
-        ArrayList<Field>[] temp = game.countStones();
-        ArrayList<Field> notFrozenStones = new ArrayList<>();
+        ArrayList<Coords>[] temp = game.getNotFrozenStones();
+        ArrayList<Integer> numberOfFrozenStones = new ArrayList<>();
 
-        for (Field field: temp[game.getActivePlayerTurn()]) {
-            if (!field.isFrozen()) {
-                notFrozenStones.add(field);
-            }
-        }
+        int[] randomNumbers = new int [2];
 
-        int[] randomNumbers = new int [3];
-        Utility.generateRandomNumbers(randomNumbers, notFrozenStones.size());
+        Utility.generateRandomNumbers(randomNumbers, temp[game.getActivePlayerTurn()].size(), numberOfFrozenStones);
 
-        for (int i = 0; i < randomNumbers[2]; i++) {
-            notFrozenStones.get(i).freeze(randomNumbers[0], randomNumbers[1]);
-            frozenStones.add(notFrozenStones.get(i));
+        for (int i: numberOfFrozenStones) {
+            Coords tmpCoords = temp[game.getActivePlayerTurn()].get(i);
+            game.getBoard().getField(tmpCoords.getX(), tmpCoords.getY()).freeze(randomNumbers[0], randomNumbers[1]);
+            frozenStones.add(game.getBoard().getField(tmpCoords.getX(), tmpCoords.getY()));
+            coordsOfFrozenStones.add(tmpCoords);
         }
 
         game.turnHasBeenMade();
@@ -217,7 +214,7 @@ public class Controller {
                 Integer.toString(game.getScore()[Utility.PLAYERTWO]),
                 Utility.getPlayerTurnString(game.getActivePlayerTurn()),
                 Utility.visualizeBoard(game.getBoard()),
-                Utility.getSuccessfulFreezeStoneString(randomNumbers)
+                Utility.getSuccessfulFreezeStoneString(randomNumbers, numberOfFrozenStones.size())
         };
     }
 
@@ -263,6 +260,7 @@ public class Controller {
             Board temp = game.makeUndo();
             game.setBoard(temp);
 
+            game.makeCheckpoint();
             game.countStones();
 
             return new String[] {
@@ -292,9 +290,9 @@ public class Controller {
      * [3] vizualizovaná hrací deska
      * [4,5] souřadnice tahu počítače
      */
-    void analyzeNextTurn() throws GameEndedException, ComputerHasPlayed {
+    String[] analyzeNextTurn() throws GameEndedException, ComputerHasPlayed, GameIsNotStartedException {
         if (!gameStarted) {
-            return;
+            throw new GameIsNotStartedException();
         }
 
         allAvailableMoves = game.getAvailableMoves();
@@ -328,5 +326,11 @@ public class Controller {
                     }
             );
         }
+        return new String[] {
+                Integer.toString(game.getScore()[Utility.PLAYERONE]),
+                Integer.toString(game.getScore()[Utility.PLAYERTWO]),
+                Utility.getPlayerTurnString(game.getActivePlayerTurn()),
+                Utility.visualizeBoard(game.getBoard())
+        };
     }
 }

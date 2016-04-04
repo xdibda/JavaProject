@@ -27,7 +27,9 @@ public class Utility {
     /**
      * Konstanta pro maximální dobu zmrazení kamenů
      */
-    static int MAXFREEZETIME = 60;
+    static int MINGENERATETIME = 5;
+    static int MAXINITFREEZETIME = 10;
+    static int MAXPERSISTFREEZETIME = 15;
 
     /**
      * Řetězcová interpretace jmen hráčů
@@ -378,8 +380,8 @@ public class Utility {
      * @param numbers Pole typu {@code Integer}. Kolik kamenů, za jak dlouho, na jak dlouho
      * @return Řetězec znaků
      */
-    static String getSuccessfulFreezeStoneString(int[] numbers) {
-        return "Za dobu: " + numbers[0] + " sekund bude zmrazen pocet kamenu: " + numbers[2] + " na dobu: " + numbers[1] + " sekund";
+    static String getSuccessfulFreezeStoneString(int[] numbers, int numberOfStones) {
+        return "Za dobu: " + numbers[0] + " sekund bude zmrazen pocet kamenu: " + numberOfStones + " na dobu: " + numbers[1] + " sekund";
     }
 
     /**
@@ -389,10 +391,10 @@ public class Utility {
      */
     static String getPlayerTurnString(int player) {
         if (player == PLAYERONE) {
-            return "Hraje " + PLAYERS[PLAYERONE] + " [BLACK]:";
+            return PLAYERS[PLAYERONE] + " [BLACK]";
         }
         else {
-            return "Hraje " + PLAYERS[PLAYERTWO] + " [WHITE]:";
+            return PLAYERS[PLAYERTWO] + " [WHITE]";
         }
     }
 
@@ -476,12 +478,20 @@ public class Utility {
      * @param randomNumbers Pole odkazů, kam se uloží výsledky
      * @param notFrozenStones Počet kamenů hráče, které ještě nejsou zamrznuty a lze je tedy nechat zamrznout
      */
-    static void generateRandomNumbers(int[] randomNumbers, int notFrozenStones) {
+    static void generateRandomNumbers(int[] randomNumbers, int notFrozenStones, ArrayList<Integer> numberOfFrozenStones) {
         Random random = new Random();
 
-        randomNumbers[0] = random.nextInt(Utility.MAXFREEZETIME);
-        randomNumbers[1] = random.nextInt(Utility.MAXFREEZETIME);
-        randomNumbers[2] = random.nextInt(notFrozenStones);
+        randomNumbers[0] = random.nextInt(Utility.MAXINITFREEZETIME - Utility.MINGENERATETIME) + Utility.MINGENERATETIME;
+        randomNumbers[1] = random.nextInt(Utility.MAXPERSISTFREEZETIME - Utility.MINGENERATETIME) + Utility.MINGENERATETIME;
+
+        int numberOfStones = random.nextInt(notFrozenStones);
+
+        for (int i = 0; i < numberOfStones; i++) {
+            int randomNumber = random.nextInt(notFrozenStones);
+            if (!numberOfFrozenStones.contains(randomNumber)) {
+                numberOfFrozenStones.add(randomNumber);
+            }
+        }
     }
 
     /**

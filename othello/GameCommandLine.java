@@ -143,6 +143,7 @@ public class GameCommandLine {
                     showMoveInfo(computerTurn.getInfoStrings()[4], computerTurn.getInfoStrings()[5],computerTurn.getInfoStrings());
                     continue;
                 }
+                catch (GameIsNotStartedException e) {}
 
                 TypeOfInstruction typeOfInstruction = fileManager.getDecision(tokenArgumentsArray);
                 switch (typeOfInstruction) {
@@ -176,7 +177,8 @@ public class GameCommandLine {
 
                     case FREEZE:
                         try {
-                            nextPlayer = controller.freezeStones();
+                            ArrayList<Coords> stonesCoords = new ArrayList<>();
+                            nextPlayer = controller.freezeStones(stonesCoords);
                             showAdditionalInfo(nextPlayer[4]);
                             showMoveInfo(nextPlayer);
                         } catch (GameIsNotStartedException e) {

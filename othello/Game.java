@@ -17,6 +17,8 @@
 package othello;
 
 import java.util.*;
+
+import javafx.scene.web.WebHistory;
 import othello.Utility.*;
 
 public class Game {
@@ -106,9 +108,11 @@ public class Game {
         if (logger.size() < 3) {
             throw new NoMoreMovesToUndoException();
         }
-        logger.pop();
-        logger.pop();
-        return logger.peek();
+        Board temp = null;
+        for (int i = 0; i < 3; i++) {
+            temp = logger.pop();
+        }
+        return temp;
     }
 
     /**
@@ -189,21 +193,58 @@ public class Game {
      * @param frozenStones Pole zamrznutých kamenenů
      */
     void checkIfFrozen(ArrayList<Field> frozenStones) {
-        for (Field field: frozenStones) {
-            Color color = null;
-
-            try {
-                color = field.getColor();
-            } catch (FieldIsEmptyException e) {}
-
-            if(field.isFrozen() && color != Color.FBLACK && color != Color.FWHITE) {
-                field.changeColorFreeze();
+        if (frozenStones.size() > 0) {
+            ArrayList<Field> tmp = new ArrayList<>();
+            for (Field fieldConstructor: frozenStones) {
+                tmp.add(new Field(fieldConstructor));
             }
-            else if (!field.isFrozen() && color != Color.BLACK && color != Color.WHITE) {
-                field.changeColorFreeze();
-                frozenStones.remove(field);
+            for (Field field : frozenStones) {
+                Color color = null;
+
+                try {
+                    color = field.getColor();
+                } catch (FieldIsEmptyException e) {
+                }
+
+                if (field.isFrozen() && color != Color.FBLACK && color != Color.FWHITE) {
+                    field.changeColorFreeze();
+                }
+                else if (!field.isFrozen() && color != Color.BLACK && color != Color.WHITE) {
+                    field.changeColorFreeze();
+                    tmp.remove(field);
+                }
+            }
+            frozenStones = tmp;
+        }
+    }
+
+    /**
+     * Metoda pro získání polí, které nejsou zmraženy a tudíž mohou být zmraženy
+     * @return Pole kamenů černého i bílého hráče
+     * @see Controller
+     */
+    ArrayList<Coords>[] getNotFrozenStones() {
+        ArrayList<Coords> blackStones = new ArrayList<>();
+        ArrayList<Coords> whiteStones = new ArrayList<>();
+
+        for (int i = 0; i < Board.SIZE; i++) {
+            for (int j = 0; j < Board.SIZE; j++) {
+                try {
+                    if (!getBoard().getField(i, j).isFrozen()) {
+                        switch (getBoard().getField(i, j).getColor()) {
+                            case BLACK:
+                            case FBLACK:
+                                blackStones.add(new Coords(i, j));
+                                break;
+                            case WHITE:
+                            case FWHITE:
+                                whiteStones.add(new Coords(i, j));
+                        }
+                    }
+                } catch (FieldIsEmptyException e) {}
             }
         }
+        return new ArrayList[] {blackStones, whiteStones};
     }
 
     /**
@@ -218,7 +259,7 @@ public class Game {
 
         for (Field field: getBoard().getField()) {
             try {
-                if (field.getColor() == Color.BLACK)
+                if (field.getColor() == Color.BLACK || field.getColor() == Color.FBLACK)
                     blackStones.add(field);
                 else
                     whiteStones.add(field);

@@ -57,6 +57,12 @@ public class Field implements Cloneable {
         frozen = false;
     }
 
+    Field(Field field) {
+        this.empty = field.empty;
+        this.color = field.color;
+        this.frozen = field.frozen;
+    }
+
     /**
      * Mění barvu mezi zmrazením a odmrazení
      */
