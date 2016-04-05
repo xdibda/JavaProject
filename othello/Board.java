@@ -60,7 +60,6 @@ public class Board implements Cloneable {
     Board (Board board) {
         this.map = new Field[board.getField().length];
 
-        allocateFields();
         for (int i = 0; i < board.getField().length; i++) {
             try {
                 this.map[i] = (Field) board.map[i].clone();

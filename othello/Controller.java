@@ -25,6 +25,7 @@ public class Controller {
     private boolean gameStarted;
     ArrayList<TreeMap<Coords, ArrayList<Coords>>> allAvailableMoves;
     ArrayList<Field> frozenStones = new ArrayList<>();
+    ArrayList<Field> toFreezeStones = new ArrayList<>();
 
     /**
      * Konstruktor objektu
@@ -202,6 +203,7 @@ public class Controller {
         for (int i: numberOfFrozenStones) {
             Coords tmpCoords = temp[game.getActivePlayerTurn()].get(i);
             game.getBoard().getField(tmpCoords.getX(), tmpCoords.getY()).freeze(randomNumbers[0], randomNumbers[1]);
+            toFreezeStones.add(game.getBoard().getField(tmpCoords.getX(), tmpCoords.getY()));
             frozenStones.add(game.getBoard().getField(tmpCoords.getX(), tmpCoords.getY()));
             coordsOfFrozenStones.add(tmpCoords);
         }
@@ -290,14 +292,21 @@ public class Controller {
      * [3] vizualizovaná hrací deska
      * [4,5] souřadnice tahu počítače
      */
-    String[] analyzeNextTurn() throws GameEndedException, ComputerHasPlayed, GameIsNotStartedException {
+    String[] analyzeNextTurn(ArrayList<Field> retFields) throws GameEndedException, ComputerHasPlayed, GameIsNotStartedException {
         if (!gameStarted) {
             throw new GameIsNotStartedException();
         }
 
         allAvailableMoves = game.getAvailableMoves();
 
-        game.checkIfFrozen(frozenStones);
+        game.checkIfFrozen(frozenStones, toFreezeStones);
+
+        for (Field field: toFreezeStones) {
+            retFields.add(field);
+        }
+        for (Field field: frozenStones) {
+            retFields.add(field);
+        }
 
         if (allAvailableMoves.isEmpty()) {
             game.setFinalScore();

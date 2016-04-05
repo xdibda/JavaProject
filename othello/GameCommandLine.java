@@ -134,7 +134,8 @@ public class GameCommandLine {
                 ArrayList<String> tokenArgumentsArray = new ArrayList<>();
 
                 try {
-                    controller.analyzeNextTurn();
+                    ArrayList<Field> board = null;
+                    controller.analyzeNextTurn(board);
                 }
                 catch (GameEndedException endOfGame) {
                     showMoveInfo(endOfGame.getInfoStrings());

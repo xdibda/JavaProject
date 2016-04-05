@@ -192,7 +192,7 @@ public class Game {
      * Metoda pro kontrolu zamrznutí kamenů po tahu a změna jejich barvy
      * @param frozenStones Pole zamrznutých kamenenů
      */
-    void checkIfFrozen(ArrayList<Field> frozenStones) {
+    void checkIfFrozen(ArrayList<Field> frozenStones, ArrayList<Field> notFrozen) {
         if (frozenStones.size() > 0) {
             ArrayList<Field> tmp = new ArrayList<>();
             for (Field fieldConstructor: frozenStones) {
@@ -208,6 +208,7 @@ public class Game {
 
                 if (field.isFrozen() && color != Color.FBLACK && color != Color.FWHITE) {
                     field.changeColorFreeze();
+                    notFrozen.remove(field);
                 }
                 else if (!field.isFrozen() && color != Color.BLACK && color != Color.WHITE) {
                     field.changeColorFreeze();

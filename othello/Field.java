@@ -18,15 +18,21 @@ public class Field implements Cloneable {
      * Vnitřní třída pro plánování události
      */
     class Defrost extends TimerTask {
-        int s = 0;
+        int initSec;
+        int persistSec;
 
         /**
-         * Konstruktor vnitřní třídy pro události zmrazení
-         * @param s Doba trvání zmrazení v sekundách
-         * @see Controller
+         *
+         * @param initSec
+         * @param persistSec
          */
-        Defrost(int s) {
-            this.s = s;
+        Defrost(int initSec, int persistSec) {
+            this.initSec = initSec;
+            this.persistSec = persistSec;
+        }
+
+        int left() {
+            return (initSec == 0) ? persistSec : initSec;
         }
 
         /**
@@ -34,13 +40,17 @@ public class Field implements Cloneable {
          */
         @Override
         public void run() {
-            frozen = true;
-
-            try {
-                Thread.sleep((long) s * 1000);
-            } catch (InterruptedException e) {}
-
-            frozen = false;
+            if (initSec == 0) {
+                frozen = true;
+                if (persistSec != 0) {
+                    persistSec--;
+                }
+                else {
+                    frozen = false;
+                    timer.cancel();
+                }
+            }
+            else initSec--;
         }
 
     }
@@ -48,6 +58,8 @@ public class Field implements Cloneable {
     private Color color;
     private boolean empty;
     private boolean frozen;
+    Defrost defrost;
+    Timer timer;
 
     /**
      * Konstruktor pole, implicitně nastavené na prázdné
@@ -107,6 +119,10 @@ public class Field implements Cloneable {
             this.color = color;
     }
 
+    int left() {
+        return defrost.left();
+    }
+
     /**
      * Získání informace zda je pole prázdné
      * @return Prázdné/neprázdné pole
@@ -131,10 +147,10 @@ public class Field implements Cloneable {
      * @param persistSec Jak dlouho bude zmrazení trvat
      */
     void freeze(int initSec, int persistSec) {
-        Timer freezeTimer = new Timer();
-        Defrost defrost = new Defrost(persistSec);
+        timer = new Timer();
+        defrost = new Defrost(initSec, persistSec);
 
-        freezeTimer.schedule(defrost, initSec * 1000);
+        timer.schedule(defrost, 0, 1000);
     }
 
     /**

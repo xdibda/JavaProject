@@ -5,6 +5,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import javax.swing.JOptionPane;
 
 /**
@@ -134,9 +135,8 @@ public class GamePage extends Page
                         else
                             g.setColor( Color.black );
 
-                        Delay delay = new Delay( 5, 5 );
                         g.setFont( GameGUI.arial40bold );
-                        g.drawString( Integer.toString( delay.left() ), i * ( imgSize + GameGUI.GAP_SIZE ) + 25 + imgSize / 2, j * ( imgSize + GameGUI.GAP_SIZE ) + 50 + imgSize / 2 );
+                        g.drawString( Integer.toString( 5 ), i * ( imgSize + GameGUI.GAP_SIZE ) + 25 + imgSize / 2, j * ( imgSize + GameGUI.GAP_SIZE ) + 50 + imgSize / 2 );
                         //System.out.println( Integer.toString( delay.left() ) );
                         g.setFont( GameGUI.arial12 );
                         g.setColor( Color.white );
@@ -150,7 +150,8 @@ public class GamePage extends Page
         {
             try
             {
-                gui.setGameInfo( gui.getController().analyzeNextTurn() );
+                ArrayList<Field> frozen = new ArrayList<>();
+                gui.setGameInfo( gui.getController().analyzeNextTurn(frozen) );
             }
             catch ( GameEndedException endOfGame )
             {
