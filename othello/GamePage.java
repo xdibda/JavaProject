@@ -125,22 +125,21 @@ public class GamePage extends Page
                         break;
                 }
                 
-                if( gui.freezeTriggered )
+                for ( Utility.Coords coord : gui.getStonesCoords() )
                 {
-                    for ( Utility.Coords coord : gui.getStonesCoords() )
+                    if ( coord.getX() == i && coord.getY() == j )
                     {
-                        if ( coord.getX() == i && coord.getY() == j )
-                        {
-                            if ( colorCheck == 'B' || colorCheck == 'K' )
-                                g.setColor( Color.white );
-                            else
-                                g.setColor( Color.black );
-
-                            g.setFont( GameGUI.arial40bold );
-                            g.drawString( "F", i * ( imgSize + GameGUI.GAP_SIZE ) + 25 + imgSize / 2, j * ( imgSize + GameGUI.GAP_SIZE ) + 50 + imgSize / 2 );
-                            g.setFont( GameGUI.arial12 );
+                        if ( colorCheck == 'B' || colorCheck == 'K' )
                             g.setColor( Color.white );
-                        }
+                        else
+                            g.setColor( Color.black );
+
+                        Delay delay = new Delay( 5, 5 );
+                        g.setFont( GameGUI.arial40bold );
+                        g.drawString( Integer.toString( delay.left() ), i * ( imgSize + GameGUI.GAP_SIZE ) + 25 + imgSize / 2, j * ( imgSize + GameGUI.GAP_SIZE ) + 50 + imgSize / 2 );
+                        //System.out.println( Integer.toString( delay.left() ) );
+                        g.setFont( GameGUI.arial12 );
+                        g.setColor( Color.white );
                     }
                 }
                 
