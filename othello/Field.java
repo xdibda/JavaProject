@@ -20,19 +20,25 @@ public class Field implements Cloneable {
     class Defrost extends TimerTask {
         int initSec;
         int persistSec;
+        int originPersist;
 
         /**
          *
          * @param initSec
          * @param persistSec
          */
-        Defrost(int initSec, int persistSec) {
+        Defrost(int initSec, int persistSec, int originPersist) {
             this.initSec = initSec;
             this.persistSec = persistSec;
+            this.originPersist = originPersist;
         }
 
         int left() {
-            return (initSec == 0) ? persistSec : initSec;
+            return  (initSec == 0) ? persistSec : initSec;
+        }
+
+        boolean write() {
+            return !((initSec == 0 && persistSec == originPersist) || persistSec == 0);
         }
 
         /**
@@ -40,17 +46,17 @@ public class Field implements Cloneable {
          */
         @Override
         public void run() {
-            if (initSec == 0) {
-                frozen = true;
-                if (persistSec != 0) {
-                    persistSec--;
-                }
-                else {
-                    frozen = false;
-                    timer.cancel();
-                }
+            if (initSec != 0)
+                initSec--;
+            else {
+                    frozen = true;
+                    if (persistSec != 0)
+                        persistSec--;
+                    else {
+                        frozen = false;
+                        timer.cancel();
+                    }
             }
-            else initSec--;
         }
 
     }
@@ -123,6 +129,10 @@ public class Field implements Cloneable {
         return defrost.left();
     }
 
+    boolean write() {
+        return defrost.write();
+    }
+
     /**
      * Získání informace zda je pole prázdné
      * @return Prázdné/neprázdné pole
@@ -148,7 +158,7 @@ public class Field implements Cloneable {
      */
     void freeze(int initSec, int persistSec) {
         timer = new Timer();
-        defrost = new Defrost(initSec, persistSec);
+        defrost = new Defrost(initSec, persistSec, persistSec);
 
         timer.schedule(defrost, 0, 1000);
     }

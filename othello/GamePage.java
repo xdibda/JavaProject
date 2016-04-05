@@ -131,19 +131,17 @@ public class GamePage extends Page
                     if ( f.equals( gui.getController().getBoard().getField( i, j ) ) )
                     {
                         g.setFont( GameGUI.arial40bold );
-                        if ( colorCheck == 'B' || colorCheck == 'K' )
-                            g.setColor( Color.white );
-                        else
-                            g.setColor( Color.black );
-                        if ( f.left() != 0 )
+                        g.setColor((colorCheck == 'B' || colorCheck == 'K') ? Color.white : Color.black);
+                        if ( f.write() )
                         {
                             if( f.left() > 9 )
                             {
-                                g.drawString( Integer.toString( f.left() ), i * ( imgSize + GameGUI.GAP_SIZE ) + 12 + imgSize / 2, j * ( imgSize + GameGUI.GAP_SIZE ) + 50 + imgSize / 2 );
+                                System.out.println(f.left());
+                               g.drawString( Integer.toString( f.left() ), i * ( imgSize + GameGUI.GAP_SIZE ) + 12 + imgSize / 2, j * ( imgSize + GameGUI.GAP_SIZE ) + 50 + imgSize / 2 );
                             }
                             else
-                            {
-                                g.drawString( Integer.toString( f.left() ), i * ( imgSize + GameGUI.GAP_SIZE ) + 25 + imgSize / 2, j * ( imgSize + GameGUI.GAP_SIZE ) + 50 + imgSize / 2 );
+                            {System.out.println(f.left());
+                               g.drawString( Integer.toString( f.left() ), i * ( imgSize + GameGUI.GAP_SIZE ) + 25 + imgSize / 2, j * ( imgSize + GameGUI.GAP_SIZE ) + 50 + imgSize / 2 );
                             }
                         }
                         g.setFont( GameGUI.arial12 );

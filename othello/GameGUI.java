@@ -103,25 +103,25 @@ public class GameGUI extends Canvas implements Runnable
         
         try
         {
-            menuBackground = loader.loadImage("/menubg.jpg");
-            background = loader.loadImage("/bg.jpg");
-            imgBlackDisk = loader.loadImage( "/black_disk.png");
-            imgWhiteDisk = loader.loadImage( "/white_disk.png");
+            menuBackground = loader.loadImage("/resources/menubg.jpg");
+            background = loader.loadImage("/resources/bg.jpg");
+            imgBlackDisk = loader.loadImage( "/resources/black_disk.png");
+            imgWhiteDisk = loader.loadImage( "/resources/white_disk.png");
             
-            imgEmptyField_6 = loader.loadImage( "/empty_field_6.png");
-            imgEmptyField_8 = loader.loadImage( "/empty_field_8.png");
-            imgEmptyField_10 = loader.loadImage( "/empty_field_10.png");
-            imgEmptyField_12 = loader.loadImage( "/empty_field_12.png");
+            imgEmptyField_6 = loader.loadImage( "/resources/empty_field_6.png");
+            imgEmptyField_8 = loader.loadImage( "/resources/empty_field_8.png");
+            imgEmptyField_10 = loader.loadImage( "/resources/empty_field_10.png");
+            imgEmptyField_12 = loader.loadImage( "/resources/empty_field_12.png");
             
-            imgWhiteField_6 = loader.loadImage( "/white_field_6.png");
-            imgWhiteField_8 = loader.loadImage( "/white_field_8.png");
-            imgWhiteField_10 = loader.loadImage( "/white_field_10.png");
-            imgWhiteField_12 = loader.loadImage( "/white_field_12.png");
+            imgWhiteField_6 = loader.loadImage( "/resources/white_field_6.png");
+            imgWhiteField_8 = loader.loadImage( "/resources/white_field_8.png");
+            imgWhiteField_10 = loader.loadImage( "/resources/white_field_10.png");
+            imgWhiteField_12 = loader.loadImage( "/resources/white_field_12.png");
             
-            imgBlackField_6 = loader.loadImage( "/black_field_6.png");
-            imgBlackField_8 = loader.loadImage( "/black_field_8.png");
-            imgBlackField_10 = loader.loadImage( "/black_field_10.png");
-            imgBlackField_12 = loader.loadImage( "/black_field_12.png");
+            imgBlackField_6 = loader.loadImage( "/resources/black_field_6.png");
+            imgBlackField_8 = loader.loadImage( "/resources/black_field_8.png");
+            imgBlackField_10 = loader.loadImage( "/resources/black_field_10.png");
+            imgBlackField_12 = loader.loadImage( "/resources/black_field_12.png");
         } 
         catch( IOException e ) 
         {
@@ -188,7 +188,7 @@ public class GameGUI extends Canvas implements Runnable
             lastTime = now;
             if ( delta >= 1 )
             {
-                //tick();
+                tick();
                 updates++;
                 delta--;
             }
@@ -198,7 +198,7 @@ public class GameGUI extends Canvas implements Runnable
             if ( System.currentTimeMillis() - timer > 1000 )
             {
                 timer += 1000;
-                //System.out.println( "FPS: " + frames + " updates: " + updates );
+//                System.out.println( "FPS: " + frames + " updates: " + updates );
                 updates = 0;
                 frames = 0;
             }
@@ -206,14 +206,14 @@ public class GameGUI extends Canvas implements Runnable
         stop();
     }
     
-// TODO animations (maybe)
-//    private void tick()
-//    {
-//        if ( state == STATE.GAME )
-//        {
-//            // render...
-//        }
-//    }
+    // TODO animations (maybe)
+    private void tick()
+    {
+        if ( state == STATE.GAME )
+        {
+            // render...
+        }
+    }
     
     private void render()
     {
