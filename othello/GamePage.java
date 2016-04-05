@@ -18,6 +18,7 @@ public class GamePage extends Page
     
     private String congratulations = null;
     private String playerName = null;
+    ArrayList<Field> frozen = new ArrayList<>();
     
     public Rectangle boardBackground = new Rectangle( 34, 34, 700, 700 );
     public Rectangle userPanelBackground = new Rectangle ( 768, 34, 222, 700 );
@@ -91,7 +92,7 @@ public class GamePage extends Page
     
     public void renderGameBoard( Graphics g)
     {
-        int i, j;
+        int i, j, x, y;
         char colorCheck = 'W';
         for ( j = 0; j < gui.getBoardSize(); j++ )
         {
@@ -110,14 +111,14 @@ public class GamePage extends Page
                     case 'K':
                         g.drawImage( imgBlackField, i * ( imgSize + GameGUI.GAP_SIZE ) + 34, j * ( imgSize + GameGUI.GAP_SIZE ) + 34, null );
                         g.setColor(transparentWhite);
-                        g.fillRect(i * ( imgSize + GameGUI.GAP_SIZE ) + 34, j * ( imgSize + GameGUI.GAP_SIZE ) + 34, imgSize, imgSize );
+                        g.fillRect( i * ( imgSize + GameGUI.GAP_SIZE ) + 34, j * ( imgSize + GameGUI.GAP_SIZE ) + 34, imgSize, imgSize );
                         g.setColor( Color.white );
                         colorCheck = 'K';
                         break;
                     case 'E':
                         g.drawImage( imgWhiteField, i * ( imgSize + GameGUI.GAP_SIZE ) + 34, j * ( imgSize + GameGUI.GAP_SIZE ) + 34, null );
                         g.setColor(transparentWhite);
-                        g.fillRect(i * ( imgSize + GameGUI.GAP_SIZE ) + 34, j * ( imgSize + GameGUI.GAP_SIZE ) + 34, imgSize, imgSize );
+                        g.fillRect( i * ( imgSize + GameGUI.GAP_SIZE ) + 34, j * ( imgSize + GameGUI.GAP_SIZE ) + 34, imgSize, imgSize );
                         g.setColor( Color.white );
                         colorCheck = 'E';
                         break;
@@ -125,19 +126,26 @@ public class GamePage extends Page
                         g.drawImage( imgEmptyField, i * ( imgSize + GameGUI.GAP_SIZE ) + 34, j * ( imgSize + GameGUI.GAP_SIZE ) + 34, null );
                         break;
                 }
-                
-                for ( Utility.Coords coord : gui.getStonesCoords() )
+                for ( Field f: frozen )
                 {
-                    if ( coord.getX() == i && coord.getY() == j )
+                    if ( f.equals( gui.getController().getBoard().getField( i, j ) ) )
                     {
+                        g.setFont( GameGUI.arial40bold );
                         if ( colorCheck == 'B' || colorCheck == 'K' )
                             g.setColor( Color.white );
                         else
                             g.setColor( Color.black );
-
-                        g.setFont( GameGUI.arial40bold );
-                        g.drawString( Integer.toString( 5 ), i * ( imgSize + GameGUI.GAP_SIZE ) + 25 + imgSize / 2, j * ( imgSize + GameGUI.GAP_SIZE ) + 50 + imgSize / 2 );
-                        //System.out.println( Integer.toString( delay.left() ) );
+                        if ( f.left() != 0 )
+                        {
+                            if( f.left() > 9 )
+                            {
+                                g.drawString( Integer.toString( f.left() ), i * ( imgSize + GameGUI.GAP_SIZE ) + 12 + imgSize / 2, j * ( imgSize + GameGUI.GAP_SIZE ) + 50 + imgSize / 2 );
+                            }
+                            else
+                            {
+                                g.drawString( Integer.toString( f.left() ), i * ( imgSize + GameGUI.GAP_SIZE ) + 25 + imgSize / 2, j * ( imgSize + GameGUI.GAP_SIZE ) + 50 + imgSize / 2 );
+                            }
+                        }
                         g.setFont( GameGUI.arial12 );
                         g.setColor( Color.white );
                     }
@@ -150,8 +158,10 @@ public class GamePage extends Page
         {
             try
             {
-                ArrayList<Field> frozen = new ArrayList<>();
-                gui.setGameInfo( gui.getController().analyzeNextTurn(frozen) );
+                //ArrayList <Field> tmp = new ArrayList<>();
+                //frozen.add( tmp );
+                
+                gui.setGameInfo( gui.getController().analyzeNextTurn( frozen ) );
             }
             catch ( GameEndedException endOfGame )
             {

@@ -342,4 +342,9 @@ public class Controller {
                 Utility.visualizeBoard(game.getBoard())
         };
     }
+    
+    public Board getBoard()
+    {
+        return this.game.getBoard();
+    }
 }
