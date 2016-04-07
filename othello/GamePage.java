@@ -4,7 +4,7 @@
  *          2) Načtení správného obrázku
  *          3) Vykreslení hrací desky
  *          4) Vykreslení hráčského panelu
- *          5) TODO Vykreslení souřadnic
+ *          5) Vykreslení souřadnic
  * @author Lukáš Hudec
  * @see othello.GameGUI
  * @see othello.Page
@@ -66,6 +66,7 @@ public class GamePage extends Page
         g.setColor( Color.white );
         
         prepareImage();
+        renderCoords( g );
         renderGameBoard( g );
         renderUserPanel( g, g2d );
     }
@@ -127,14 +128,17 @@ public class GamePage extends Page
             {
                 switch ( gui.getGameInfo()[ 3 ].charAt( i + j * gui.getBoardSize() ) )
                 {
+                // WHITE
                     case 'W':
                         g.drawImage( imgWhiteField, i * ( imgSize + GameGUI.GAP_SIZE ) + 34, j * ( imgSize + GameGUI.GAP_SIZE ) + 34, null );
                         colorCheck = 'W';
                         break;
+                // BLACK
                     case 'B':
                         g.drawImage( imgBlackField, i * ( imgSize + GameGUI.GAP_SIZE ) + 34, j * ( imgSize + GameGUI.GAP_SIZE ) + 34, null );
                         colorCheck = 'B';
                         break;
+                // FROZEN BLACK
                     case 'K':
                         g.drawImage( imgBlackField, i * ( imgSize + GameGUI.GAP_SIZE ) + 34, j * ( imgSize + GameGUI.GAP_SIZE ) + 34, null );
                         g.setColor(transparentWhite);
@@ -142,6 +146,7 @@ public class GamePage extends Page
                         g.setColor( Color.white );
                         colorCheck = 'K';
                         break;
+                // FROZEN WHITE
                     case 'E':
                         g.drawImage( imgWhiteField, i * ( imgSize + GameGUI.GAP_SIZE ) + 34, j * ( imgSize + GameGUI.GAP_SIZE ) + 34, null );
                         g.setColor(transparentWhite);
@@ -153,9 +158,8 @@ public class GamePage extends Page
                         g.drawImage( imgEmptyField, i * ( imgSize + GameGUI.GAP_SIZE ) + 34, j * ( imgSize + GameGUI.GAP_SIZE ) + 34, null );
                         break;
                 }
-                /**
-                 *    Cyklus, pro vykreslení odpočtu na jednotlivých zamrzlých polích
-                 */
+
+                //Cyklus, pro vykreslení odpočtu na jednotlivých zamrzlých polích
                 for ( Field f: frozen )
                 {
                     if ( f.equals( gui.getController().getBoard().getField( i, j ) ) )
@@ -179,12 +183,11 @@ public class GamePage extends Page
                         g.setColor( Color.white );
                     }
                 }
-                g.drawString( Integer.toString( i + j * gui.getBoardSize() ), i * ( imgSize + GameGUI.GAP_SIZE ) + 35, j * ( imgSize + GameGUI.GAP_SIZE ) + 45 );
+                //g.drawString( Integer.toString( i + j * gui.getBoardSize() ), i * ( imgSize + GameGUI.GAP_SIZE ) + 35, j * ( imgSize + GameGUI.GAP_SIZE ) + 45 );
             }
         }
-        /**
-         * Kontrola konce hry
-         */
+        
+        /// Kontrola a vykreslování konce hry, tah počítače
         if( !gui.finished )
         {
             try
@@ -292,13 +295,24 @@ public class GamePage extends Page
     }
     
     /**
-     * TODO
      * Metoda na vykreslení souřadnic kolem hrací desky
      * @param g grafika
      */
-
     public void renderCoords( Graphics g )
     {
-        
+        char c = 'A';
+        g.setFont( GameGUI.arial12bold );
+        for ( int i = 0; i < gui.getBoardSize(); i++ )
+        {
+            g.drawString( Character.toString( c ), i * ( imgSize + GameGUI.GAP_SIZE ) + imgSize / 2 + 30, 25 );
+            
+            if( i < 9 )
+                g.drawString( Integer.toString( i + 1 ), 20, i * ( imgSize + GameGUI.GAP_SIZE ) + imgSize / 2 + 40 );
+            else
+                g.drawString( Integer.toString( i + 1 ), 15, i * ( imgSize + GameGUI.GAP_SIZE ) + imgSize / 2 + 40 );
+            
+            c++;
+        }
+        g.setFont( GameGUI.arial12 );
     }
 }
