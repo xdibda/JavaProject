@@ -1,7 +1,9 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * Třída pro grafické zobrazení stránky o autorech hry
+ * Funkce:  1) Vykreslení stránky
+ * @author Lukáš Hudec
+ * @see othello.GameGUI
+ * @see othello.Page
  */
 package othello;
 
@@ -10,14 +12,14 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 
-/**
- *
- * @author Lukáš
- */
-public class CreditsPage extends Page {
-    
+public class CreditsPage extends Page
+{
     public Rectangle backButton = new Rectangle( GameGUI.WIDTH / 2 - 150, 650, 300, 75 );
     
+    /**
+     * Přetížená metoda, která vykresluje stránku
+     * @param g grafika
+     */
     @Override
     public void render( Graphics g )
     {

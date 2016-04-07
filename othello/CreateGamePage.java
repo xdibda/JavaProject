@@ -1,8 +1,12 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * Třída pro grafické zobrazení stránky s volbami hry
+ * Funkce:  1) Vykreslení stránky
+ *          2) Vykreslení jednotlivých komponent
+ * @author Lukáš Hudec
+ * @see othello.GameGUI
+ * @see othello.Page
  */
+
 package othello;
 
 import java.awt.Color;
@@ -10,10 +14,6 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 
-/**
- *
- * @author Lukáš
- */
 public class CreateGamePage extends Page
 {
     private GameGUI gui = null;
@@ -33,6 +33,10 @@ public class CreateGamePage extends Page
     public Rectangle nextButton = new Rectangle( GameGUI.WIDTH / 2 - 230, 650, 220, 75 );
     public Rectangle backButton = new Rectangle( GameGUI.WIDTH / 2 + 10, 650, 220, 75 );
 
+    /**
+     * Konstruktor třídy CreateGamePage
+     * @param gui GUI
+     */
     public CreateGamePage( GameGUI gui )
     {
         this.gui = gui;
@@ -40,6 +44,10 @@ public class CreateGamePage extends Page
         this.gui.easy = true;
     }
     
+    /**
+     * Přetížená metoda, která vykresluje stránku
+     * @param g grafika
+     */
     @Override
     public void render( Graphics g )
     {
@@ -56,6 +64,11 @@ public class CreateGamePage extends Page
         g.drawString( "Next", GameGUI.WIDTH / 2 + 80, 700 );
     }
     
+    /**
+     * Metoda, která vykresluje tlačítka pro volbu velikosti hrací desky
+     * @param g grafika
+     * @param g2d 2D grafika
+     */
     private void renderSizeOptions( Graphics g, Graphics2D g2d )
     {
         g.setFont( pageTitleFont );
@@ -105,6 +118,11 @@ public class CreateGamePage extends Page
         g.drawString( "12", GameGUI.WIDTH / 2 + 160, 265 );
     }
     
+    /**
+     * Metoda, která vykresluje tlačítka pro volbu protihráče
+     * @param g grafika
+     * @param g2d 2D grafika
+     */
     private void renderOpponentOptions( Graphics g, Graphics2D g2d )
     {
         g.setColor( Color.white );

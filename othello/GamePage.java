@@ -1,3 +1,15 @@
+/**
+ * Třída pro grafické zobrazení stránky běžící hry
+ * Funkce:  1) Vykreslení stránky
+ *          2) Načtení správného obrázku
+ *          3) Vykreslení hrací desky
+ *          4) Vykreslení hráčského panelu
+ *          5) TODO Vykreslení souřadnic
+ * @author Lukáš Hudec
+ * @see othello.GameGUI
+ * @see othello.Page
+ */
+
 package othello;
 
 import java.awt.Color;
@@ -8,19 +20,17 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import javax.swing.JOptionPane;
 
-/**
- *  TODO RenderCoords()
- * @author Lukáš
- */
 public class GamePage extends Page
 {
     private GameGUI gui = null;
     
-    private String congratulations = null;
     private String playerName = null;
+    
+    /**
+     * Pole se zamrzlými políčky
+     */
     ArrayList<Field> frozen = new ArrayList<>();
     
-    public Rectangle boardBackground = new Rectangle( 34, 34, 700, 700 );
     public Rectangle userPanelBackground = new Rectangle ( 768, 34, 222, 700 );
     
     public Rectangle freezeButton = new Rectangle( 779, 490, 200, 50 );
@@ -29,16 +39,25 @@ public class GamePage extends Page
     public Rectangle quitButton = new Rectangle( 779, 673, 200, 50 );
     
     private int imgSize;
+    
     private BufferedImage imgEmptyField;
     private BufferedImage imgWhiteField;
     private BufferedImage imgBlackField;
     
+    /**
+     * Konstruktor třídy GamePage
+     * @param gui GUI
+     */
     public GamePage( GameGUI gui )
     {
         this.gui = gui;
         gui.finished = false;
     }
     
+    /**
+     * Přetížená metoda, která vykresluje stránku
+     * @param g grafika
+     */
     @Override
     public void render( Graphics g )
     {
@@ -51,6 +70,9 @@ public class GamePage extends Page
         renderUserPanel( g, g2d );
     }
     
+    /**
+     * Metoda, která načte obrázky polí, podle velikosti hrací desky
+     */
     public void prepareImage()
     {
         switch ( gui.getBoardSize() )
@@ -90,6 +112,11 @@ public class GamePage extends Page
         }
     }
     
+    /**
+     * Metoda, která vykresluje hrací desku na základě informací o hře
+     * @param g grafika
+     * @see othello.Controller
+     */
     public void renderGameBoard( Graphics g)
     {
         int i, j, x, y;
@@ -126,21 +153,25 @@ public class GamePage extends Page
                         g.drawImage( imgEmptyField, i * ( imgSize + GameGUI.GAP_SIZE ) + 34, j * ( imgSize + GameGUI.GAP_SIZE ) + 34, null );
                         break;
                 }
+                /**
+                 *    Cyklus, pro vykreslení odpočtu na jednotlivých zamrzlých polích
+                 */
                 for ( Field f: frozen )
                 {
                     if ( f.equals( gui.getController().getBoard().getField( i, j ) ) )
                     {
                         g.setFont( GameGUI.arial40bold );
-                        g.setColor((colorCheck == 'B' || colorCheck == 'K') ? Color.white : Color.black);
+                        g.setColor( ( colorCheck == 'B' || colorCheck == 'K' ) ? Color.white : Color.black );
                         if ( f.write() )
                         {
                             if( f.left() > 9 )
                             {
-                                System.out.println(f.left());
+                               //System.out.println(f.left());
                                g.drawString( Integer.toString( f.left() ), i * ( imgSize + GameGUI.GAP_SIZE ) + 12 + imgSize / 2, j * ( imgSize + GameGUI.GAP_SIZE ) + 50 + imgSize / 2 );
                             }
                             else
-                            {System.out.println(f.left());
+                            {
+                               //System.out.println(f.left());
                                g.drawString( Integer.toString( f.left() ), i * ( imgSize + GameGUI.GAP_SIZE ) + 25 + imgSize / 2, j * ( imgSize + GameGUI.GAP_SIZE ) + 50 + imgSize / 2 );
                             }
                         }
@@ -148,17 +179,16 @@ public class GamePage extends Page
                         g.setColor( Color.white );
                     }
                 }
-                
                 g.drawString( Integer.toString( i + j * gui.getBoardSize() ), i * ( imgSize + GameGUI.GAP_SIZE ) + 35, j * ( imgSize + GameGUI.GAP_SIZE ) + 45 );
             }
         }
+        /**
+         * Kontrola konce hry
+         */
         if( !gui.finished )
         {
             try
             {
-                //ArrayList <Field> tmp = new ArrayList<>();
-                //frozen.add( tmp );
-                
                 gui.setGameInfo( gui.getController().analyzeNextTurn( frozen ) );
             }
             catch ( GameEndedException endOfGame )
@@ -171,10 +201,12 @@ public class GamePage extends Page
             catch ( ComputerHasPlayed computerTurn )
             {
                 gui.setGameInfo( computerTurn.getInfoStrings() );
-                //showMoveInfo(computerTurn.getInfoStrings()[4], computerTurn.getInfoStrings()[5],computerTurn.getInfoStrings());
             }
             catch ( GameIsNotStartedException e ) {}
             
+            /**
+             * Pokud hraje počítač je nastaveno zpoždění 0,5s, které simuluje tah počítače
+             */
             if ( gui.computerPlayer )
             {
                 try
@@ -198,6 +230,15 @@ public class GamePage extends Page
         }
     }
     
+    /**
+     * Metoda, která vykresluje hráčský panel
+     * - vykreslení skóre
+     * - vykreslení hráče na tahu
+     * - vykreslení informací o zamrzlých kamenech
+     * - vykreslení hráčských tlačítek
+     * @param g grafika
+     * @param g2d 2D Grafika
+     */
     public void renderUserPanel( Graphics g, Graphics2D g2d )
     {
         g.setColor( super.transparentWhite );
@@ -213,17 +254,16 @@ public class GamePage extends Page
         g.drawString( gui.getGameInfo()[0] + " : " + gui.getGameInfo()[1], 830, 180 );
         g.setFont( super.basicFont );
         
-//        g.drawString( gui.getGameInfo()[2].substring(1, 8), 772, 300 );
-        if( ( gui.getGameInfo()[2].substring(1, 8) ).equals("pocitac") )
+        if( ( gui.getGameInfo()[ 2 ].substring( 1, 8 ) ).equals("pocitac") )
         {
             g.drawString( "Pocitac", 850, 250 );
         }
         else
         {
-            g.drawString( gui.getGameInfo()[2].substring(1, 7), 850, 250 );
+            g.drawString( gui.getGameInfo()[ 2 ].substring( 1, 7 ), 850, 250 );
         }
         
-        if ( gui.getGameInfo()[2].substring(10, 15).equals( "BLACK" ) )
+        if ( gui.getGameInfo()[ 2 ].substring(10, 15).equals( "BLACK" ) )
         {
             g.drawImage( gui.imgBlackDisk, 810, 300, null );
         }
@@ -251,13 +291,14 @@ public class GamePage extends Page
         g.drawString( "Quit", 849, 710);
     }
     
-    // TODO
-    public void renderCoords( Graphics g, int col, int row )
+    /**
+     * TODO
+     * Metoda na vykreslení souřadnic kolem hrací desky
+     * @param g grafika
+     */
+
+    public void renderCoords( Graphics g )
     {
-        if ( row == 0 || row == gui.getBoardSize() )
-        {
-            
-        }
+        
     }
-    
 }

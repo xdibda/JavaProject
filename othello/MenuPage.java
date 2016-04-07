@@ -1,3 +1,10 @@
+/**
+ * Třída pro grafické zobrazení stránky s hlavním menu
+ * Funkce:  1) Vykreslení stránky
+ * @author Lukáš Hudec
+ * @see othello.GameGUI
+ * @see othello.Page
+ */
 package othello;
 
 import java.awt.Color;
@@ -5,18 +12,18 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 
-/**
- *
- * @author Lukáš
- */
-public class MenuPage extends Page{
-    
+public class MenuPage extends Page
+{
     public Rectangle newGameButton = new Rectangle( GameGUI.WIDTH / 2 - 150, 250, 300, 75 );
     public Rectangle loadGameButton = new Rectangle( GameGUI.WIDTH / 2 - 150, 350, 300, 75 );
     public Rectangle creditsButton = new Rectangle( GameGUI.WIDTH / 2 - 150, 450, 300, 75 );
     public Rectangle howToPlayButton = new Rectangle( GameGUI.WIDTH / 2 - 150, 550, 300, 75 );
     public Rectangle quitButton = new Rectangle( GameGUI.WIDTH / 2 - 150, 650, 300, 75 );
-      
+    
+    /**
+     * Přetížená metoda, která vykresluje stránku
+     * @param g grafika
+     */
     @Override
     public void render( Graphics g )
     {

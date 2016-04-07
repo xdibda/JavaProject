@@ -1,7 +1,11 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * Abstraktní třída pro stránky
+ * Obsahuje:  1) definice fontů
+ *            2) definice barev
+ *            3) deklaraci metody Render()
+ *            4) Abstraktní metodu vykreslující tlačítko
+ * @author Lukáš Hudec
+ * @see othello.GameGUI
  */
 package othello;
 
@@ -11,10 +15,6 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 
-/**
- *
- * @author Lukáš
- */
 public abstract class Page
 {
     Font gameTitleFont = new Font( "arial", Font.BOLD, 90 );
@@ -27,6 +27,17 @@ public abstract class Page
     
     abstract public void render( Graphics g );
     
+    /**
+     * Metoda, která vykresluje tlačítko
+     * @param r čtverec, ohraničující tlačítko
+     * @param g grafika
+     * @param g2d 2D grafika
+     * @param x x-ová souřadnice čtverce
+     * @param y y-ová souřadnice čtverce
+     * @param width šířka tlačítka
+     * @param height výška tlačítka
+     * @param selected flag, zda je tlačítko vybráno
+     */
     public void renderButton( Rectangle r, Graphics g, Graphics2D g2d, int x, int y, int width, int height, boolean selected )
     {
         g2d.draw( r );

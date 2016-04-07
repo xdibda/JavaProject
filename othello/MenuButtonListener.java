@@ -1,26 +1,32 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * Třída pro ovládání hry myší
+ * Funkce:  1) Ovládání hlavního menu
+ *          2) Ovládání nastavování hry
+ *          3) Ovládání hrací desky
+ *          4) Ovládání hračského panelu
+ *          5) Výběr souboru pro načtení uložené hry
+ * @author Lukáš Hudec
+ * @see othello.GameGUI
+ * @see othello.Controller
  */
 package othello;
 
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.File;
-import java.util.ArrayList;
 import javax.swing.JFileChooser;
-import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileView;
+import javax.swing.JOptionPane;
 
-/**
- *
- * @author Lukáš
- */
 public class MenuButtonListener implements MouseListener 
 {
     private GameGUI gui;
     
+    /**
+     * Konstruktor, který vytvoří nový MenuButtonListener
+     * a propojí ho s GUI
+     * @param gui GUI
+     */
     public MenuButtonListener( GameGUI gui )
     {
         this.gui = gui;
@@ -28,7 +34,10 @@ public class MenuButtonListener implements MouseListener
         gui.easy = true;
     }
     
-
+    /**
+     * Přetížená metoda, která se invokuje po kliknutí myší
+     * @param e událost myši
+     */
     @Override
     public void mousePressed( MouseEvent e )
     {
@@ -78,18 +87,24 @@ public class MenuButtonListener implements MouseListener
     @Override
     public void mouseExited( MouseEvent e ) {}
     
+    /**
+     * Metoda, která zpracovává události myši na stránce hlavní menu
+     * @param mouseX x-ová souřadnice myši
+     * @param mouseY y-ová souřadnice myši
+     */
     public void menuHandler( int mouseX, int mouseY )
     {
         if ( mouseX >= GameGUI.WIDTH / 2 - 150 && mouseX <= GameGUI.WIDTH / 2 + 150 )
         {
-        // New Game
+        // New Game Button
             if ( mouseY >= 250 && mouseY <= 325 )
             {
                 gui.setState( GameGUI.STATE.CREATE );
             }
-        // Load Game
+        // Load Game Button
             else if ( mouseY >= 350 && mouseY <= 425 )
             {
+                // Nastavení, aby se otevřela složka save a znemožnění přístupu do jiných adresářů
                 final File dirToLock = new File("./save");
                 final JFileChooser fc = new JFileChooser( dirToLock );
                 
@@ -124,17 +139,17 @@ public class MenuButtonListener implements MouseListener
                     gui.setState( GameGUI.STATE.MENU );
                 }
             }
-        // Credits
+        // Credits Button
             else if ( mouseY >= 450 && mouseY <= 525 )
             {
                 gui.setState( GameGUI.STATE.CREDITS );
             }
-        // How to play
+        // How to play Button
             else if ( mouseY >= 550 && mouseY <= 625 )
             {
                 gui.setState( GameGUI.STATE.HOWTO );
             }
-        // Quit
+        // Quit Button
             else if ( mouseY >= 650 && mouseY <= 725 )
             {
                 System.exit( 0 );
@@ -142,16 +157,21 @@ public class MenuButtonListener implements MouseListener
         }
     }
     
+    /**
+     * Metoda, která zpracovává události na stránce s nastavením hry
+     * @param mouseX x-ová souřadnice myši
+     * @param mouseY y-ová souřadnice myši
+     */
     public void gameOptionsHandler( int mouseX, int mouseY )
     {
         if ( mouseY >= 650 && mouseY <= 725 )
         {
-        //  Back
+        //  Back Button
             if ( mouseX >= GameGUI.WIDTH / 2 - 230 && mouseX <= GameGUI.WIDTH / 2 - 10 )
             {
                 gui.setState( GameGUI.STATE.MENU );
             }
-        //  Next
+        //  Next Button
             else if ( mouseX >= GameGUI.WIDTH / 2 + 10 && mouseX <= GameGUI.WIDTH / 2 + 230 )
             {
                 if ( !gui.computerPlayer )
@@ -204,34 +224,34 @@ public class MenuButtonListener implements MouseListener
         //  Human
             if ( mouseX >= GameGUI.WIDTH / 2 - 230 && mouseX <= GameGUI.WIDTH / 2 - 10 )
             {
-//                System.out.println( "HUMAN" );
                 gui.computerPlayer = false;
             }
         //  AI
             else if ( mouseX >= GameGUI.WIDTH / 2 + 10 && mouseX <= GameGUI.WIDTH / 2 + 230 )
             {
-//                System.out.println( "AI" );
                 gui.computerPlayer = true;
             }
         }
-        
-        if( gui.computerPlayer && mouseY >= 500 && mouseY <= 575 )
+        else if( gui.computerPlayer && mouseY >= 500 && mouseY <= 575 )
         {
         //  Easy
             if ( mouseX >= GameGUI.WIDTH / 2 - 230 && mouseX <= GameGUI.WIDTH / 2 - 10 )
             {
-//                System.out.println( "HUMAN" );
                 gui.easy = true;
             }
         //  Hard
             else if ( mouseX >= GameGUI.WIDTH / 2 + 10 && mouseX <= GameGUI.WIDTH / 2 + 230 )
             {
-//                System.out.println( "AI" );
                 gui.easy = false;
             }
         }
     }
     
+    /**
+     * Metoda, která zpracovává události na jednodušší stránce s jedním tlačítkem
+     * @param mouseX x-ová souřadnice myši
+     * @param mouseY y-ová souřadnice myši
+     */
     public void commonHandler( int mouseX, int mouseY )
     {
         if( mouseX >= GameGUI.WIDTH / 2 - 150 && mouseX <= GameGUI.WIDTH / 2 + 150 )
@@ -243,6 +263,11 @@ public class MenuButtonListener implements MouseListener
         }
     }
     
+    /**
+     * Metoda, která zpracovává události na hráčském panelu
+     * @param mouseX x-ová souřadnice myši
+     * @param mouseY y-ová souřadnice myši
+     */
     public void playerPanelHandler( int mouseX, int mouseY )
     {
         if( mouseX >= 779 && mouseX <= 979 )
@@ -322,6 +347,11 @@ public class MenuButtonListener implements MouseListener
         }
     }
     
+    /**
+     * Metoda, která zpracovává události na herní desce
+     * @param mouseX x-ová souřadnice myši
+     * @param mouseY y-ová souřadnice myši
+     */
     public void gameHandler( int mouseX, int mouseY )
     {
         int startX, startY;
@@ -363,7 +393,6 @@ public class MenuButtonListener implements MouseListener
                         {
                             JOptionPane.showMessageDialog( GameGUI.frame, e, "Warning", JOptionPane.ERROR_MESSAGE );
                         }
-                        //System.out.println( "Coords: " + i + " " + j );
                     }
                 }
             }
