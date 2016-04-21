@@ -224,14 +224,14 @@ public class Game {
      * @return Pole kamenů černého i bílého hráče
      * @see Controller
      */
-    ArrayList<Coords>[] getNotFrozenStones() {
+    ArrayList<Coords>[] getAvailable() {
         ArrayList<Coords> blackStones = new ArrayList<>();
         ArrayList<Coords> whiteStones = new ArrayList<>();
 
         for (int i = 0; i < Board.SIZE; i++) {
             for (int j = 0; j < Board.SIZE; j++) {
                 try {
-                    if (!getBoard().getField(i, j).isFrozen()) {
+                    if (getBoard().getField(i, j).isAvailable()) {
                         switch (getBoard().getField(i, j).getColor()) {
                             case BLACK:
                             case FBLACK:

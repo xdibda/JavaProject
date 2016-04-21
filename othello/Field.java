@@ -54,6 +54,7 @@ public class Field implements Cloneable {
                         persistSec--;
                     else {
                         frozen = false;
+                        available = true;
                         timer.cancel();
                     }
             }
@@ -64,6 +65,7 @@ public class Field implements Cloneable {
     private Color color;
     private boolean empty;
     private boolean frozen;
+    private boolean available;
     Defrost defrost;
     Timer timer;
 
@@ -73,12 +75,14 @@ public class Field implements Cloneable {
     Field() {
         empty = true;
         frozen = false;
+        available = true;
     }
 
     Field(Field field) {
         this.empty = field.empty;
         this.color = field.color;
         this.frozen = field.frozen;
+        this.available = field.available;
     }
 
     /**
@@ -169,5 +173,13 @@ public class Field implements Cloneable {
      */
     public boolean isFrozen() {
         return frozen;
+    }
+
+    public boolean isAvailable() {
+        return available;
+    }
+
+    public void setAvailable(boolean available) {
+        this.available = available;
     }
 }

@@ -15,7 +15,6 @@ package othello;
 
 import othello.Utility.*;
 
-import java.io.IOException;
 import java.util.*;
 
 public class Controller {
@@ -193,17 +192,17 @@ public class Controller {
             throw new GameIsNotStartedException();
         }
 
-        ArrayList<Coords>[] temp = game.getNotFrozenStones();
+        ArrayList<Coords>[] notFrozen = game.getAvailable();
         ArrayList<Integer> numberOfFrozenStones = new ArrayList<>();
 
         int[] randomNumbers = new int [2];
 
-        Utility.generateRandomNumbers(randomNumbers, temp[game.getActivePlayerTurn()].size(), numberOfFrozenStones);
+        Utility.generateRandomNumbers(randomNumbers, notFrozen[game.getActivePlayerTurn()].size(), numberOfFrozenStones);
 
         for (int i: numberOfFrozenStones) {
-            Coords tmpCoords = temp[game.getActivePlayerTurn()].get(i);
+            Coords tmpCoords = notFrozen[game.getActivePlayerTurn()].get(i);
             game.getBoard().getField(tmpCoords.getX(), tmpCoords.getY()).freeze(randomNumbers[0], randomNumbers[1]);
-            toFreezeStones.add(game.getBoard().getField(tmpCoords.getX(), tmpCoords.getY()));
+            game.getBoard().getField(tmpCoords.getX(), tmpCoords.getY()).setAvailable(false);
             frozenStones.add(game.getBoard().getField(tmpCoords.getX(), tmpCoords.getY()));
             coordsOfFrozenStones.add(tmpCoords);
         }
