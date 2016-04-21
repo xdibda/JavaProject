@@ -175,10 +175,18 @@ public class Field implements Cloneable {
         return frozen;
     }
 
+    /**
+     * Zjišťuje, zdali je kámen zmrazen nebo čeká na zmrazení
+     * @return
+     */
     public boolean isAvailable() {
         return available;
     }
 
+    /**
+     * Nastavuje kámen na volný ke zmrazení
+     * @param available kámen volný ke zmrazení
+     */
     public void setAvailable(boolean available) {
         this.available = available;
     }

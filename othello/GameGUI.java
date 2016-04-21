@@ -1,16 +1,14 @@
-/**
- * Třída pro grafické zobrazení informací o hře v grafickém uživatelském
- * rozhraní.
- * Funkce:  1) Inicializace GUI
- *          2) Vykreslení stránek na základě stavů hry
- * @author Lukáš Hudec
- * @see othello.Controller
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
  */
 package othello;
 
 import javax.swing.*;
 
 import java.awt.*;
+import java.awt.event.*;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 
@@ -18,57 +16,35 @@ import java.io.IOException;
 import java.util.ArrayList;
 import othello.Utility.Coords;
 
+/**
+ *
+ * @author Lukáš
+ */
 public class GameGUI extends Canvas implements Runnable
 {
     public static final String TITLE = "2D Othello Game";
-    /**
-     * Pevně daná šířka a výška okna
-     */
     public static final int WIDTH = 1024;
     public static final int HEIGHT = 768;
-    /**
-     * Velikost mezery mezi jednotlivými poličky herní desky
-     */
     public static final int GAP_SIZE = 2;
-    /**
-     * Velikosti políček v závislé na velikosti herní desky
-     */
     public static final int FIELD_6_SIZE = 115;
     public static final int FIELD_8_SIZE = 86;
     public static final int FIELD_10_SIZE = 68;
     public static final int FIELD_12_SIZE = 56;
     
     private Thread thread;
-    private Controller controller = null;
-    private ArrayList<Coords> coords = null;
-    private int boardSize = 0;    
-    private String[] gameInfo = null;
-    private String freezeInfo = null;
     
-    /**
-     * Stav hry
-     */
-    private STATE state = STATE.MENU;
-    
-    /**
-     * Flagy, pro kontrolu běhu hry
-     */
     private boolean running = false;
     public boolean computerPlayer;
     public boolean easy;
     public boolean finished;
     public boolean freezeTriggered = false;
     
-    /**
-     * Definice různých fontů
-     */
+    private ArrayList<Utility.Coords> stonesCoords;
+    
     public static Font arial12 = new Font( "arial", Font.PLAIN, 12 );
     public static Font arial12bold = new Font( "arial", Font.BOLD, 12 );
     public static Font arial40bold = new Font( "arial", Font.BOLD, 40 );
     
-    /**
-     * Používáné obrázky
-     */
     private final BufferedImage image = new BufferedImage( WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB );
     private BufferedImage menuBackground = null;
     private BufferedImage background = null;
@@ -91,43 +67,35 @@ public class GameGUI extends Canvas implements Runnable
     public BufferedImage imgBlackField_10 = null;
     public BufferedImage imgBlackField_12 = null;
     
+    private Controller controller = null;
+    private String freezeInfo = null;
+    private Player p;
     
-    /**
-     * Instance tříd, které reprezentují jednotlivé stránky
-     */
     private MenuPage pgMenu;
     private CreateGamePage pgCreate;
     private GamePage pgGame;
     private CreditsPage pgCredits;
     private HowToPage pgHowTo;
             
+    public JOptionPane op;
     static JFrame frame;
     public static Graphics g;
     
-    /**
-     * Enum - stavy hry
-     * - MENU    - hlavní menu
-     * - CREATE  - volby hry
-     * - GAME    - běžící hra
-     * - CREDITS - o autorech
-     * - HOWTO   - nápověda hry
-     */
     public static enum STATE
     {
         MENU,
         CREATE,
         GAME,
+        SAVE,
         CREDITS,
         HOWTO
     };
-
-    /**
-     * Metoda, která provede inicializaci GUI:
-     * - načtení obrázků
-     * - inicializace jednotlivých stránek hry
-     * - nastavení implicitní hodnoty velikosti hrací desky
-     * - inicializace MouseListeneru {@code MenuButtonListener}
-     */
+    
+    private STATE state = STATE.MENU;
+    
+    private int boardSize = 0;    
+    private String[] gameInfo;
+    
     public void initialize()
     {
         requestFocus();
@@ -135,25 +103,25 @@ public class GameGUI extends Canvas implements Runnable
         
         try
         {
-            menuBackground = loader.loadImage("/menubg.jpg");
-            background = loader.loadImage("/bg.jpg");
-            imgBlackDisk = loader.loadImage( "/black_disk.png");
-            imgWhiteDisk = loader.loadImage( "/white_disk.png");
+            menuBackground = loader.loadImage("/resources/menubg.jpg");
+            background = loader.loadImage("/resources/bg.jpg");
+            imgBlackDisk = loader.loadImage( "/resources/black_disk.png");
+            imgWhiteDisk = loader.loadImage( "/resources/white_disk.png");
             
-            imgEmptyField_6 = loader.loadImage( "/empty_field_6.png");
-            imgEmptyField_8 = loader.loadImage( "/empty_field_8.png");
-            imgEmptyField_10 = loader.loadImage( "/empty_field_10.png");
-            imgEmptyField_12 = loader.loadImage( "/empty_field_12.png");
+            imgEmptyField_6 = loader.loadImage( "/resources/empty_field_6.png");
+            imgEmptyField_8 = loader.loadImage( "/resources/empty_field_8.png");
+            imgEmptyField_10 = loader.loadImage( "/resources/empty_field_10.png");
+            imgEmptyField_12 = loader.loadImage( "/resources/empty_field_12.png");
             
-            imgWhiteField_6 = loader.loadImage( "/white_field_6.png");
-            imgWhiteField_8 = loader.loadImage( "/white_field_8.png");
-            imgWhiteField_10 = loader.loadImage( "/white_field_10.png");
-            imgWhiteField_12 = loader.loadImage( "/white_field_12.png");
+            imgWhiteField_6 = loader.loadImage( "/resources/white_field_6.png");
+            imgWhiteField_8 = loader.loadImage( "/resources/white_field_8.png");
+            imgWhiteField_10 = loader.loadImage( "/resources/white_field_10.png");
+            imgWhiteField_12 = loader.loadImage( "/resources/white_field_12.png");
             
-            imgBlackField_6 = loader.loadImage( "/black_field_6.png");
-            imgBlackField_8 = loader.loadImage( "/black_field_8.png");
-            imgBlackField_10 = loader.loadImage( "/black_field_10.png");
-            imgBlackField_12 = loader.loadImage( "/black_field_12.png");
+            imgBlackField_6 = loader.loadImage( "/resources/black_field_6.png");
+            imgBlackField_8 = loader.loadImage( "/resources/black_field_8.png");
+            imgBlackField_10 = loader.loadImage( "/resources/black_field_10.png");
+            imgBlackField_12 = loader.loadImage( "/resources/black_field_12.png");
         } 
         catch( IOException e ) 
         {
@@ -166,16 +134,13 @@ public class GameGUI extends Canvas implements Runnable
         pgGame = new GamePage( this );
         pgCredits = new CreditsPage();
         pgHowTo = new HowToPage();
+        stonesCoords = new ArrayList<>();
         
         setBoardSize( 8 );
-        coords = new ArrayList<>();
         
         this.addMouseListener( new MenuButtonListener( this ) );
     }
     
-    /**
-     * Metoda, která inicializuje a nastartuje vlákno
-     */
     private synchronized void start()
     {
         if ( running )
@@ -186,9 +151,6 @@ public class GameGUI extends Canvas implements Runnable
         thread.start();
     }
     
-    /**
-     * Metdoa, která ukončí vlákno
-     */
     private synchronized void stop()
     {
         if ( !running )
@@ -206,27 +168,53 @@ public class GameGUI extends Canvas implements Runnable
         System.exit( 1 );
     }
     
-    /**
-     * Přetížená metoda, která reprezentuje běh hry
-     */
     @Override
     public void run()
     {
         initialize();
         
+        long lastTime = System.nanoTime();
+        final double amountOfTicks = 60.0;
+        double ns = 1_000_000_000 / amountOfTicks;
+        double delta = 0;
+        int updates = 0;
+        int frames = 0;
+        long timer = System.currentTimeMillis();
+        
         while ( running )
         {
+            long now = System.nanoTime();
+            delta += ( now - lastTime ) / ns;
+            lastTime = now;
+            if ( delta >= 1 )
+            {
+                tick();
+                updates++;
+                delta--;
+            }
             render();
+            frames++;
+            
+            if ( System.currentTimeMillis() - timer > 1000 )
+            {
+                timer += 1000;
+//                System.out.println( "FPS: " + frames + " updates: " + updates );
+                updates = 0;
+                frames = 0;
+            }
         }
         stop();
     }
     
-    /**
-     * Metoda, která vykresluje GUI v závislosti na stavu hry
-     * - inicializace grafiky
-     * - vykreslení pozadí
-     * - vykreslení stránky
-     */
+    // TODO animations (maybe)
+    private void tick()
+    {
+        if ( state == STATE.GAME )
+        {
+            // render...
+        }
+    }
+    
     private void render()
     {
         BufferStrategy bs = this.getBufferStrategy();
@@ -236,10 +224,12 @@ public class GameGUI extends Canvas implements Runnable
             createBufferStrategy( 3 );
             return;
         }
-        g = bs.getDrawGraphics();
         
-        // Vykreslování
+        g = bs.getDrawGraphics();
+        //---------------
+        
         g.drawImage( image, 0, 0, getWidth(), getHeight(), this );
+        
         g.drawImage( background, 0, 0, null );
         
         switch( state )
@@ -270,18 +260,19 @@ public class GameGUI extends Canvas implements Runnable
                 pgHowTo.render( g );
                 break;
             }
+            case SAVE:
+            {
+                break;
+            }
             default:
                 break;
         }
         
+        //---------------
         g.dispose();
         bs.show();
     }
     
-    /**
-     * Hlavní metoda, která spouští program v řežimu GUI
-     * @param args Argumenty programu (Spouští se bez argumentů)
-     */
     public static void main( String[] args )
     {
         GameGUI gui = new GameGUI();
@@ -301,102 +292,58 @@ public class GameGUI extends Canvas implements Runnable
         gui.start();
     }
     
-    /**
-     * Metoda, která vrací současný stav hry
-     * @return stav hry
-     */
     public STATE getState()
     {
         return this.state;
     }
     
-    /**
-     * Metoda, která nastavuje stav hry
-     * @param state stav hry
-     */
     public void setState( STATE state )
     {
         this.state = state;
     }
     
-    /**
-     * Metoda, která vrací velikost herní desky
-     * @return velikost herní desky
-     */
     public int getBoardSize()
     {
         return this.boardSize;
     }
     
-    /**
-     * Metoda, která nastavuje velikost herní desky
-     * @param size velikost herní desky
-     */
     public void setBoardSize( int size )
     {
         this.boardSize = size;
     }
     
-    /**
-     * Metoda, která vrací kontrolér
-     * @return kontrolér
-     */
     public Controller getController()
     {
         return this.controller;
     }
     
-    /**
-     * Metoda, která nastavuje pole řetězců s informacemi o hře
-     * @param gameInfo pole řetězců {@code String} s informacemi
-     */
     public void setGameInfo( String[] gameInfo )
     {
         this.gameInfo = gameInfo;
     }
     
-    /**
-     * Metoda, která vrací pole řetězců s informacemi o hře
-     * @return pole řetězců {@code String}
-     */
     public String[] getGameInfo()
     {
         return this.gameInfo;
     }
     
-    /**
-     * Metoda, která nastavuje řetězec s informací o zamrzlých kamenech
-     * @param freezeInfo řetězec s informacemi o zamrzlých kamenech
-     */
+    public ArrayList<Coords> getStonesCoords()
+    {
+        return this.stonesCoords;
+    }
+    
     public void setFreezeInfo( String freezeInfo )
     {
         this.freezeInfo = freezeInfo;
     }
     
-    /**
-     * Metoda, která vrací řetězec s informacemi o zamrzlých kamenech
-     * @return řetězec
-     */
     public String getFreezeInfo()
     {
         return this.freezeInfo;
     }
     
-    /**
-     * Metoda, která vrací hlavní vlákno hry
-     * @return vlákno
-     */
     public Thread  getThread()
     {
         return this.thread;
-    }
-    
-    /**
-     * Metoda, která vrací pole souřadnic kamenů {@code Coords}
-     * @return pole souřadnic kamenů
-     */
-    public ArrayList<Coords> getStonesCoords()
-    {
-        return this.coords;
     }
 }
